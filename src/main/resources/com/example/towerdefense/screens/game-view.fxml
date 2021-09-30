@@ -43,7 +43,7 @@
                 <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                     <Image url="/clock.png"/>
                 </ImageView>
-                <Label prefHeight="30.0" prefWidth="90.0" text="3:00">
+                <Label fx:id="timer" prefHeight="30.0" prefWidth="90.0" text="3:00">
                     <font>
                         <Font size="20.0"/>
                     </font>
