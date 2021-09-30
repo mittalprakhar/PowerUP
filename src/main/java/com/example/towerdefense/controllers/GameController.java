@@ -8,7 +8,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Screen;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,6 +20,9 @@ public class GameController {
     @FXML
     private Pane grid;
 
+    @FXML
+    private VBox sideMenu;
+
     private Tile[] tiles;
     private int[] tileImages;
 
@@ -28,8 +30,9 @@ public class GameController {
     private static int COLS = 60;
 
     public void initialize() throws FileNotFoundException {
-        int tileSize = (int) (Screen.getPrimary().getVisualBounds().getHeight() * 0.96 / ROWS);
+        int tileSize = 600 / ROWS;
         container.setPrefWidth(tileSize * COLS);
+        sideMenu.setPrefWidth(1200 - container.getPrefWidth());
 
         tiles = new Tile[ROWS * COLS];
         tileImages = getTileImages();
@@ -47,14 +50,13 @@ public class GameController {
 
         ProgressBar monumentHealth = new ProgressBar();
         monumentHealth.setProgress(1);
+        monumentHealth.setPrefWidth(tileSize * 6);
         monumentHealth.setTranslateX(tileSize * 51);
         monumentHealth.setTranslateY(tileSize * 14);
-        monumentHealth.setStyle("-fx-accent: #c90c22; -fx-background-insets: 0");
         grid.getChildren().add(monumentHealth);
     }
 
     private int[] getTileImages() throws FileNotFoundException {
-        System.out.println(System.getProperty("user.dir"));
         Scanner s = new Scanner(new File("src/main/resources/map1.txt"));
         int[] array = new int[ROWS * COLS];
         for (int i = 0; i < array.length; i++) {
@@ -75,8 +77,6 @@ public class GameController {
             this.occupied = occupied;
             Rectangle border = new Rectangle(tileSize, tileSize);
             border.setFill(new ImagePattern(background));
-            /*border.setStroke(Color.rgb(16, 16, 16));
-            border.setStrokeWidth(0.25);*/
             getChildren().add(border);
         }
     }
