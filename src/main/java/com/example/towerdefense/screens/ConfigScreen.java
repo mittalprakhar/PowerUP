@@ -1,4 +1,4 @@
-package com.example.towerdefense;
+package com.example.towerdefense.screens;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,8 +9,7 @@ import java.io.IOException;
 public class ConfigScreen {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(WelcomeScreen.class.getResource("config-view.fxml"));
-        Scene NewScene = new Scene(fxmlLoader.load(), 320, 240);
-        stage.setScene(NewScene);
-        stage.show();
+        Scene scene = new Scene(fxmlLoader.load(), stage.getScene().getWidth(), stage.getScene().getHeight());
+        stage.setScene(scene);
     }
 }

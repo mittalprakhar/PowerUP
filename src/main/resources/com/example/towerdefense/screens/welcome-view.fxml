@@ -6,11 +6,11 @@
 
 <?import javafx.scene.control.Button?>
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.towerdefense.ConfigController">
+      fx:controller="com.example.towerdefense.controllers.WelcomeController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
-    <Label fx:id="configText"/>
-    <Button text="Click to config!" onAction="#onConfigButtonClick"/>
+    <Label fx:id="welcomeText" text="Welcome to Tower Defense v1"/>
+    <Button text="Welcome!" onAction="#onWelcomeButtonClick"/>
 </VBox>

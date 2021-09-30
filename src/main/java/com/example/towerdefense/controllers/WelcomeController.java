@@ -1,5 +1,6 @@
-package com.example.towerdefense;
+package com.example.towerdefense.controllers;
 
+import com.example.towerdefense.screens.ConfigScreen;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -10,12 +11,11 @@ import java.io.IOException;
 
 public class WelcomeController {
     @FXML
-    private Label welcomeText;
+    public Label welcomeText;
 
     @FXML
     protected void onWelcomeButtonClick(ActionEvent event) throws IOException {
-        welcomeText.setText("Welcome to JavaFX Application!");
-        Node node = (Node)(event.getSource());
+        Node node = (Node) (event.getSource());
         Stage stage = (Stage) (node.getScene().getWindow());
         (new ConfigScreen()).start(stage);
     }
