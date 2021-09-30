@@ -1,5 +1,6 @@
 package com.example.towerdefense.screens;
 
+import com.example.towerdefense.controllers.GameController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -12,5 +13,6 @@ public class GameScreen {
         Scene scene = new Scene(fxmlLoader.load(), stage.getScene().getWidth(), stage.getScene().getHeight());
         scene.getStylesheets().add("game.css");
         stage.setScene(scene);
+        ((GameController)fxmlLoader.getController()).gameOn();
     }
 }
