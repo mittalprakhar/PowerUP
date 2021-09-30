@@ -14,7 +14,7 @@ public class WelcomeScreen extends Application {
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(WelcomeScreen.class.getResource("welcome-view.fxml"));
         Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
-        Scene scene = new Scene(fxmlLoader.load(), screenSize.getWidth(), screenSize.getHeight());
+        Scene scene = new Scene(fxmlLoader.load(), screenSize.getWidth(), screenSize.getHeight() * 0.95);
         primaryStage.setTitle("Tower Defense");
         primaryStage.setScene(scene);
         primaryStage.show();
