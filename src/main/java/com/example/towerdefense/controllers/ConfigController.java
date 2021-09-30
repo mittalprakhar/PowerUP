@@ -1,14 +1,18 @@
 package com.example.towerdefense.controllers;
 
+import com.example.towerdefense.screens.GameScreen;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.scene.Node;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class ConfigController {
     @FXML
-    private Label configText;
-
-    @FXML
-    protected void onConfigButtonClick() {
-        configText.setText("Welcome to Config Screen!");
+    protected void onConfigButtonClick(ActionEvent event) throws IOException {
+        Node node = (Node) (event.getSource());
+        Stage stage = (Stage) (node.getScene().getWindow());
+        (new GameScreen()).start(stage);
     }
 }
