@@ -17,6 +17,7 @@ public class WelcomeScreen extends Application {
         Scene scene = new Scene(fxmlLoader.load(), screenSize.getWidth(), screenSize.getHeight() * 0.95);
         primaryStage.setTitle("Tower Defense");
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 
