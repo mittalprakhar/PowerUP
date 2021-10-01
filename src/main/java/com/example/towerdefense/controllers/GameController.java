@@ -1,6 +1,8 @@
 package com.example.towerdefense.controllers;
 
+import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
@@ -8,76 +10,266 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Screen;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class GameController {
-    @FXML
-    private VBox container;
 
     @FXML
-    private Pane grid;
+    private VBox gameContainer;                 // Game container
 
-    private Tile[] tiles;
-    private int[] tileImages;
+    @FXML
+    private Pane gamePane;                      // Game pane within game container
+    private Tile[] tiles;                       // Array of all tiles
+    private int[] tileImages;                   // Array of tile backgrounds
 
-    private static int ROWS = 40;
-    private static int COLS = 60;
+    private static final int ROWS = 40;         // Number of tiles across y-axis
+    private static final int COLS = 60;         // Number of tiles across x-axis
+    private static int tileSize = 600 / ROWS;   // Smallest grid unit - 1 tile size
 
+    private ArrayList<Tower> towers;            // List of all towers
+    private final ProgressBar monumentHealth
+            = new ProgressBar();                // Monument health bar
+
+    @FXML
+    private VBox sideContainer;                 // Side menu container
+
+    @FXML
+    private Label playerLabel;                  // Player label in side menu
+
+    @FXML
+    private Label difficultyLabel;              // Difficulty label in side menu
+    private final String difficulty
+            = "Easy";                           // Starting difficulty
+
+    @FXML
+    private Label timeLabel;                    // Time label in side menu
+    private int time = 180;                     // Starting time in seconds
+
+    @FXML
+    private Label moneyLabel;                   // Money label in side menu
+    private int money = 500;                    // Starting money
+
+    @FXML
+    private Label killsLabel;                   // Kills label in side menu
+    private int kills = 0;                      // Starting kills
+
+    /**
+     * Initializes game screen - runs after config button is pressed
+     *
+     * @throws FileNotFoundException if map file is not present
+     */
     public void initialize() throws FileNotFoundException {
-        int tileSize = (int) (Screen.getPrimary().getVisualBounds().getHeight() * 0.96 / ROWS);
-        container.setPrefWidth(tileSize * COLS);
 
+        // Divide game screen into two containers
+        gameContainer.setPrefWidth(tileSize * COLS);
+        sideContainer.setPrefWidth(1200 - gameContainer.getPrefWidth());
+
+        // Initialize tile array and towers list
         tiles = new Tile[ROWS * COLS];
-        tileImages = getTileImages();
+        towers = new ArrayList<>();
 
+        // Get tile images from map file
+        tileImages = readMap("src/main/resources/map1.txt");
+
+        // Initialize tiles
         for (int i = 0; i < tiles.length; i++) {
-            int x = tileSize * (i % COLS);
-            int y = tileSize * (i / COLS);
-            Tile tile = new Tile(x, y, tileImages[i] != 0,
-                    tileSize, new Image("/" + tileImages[i] + ".jpg"));
-            tiles[i] = tile;
-            tile.setTranslateX(x);
-            tile.setTranslateY(y);
-            grid.getChildren().add(tile);
+            tiles[i] = new Tile(tileSize * (i % COLS), tileSize * (i / COLS),
+                    tileImages[i] != 0,  new Image("/" + tileImages[i] + ".jpg"));
         }
 
-        ProgressBar monumentHealth = new ProgressBar();
-        monumentHealth.setProgress(1);
-        monumentHealth.setTranslateX(tileSize * 51);
-        monumentHealth.setTranslateY(tileSize * 14);
-        monumentHealth.setStyle("-fx-accent: #c90c22; -fx-background-insets: 0");
-        grid.getChildren().add(monumentHealth);
+        // Initialize monument health bar
+        gamePane.getChildren().add(monumentHealth);
+
+        // Initialize labels
+        playerLabel.setText("Player Name");
+        difficultyLabel.setText(difficulty);
+        timeLabel.setText(time / 60 + ":"
+                + new DecimalFormat("00").format(time % 60));
+        moneyLabel.setText(money + "");
+        killsLabel.setText(kills + "");
+
+        // Only for M2 - will implement drag-and-drop functionality in M3
+        towers.add(new Tower(tileSize * 37, tileSize * 23,
+                tileSize * 4, 60, new Image("/tower1.png")));
+
+        towers.add(new Tower(tileSize * 23, tileSize * 14,
+                tileSize * 3, 30, new Image("/tower2.png")));
     }
 
-    private int[] getTileImages() throws FileNotFoundException {
-        System.out.println(System.getProperty("user.dir"));
-        Scanner s = new Scanner(new File("src/main/resources/map1.txt"));
+    /**
+     * Loads map file from path and returns array containing tile images
+     * Sets health bar for monument
+     *
+     * @param path Path of map file
+     * @return Tile images array
+     * @throws FileNotFoundException if map file is not present
+     */
+    private int[] readMap(String path) throws FileNotFoundException {
+        Scanner s = new Scanner(new File(path));
         int[] array = new int[ROWS * COLS];
         for (int i = 0; i < array.length; i++) {
             array[i] = s.nextInt();
         }
+
+        // Update location on monument health bar
+        monumentHealth.setProgress(1);
+        monumentHealth.setTranslateY(tileSize * (s.nextInt() - 1));
+        monumentHealth.setTranslateX(tileSize * (s.nextInt() - 1));
+        monumentHealth.setPrefWidth(tileSize * s.nextInt());
+
         return array;
     }
 
+    /**
+     * Handles gameplay logic
+     * Has an animation timer that calls other gameplay methods when required
+     */
+    public void gameOn() {
+        AnimationTimer gameLoop = new AnimationTimer() {
+            private long lastTimeUpdate;
+            private long lastMoneyUpdate;
+
+            @Override
+            public void handle(long now) {
+
+                // Every 1 second, updates timer and tower health
+                if (lastTimeUpdate == 0L) {
+                    lastTimeUpdate = now;
+                } else {
+                    long diff = now - lastTimeUpdate;
+                    if (diff >= 1_000_000_000L) {
+                        updateTime();
+                        try {
+                            for (Iterator<Tower> iterator = towers.iterator();
+                                 iterator.hasNext(); ) {
+                                Tower t = iterator.next();
+                                t.updateHealth();
+                            }
+                        } catch (ConcurrentModificationException ignored) {}
+                        lastTimeUpdate = now;
+                    }
+                }
+
+                // Every 20 seconds, adds money
+                if (lastMoneyUpdate == 0L) {
+                    lastMoneyUpdate = now;
+                } else {
+                    long diff = now - lastMoneyUpdate;
+                    if (diff >= 20_000_000_000L) {
+                        addMoney();
+                        lastMoneyUpdate = now;
+                    }
+                }
+            }
+        };
+        gameLoop.start();
+    }
+
+    /**
+     * Updates time every 1 second
+     */
+    public void updateTime() {
+        if (time > 0) {
+            time--;
+            timeLabel.setText(time / 60 + ":"
+                    + new DecimalFormat("00").format(time % 60));
+        }
+    }
+
+    /**
+     * Adds money every 20 seconds
+     */
+    public void addMoney() {
+        money += 20;
+        moneyLabel.setText(money + "");
+    }
+
+    /**
+     * Defines a single tile with x-y coordinates, a background image,
+     * and a boolean to track if the tile is occupied by a path/building or not.
+     *
+     * Game container --> game pane --> tile stack panes
+     */
     private class Tile extends StackPane {
         private int x;
         private int y;
         private boolean occupied;
         private Image background;
 
-        public Tile(int x, int y, boolean occupied, double tileSize, Image background) {
+        public Tile(int x, int y, boolean occupied, Image background) {
             this.x = x;
             this.y = y;
             this.occupied = occupied;
+
             Rectangle border = new Rectangle(tileSize, tileSize);
             border.setFill(new ImagePattern(background));
-            /*border.setStroke(Color.rgb(16, 16, 16));
-            border.setStrokeWidth(0.25);*/
             getChildren().add(border);
+            this.setTranslateX(x);
+            this.setTranslateY(y);
+            gamePane.getChildren().add(this);
+        }
+    }
+
+    /**
+     * Defines a single tower with x-y coordinates, a background image,
+     * a given size (since towers can take up multiple tiles), and health variables.
+     *
+     * Game container --> game pane --> tower stack panes
+     *
+     * Yet to implement placing towers on non-occupied tiles.
+     */
+    private class Tower extends StackPane {
+        private int x;
+        private int y;
+        private double towerSize;
+        private Image background;
+        private double maxHealth;
+        private double curHealth;
+        private ProgressBar healthBar;
+
+        public Tower(int x, int y, double towerSize, double maxHealth, Image background) {
+            this.x = x;
+            this.y = y;
+            this.towerSize = towerSize;
+            this.maxHealth = maxHealth;
+            this.curHealth = maxHealth;
+
+            Rectangle border = new Rectangle(towerSize, towerSize);
+            border.setFill(new ImagePattern(background));
+            getChildren().add(border);
+            this.setTranslateX(x);
+            this.setTranslateY(y);
+            gamePane.getChildren().add(this);
+
+            healthBar = new ProgressBar();
+            healthBar.setProgress(1);
+            healthBar.setTranslateX(x);
+            healthBar.setTranslateY(y - tileSize);
+            healthBar.setPrefWidth(towerSize);
+            healthBar.setPrefHeight(tileSize * 0.8);
+            gamePane.getChildren().add(healthBar);
+        }
+
+        public void updateHealth() {
+            if (curHealth > 0) {
+                curHealth -= 1;
+                healthBar.setProgress(curHealth / maxHealth);
+            } else {
+                destroy();
+            }
+        }
+
+        public void destroy() {
+            gamePane.getChildren().remove(this);
+            gamePane.getChildren().remove(healthBar);
+            towers.remove(this);
         }
     }
 }
