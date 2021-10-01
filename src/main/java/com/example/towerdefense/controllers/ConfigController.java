@@ -34,13 +34,15 @@ public class ConfigController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        ObservableList<String> difficultyModes = FXCollections.observableArrayList("Beginner", "Intermediate", "Expert");
+        ObservableList<String> difficultyModes =
+                FXCollections.observableArrayList("Beginner", "Intermediate", "Expert");
         difficultyComboBox.setItems(difficultyModes);
 
         String[] mapOptions = {"Garden", "Map", "Maze"};
         maps = new Map[mapOptions.length];
         for (int index = 0; index < mapOptions.length; index++) {
-            maps[index] = new Map(mapOptions[index], new Image("/" + mapOptions[index].toLowerCase() + ".png"));
+            maps[index] = new Map(mapOptions[index],
+                    new Image("/" + mapOptions[index].toLowerCase() + ".png"));
         }
 
         mapLabel.setText(maps[mapIndex].name);
