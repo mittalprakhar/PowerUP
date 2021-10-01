@@ -46,7 +46,7 @@ public class GameController {
     @FXML
     private Label difficultyLabel;              // Difficulty label in side menu
     private final String difficulty
-            = "Easy";                           // Starting difficulty
+            = "Beginner";                       // Starting difficulty
 
     @FXML
     private Label timeLabel;                    // Time label in side menu
@@ -96,11 +96,11 @@ public class GameController {
         killsLabel.setText(kills + "");
 
         // Only for M2 - will implement drag-and-drop functionality in M3
-        towers.add(new Tower(tileSize * 37, tileSize * 23,
-                tileSize * 4, 60, new Image("/tower1.png")));
+        towers.add(new Tower(tileSize * 23, tileSize * 15,
+                tileSize * 3, 30, new Image("/tower1.png")));
 
-        towers.add(new Tower(tileSize * 23, tileSize * 14,
-                tileSize * 3, 30, new Image("/tower2.png")));
+        towers.add(new Tower(tileSize * 37, tileSize * 23,
+                tileSize * 4, 60, new Image("/tower2.png")));
     }
 
     /**
@@ -148,11 +148,11 @@ public class GameController {
                         updateTime();
                         try {
                             for (Iterator<Tower> iterator = towers.iterator();
-                                 iterator.hasNext(); ) {
+                                 iterator.hasNext();) {
                                 Tower t = iterator.next();
                                 t.updateHealth();
                             }
-                        } catch (ConcurrentModificationException ignored) {}
+                        } catch (ConcurrentModificationException ignored) { }
                         lastTimeUpdate = now;
                     }
                 }
