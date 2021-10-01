@@ -14,10 +14,7 @@ import javafx.scene.shape.Rectangle;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.Scanner;
+import java.util.*;
 
 public class GameController {
 
@@ -31,11 +28,13 @@ public class GameController {
 
     private static final int ROWS = 40;         // Number of tiles across y-axis
     private static final int COLS = 60;         // Number of tiles across x-axis
-    private static int tileSize = 600 / ROWS;   // Smallest grid unit - 1 tile size
+    private static final int tileSize
+            = 600 / ROWS;                       // Smallest grid unit - 1 tile size
 
     private ArrayList<Tower> towers;            // List of all towers
-    private final ProgressBar monumentHealth
+    private final ProgressBar monumentBar
             = new ProgressBar();                // Monument health bar
+    private double monumentHealth;              // Starting monument health
 
     @FXML
     private VBox sideContainer;                 // Side menu container
@@ -45,28 +44,22 @@ public class GameController {
 
     @FXML
     private Label difficultyLabel;              // Difficulty label in side menu
-    private final String difficulty
-            = "Beginner";                       // Starting difficulty
+    private String difficulty;                  // Starting difficulty
 
     @FXML
     private Label timeLabel;                    // Time label in side menu
-    private int time = 180;                     // Starting time in seconds
+    private int time;                           // Starting time in seconds
 
     @FXML
     private Label moneyLabel;                   // Money label in side menu
-    private int money = 500;                    // Starting money
+    private int money;                          // Starting money
 
     @FXML
     private Label killsLabel;                   // Kills label in side menu
-    private int kills = 0;                      // Starting kills
+    private int kills;                              // Starting kills
 
-    /**
-     * Initializes game screen - runs after config button is pressed
-     *
-     * @throws FileNotFoundException if map file is not present
-     */
+    @FXML
     public void initialize() throws FileNotFoundException {
-
         // Divide game screen into two containers
         gameContainer.setPrefWidth(tileSize * COLS);
         sideContainer.setPrefWidth(1200 - gameContainer.getPrefWidth());
@@ -83,32 +76,13 @@ public class GameController {
             tiles[i] = new Tile(tileSize * (i % COLS), tileSize * (i / COLS),
                     tileImages[i] != 0,  new Image("/" + tileImages[i] + ".jpg"));
         }
-
-        // Initialize monument health bar
-        gamePane.getChildren().add(monumentHealth);
-
-        // Initialize labels
-        playerLabel.setText("Player Name");
-        difficultyLabel.setText(difficulty);
-        timeLabel.setText(time / 60 + ":"
-                + new DecimalFormat("00").format(time % 60));
-        moneyLabel.setText(money + "");
-        killsLabel.setText(kills + "");
-
-        // Only for M2 - will implement drag-and-drop functionality in M3
-        towers.add(new Tower(tileSize * 23, tileSize * 15,
-                tileSize * 3, 30, new Image("/tower1.png")));
-
-        towers.add(new Tower(tileSize * 37, tileSize * 23,
-                tileSize * 4, 60, new Image("/tower2.png")));
     }
 
     /**
      * Loads map file from path and returns array containing tile images
-     * Sets health bar for monument
      *
-     * @param path Path of map file
-     * @return Tile images array
+     * @param path path of map file
+     * @return tile images array
      * @throws FileNotFoundException if map file is not present
      */
     private int[] readMap(String path) throws FileNotFoundException {
@@ -118,13 +92,61 @@ public class GameController {
             array[i] = s.nextInt();
         }
 
-        // Update location on monument health bar
-        monumentHealth.setProgress(1);
-        monumentHealth.setTranslateY(tileSize * (s.nextInt() - 1));
-        monumentHealth.setTranslateX(tileSize * (s.nextInt() - 1));
-        monumentHealth.setPrefWidth(tileSize * s.nextInt());
+        // Set location of monument health bar
+        monumentBar.setTranslateY(tileSize * (s.nextInt() - 1));
+        monumentBar.setTranslateX(tileSize * (s.nextInt() - 1));
+        monumentBar.setPrefWidth(tileSize * s.nextInt());
 
         return array;
+    }
+
+    /**
+     * Sets up initial game state and labels
+     *
+     * @param configParams config parameters such as name, difficulty, and map
+     */
+    public void setUp(Map<String, Object> configParams) {
+        // Initialize game state variables and labels
+        playerLabel.setText(String.valueOf(configParams.get("playerName")));
+
+        difficulty = String.valueOf(configParams.get("difficulty"));
+        difficultyLabel.setText(difficulty);
+
+        time = 180;
+        timeLabel.setText(time / 60 + ":"
+                + new DecimalFormat("00").format(time % 60));
+
+        switch (difficulty) {
+            case "Beginner":
+                money = 500;
+                monumentHealth = 1.0;
+                break;
+            case "Moderate":
+                money = 400;
+                monumentHealth = 0.9;
+                break;
+            default:
+                money = 300;
+                monumentHealth = 0.8;
+                break;
+        }
+        moneyLabel.setText(money + "");
+
+        kills = 0;
+        killsLabel.setText(kills + "");
+
+        // Initialize monument health bar
+        monumentBar.setProgress(monumentHealth);
+        gamePane.getChildren().add(monumentBar);
+
+        // Only for M2 - will implement drag-and-drop functionality in M3
+        towers.add(new Tower(tileSize * 23, tileSize * 15,
+                tileSize * 3, 30, new Image("/tower1.png")));
+
+        towers.add(new Tower(tileSize * 37, tileSize * 23,
+                tileSize * 4, 60, new Image("/tower2.png")));
+
+        gameOn();
     }
 
     /**
@@ -138,7 +160,6 @@ public class GameController {
 
             @Override
             public void handle(long now) {
-
                 // Every 1 second, updates timer and tower health
                 if (lastTimeUpdate == 0L) {
                     lastTimeUpdate = now;

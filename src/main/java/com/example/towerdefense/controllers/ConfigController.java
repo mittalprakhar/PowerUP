@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class ConfigController implements Initializable {
@@ -35,7 +36,7 @@ public class ConfigController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ObservableList<String> difficultyModes =
-                FXCollections.observableArrayList("Beginner", "Intermediate", "Expert");
+                FXCollections.observableArrayList("Beginner", "Moderate", "Expert");
         difficultyComboBox.setItems(difficultyModes);
 
         String[] mapOptions = {"Garden", "Map", "Maze"};
@@ -56,7 +57,11 @@ public class ConfigController implements Initializable {
         if (isConfigValid()) {
             Node node = (Node) (actionEvent.getSource());
             Stage stage = (Stage) (node.getScene().getWindow());
-            (new GameScreen()).start(stage);
+            java.util.Map<String, Object> configParams = new HashMap<>();
+            configParams.put("playerName", playerName);
+            configParams.put("difficulty", difficulty);
+            configParams.put("mapName", maps[mapIndex].name);
+            (new GameScreen()).start(stage, configParams);
         }
     }
 
