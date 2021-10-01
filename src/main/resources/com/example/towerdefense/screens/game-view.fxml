@@ -7,14 +7,14 @@
 <?import javafx.scene.text.*?>
 
 <HBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.towerdefense.controllers.GameController">
-    <VBox fx:id="container">
-        <Pane fx:id="grid" />
+    <VBox fx:id="gameContainer">
+        <Pane fx:id="gamePane" />
     </VBox>
-    <VBox fx:id="sideMenu" prefHeight="600.0" prefWidth="300.0">
+    <VBox fx:id="sideContainer" prefHeight="600.0" prefWidth="300.0">
         <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
         </padding>
-        <Label text="Player Name">
+        <Label fx:id="playerLabel">
             <font>
                 <Font name="System Bold" size="26.0" />
             </font>
@@ -27,7 +27,7 @@
                 <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                     <Image url="/difficulty.png"/>
                 </ImageView>
-                <Label prefHeight="30.0" prefWidth="90.0" text="Easy">
+                <Label fx:id="difficultyLabel"  prefHeight="30.0" prefWidth="90.0">
                     <font>
                         <Font size="20.0"/>
                     </font>
@@ -43,7 +43,7 @@
                 <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                     <Image url="/clock.png"/>
                 </ImageView>
-                <Label fx:id="timer" prefHeight="30.0" prefWidth="90.0" text="3:00">
+                <Label fx:id="timeLabel" prefHeight="30.0" prefWidth="90.0">
                     <font>
                         <Font size="20.0"/>
                     </font>
@@ -58,7 +58,7 @@
                 <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                     <Image url="/coin.png"/>
                 </ImageView>
-                <Label prefHeight="30.0" prefWidth="90.0" text="500">
+                <Label fx:id="moneyLabel" prefHeight="30.0" prefWidth="90.0">
                     <font>
                         <Font size="20.0"/>
                     </font>
@@ -71,7 +71,7 @@
                 <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                     <Image url="/kills.png"/>
                 </ImageView>
-                <Label prefHeight="30.0" prefWidth="90.0" text="0">
+                <Label fx:id="killsLabel" prefHeight="30.0" prefWidth="90.0">
                     <font>
                         <Font size="20.0"/>
                     </font>
