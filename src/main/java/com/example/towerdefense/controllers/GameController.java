@@ -1,5 +1,6 @@
 package com.example.towerdefense.controllers;
 
+import com.example.towerdefense.screens.GameScreen;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -13,11 +14,9 @@ import javafx.scene.shape.Rectangle;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URL;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.Scanner;
+import java.util.*;
 
 public class GameController {
 
@@ -60,13 +59,8 @@ public class GameController {
     private Label killsLabel;                   // Kills label in side menu
     private int kills = 0;                      // Starting kills
 
-    /**
-     * Initializes game screen - runs after config button is pressed
-     *
-     * @throws FileNotFoundException if map file is not present
-     */
+    @FXML
     public void initialize() throws FileNotFoundException {
-
         // Divide game screen into two containers
         gameContainer.setPrefWidth(tileSize * COLS);
         sideContainer.setPrefWidth(1200 - gameContainer.getPrefWidth());
@@ -130,8 +124,11 @@ public class GameController {
     /**
      * Handles gameplay logic
      * Has an animation timer that calls other gameplay methods when required
+     * @param configParams the config parameters such as name, difficulty, and map.
      */
-    public void gameOn() {
+    public void gameOn(Map<String, Object> configParams) {
+        playerLabel.setText(String.valueOf(configParams.get("playerName")));
+        difficultyLabel.setText(String.valueOf(configParams.get("difficulty")));
         AnimationTimer gameLoop = new AnimationTimer() {
             private long lastTimeUpdate;
             private long lastMoneyUpdate;
