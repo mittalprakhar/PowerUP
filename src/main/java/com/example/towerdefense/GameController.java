@@ -92,7 +92,7 @@ public class GameController {
         for (int i = 0; i < tiles.length; i++) {
             tiles[i] = new Tile(TILE_SIZE * (i % COLS), TILE_SIZE * (i / COLS),
                     tileImages[i] != 0, new Image(String.valueOf(getClass().getResource(
-                            "/images/tile" + tileImages[i] + ".png"))));
+                    "/images/tile" + tileImages[i] + ".png"))));
         }
 
         // Initialize dependent game variables
@@ -102,18 +102,18 @@ public class GameController {
         difficultyLabel.setText(difficulty);
 
         switch (difficulty) {
-            case "Beginner":
-                money = 500;
-                monumentHealth = 1.0;
-                break;
-            case "Moderate":
-                money = 400;
-                monumentHealth = 0.9;
-                break;
-            default:
-                money = 300;
-                monumentHealth = 0.8;
-                break;
+        case "Beginner":
+            money = 500;
+            monumentHealth = 1.0;
+            break;
+        case "Moderate":
+            money = 400;
+            monumentHealth = 0.9;
+            break;
+        default:
+            money = 300;
+            monumentHealth = 0.8;
+            break;
         }
         moneyLabel.setText(money + "");
 
@@ -125,11 +125,11 @@ public class GameController {
         if (configParams.get("mapName").equals("Forest")) {
             towers.add(new Tower(TILE_SIZE * 23, TILE_SIZE * 15, TILE_SIZE * 3,
                     30, new Image(String.valueOf(getClass().getResource(
-                            "/images/tower1.png")))));
+                    "/images/tower1.png")))));
 
             towers.add(new Tower(TILE_SIZE * 37, TILE_SIZE * 23, TILE_SIZE * 4,
                     60, new Image(String.valueOf(getClass().getResource(
-                            "/images/tower2.png")))));
+                    "/images/tower2.png")))));
 
         }
 
@@ -182,7 +182,8 @@ public class GameController {
                                 Tower t = iterator.next();
                                 t.updateHealth();
                             }
-                        } catch (ConcurrentModificationException ignored) { }
+                        } catch (ConcurrentModificationException ignored) {
+                        }
                         lastTimeUpdate = now;
                     }
                 }
@@ -224,7 +225,7 @@ public class GameController {
     /**
      * Defines a single tile with x-y coordinates, a background image,
      * and a boolean to track if the tile is occupied by a path/building or not.
-     *
+     * <p>
      * Game container --> game pane --> tile stack panes
      */
     private class Tile extends StackPane {
@@ -250,9 +251,9 @@ public class GameController {
     /**
      * Defines a single tower with x-y coordinates, a background image,
      * a given size (since towers can take up multiple tiles), and health variables.
-     *
+     * <p>
      * Game container --> game pane --> tower stack panes
-     *
+     * <p>
      * Yet to implement placing towers on non-occupied tiles.
      */
     private class Tower extends StackPane {
