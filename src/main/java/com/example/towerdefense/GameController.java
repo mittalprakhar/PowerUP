@@ -1,4 +1,4 @@
-package com.example.towerdefense.controllers;
+package com.example.towerdefense;
 
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
@@ -83,14 +83,16 @@ public class GameController {
      * @param configParams config parameters such as name, difficulty, and map
      * @throws FileNotFoundException if map file is not present
      */
-    public void setUp(Map<String, Object> configParams) throws FileNotFoundException {
+    public void initState(Map<String, Object> configParams) throws FileNotFoundException {
         // Get tile images from map file
-        tileImages = readMap("src/main/resources/" + configParams.get("mapName") + ".txt");
+        tileImages = readMap("src/main/resources/maps/"
+                + configParams.get("mapName").toString().toLowerCase() + ".txt");
 
         // Initialize tiles
         for (int i = 0; i < tiles.length; i++) {
             tiles[i] = new Tile(TILE_SIZE * (i % COLS), TILE_SIZE * (i / COLS),
-                    tileImages[i] != 0,  new Image("/tile" + tileImages[i] + ".png"));
+                    tileImages[i] != 0, new Image(String.valueOf(getClass().getResource(
+                            "/images/tile" + tileImages[i] + ".png"))));
         }
 
         // Initialize dependent game variables
@@ -100,18 +102,18 @@ public class GameController {
         difficultyLabel.setText(difficulty);
 
         switch (difficulty) {
-        case "Beginner":
-            money = 500;
-            monumentHealth = 1.0;
-            break;
-        case "Moderate":
-            money = 400;
-            monumentHealth = 0.9;
-            break;
-        default:
-            money = 300;
-            monumentHealth = 0.8;
-            break;
+            case "Beginner":
+                money = 500;
+                monumentHealth = 1.0;
+                break;
+            case "Moderate":
+                money = 400;
+                monumentHealth = 0.9;
+                break;
+            default:
+                money = 300;
+                monumentHealth = 0.8;
+                break;
         }
         moneyLabel.setText(money + "");
 
@@ -120,12 +122,14 @@ public class GameController {
         gamePane.getChildren().add(monumentBar);
 
         // Initialize starting towers (only for M2 - just to show we can place towers)
-        if (configParams.get("mapName").equals("forest")) {
-            towers.add(new Tower(TILE_SIZE * 23, TILE_SIZE * 15,
-                    TILE_SIZE * 3, 30, new Image("/tower1.png")));
+        if (configParams.get("mapName").equals("Forest")) {
+            towers.add(new Tower(TILE_SIZE * 23, TILE_SIZE * 15, TILE_SIZE * 3,
+                    30, new Image(String.valueOf(getClass().getResource(
+                            "/images/tower1.png")))));
 
-            towers.add(new Tower(TILE_SIZE * 37, TILE_SIZE * 23,
-                    TILE_SIZE * 4, 60, new Image("/tower2.png")));
+            towers.add(new Tower(TILE_SIZE * 37, TILE_SIZE * 23, TILE_SIZE * 4,
+                    60, new Image(String.valueOf(getClass().getResource(
+                            "/images/tower2.png")))));
 
         }
 

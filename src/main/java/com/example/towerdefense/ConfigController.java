@@ -1,12 +1,11 @@
-package com.example.towerdefense.controllers;
+package com.example.towerdefense;
 
-import com.example.towerdefense.screens.GameScreen;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -14,11 +13,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.ResourceBundle;
 
-public class ConfigController implements Initializable {
+public class ConfigController {
     @FXML
     private ImageView mapImageView = new ImageView();
     @FXML
@@ -33,8 +30,12 @@ public class ConfigController implements Initializable {
     private String playerName;
     private String difficulty;
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initState() {
+
+    }
+
+    @FXML
+    public void initialize() {
         ObservableList<String> difficultyModes =
                 FXCollections.observableArrayList("Beginner", "Moderate", "Expert");
         difficultyComboBox.setItems(difficultyModes);
@@ -43,7 +44,8 @@ public class ConfigController implements Initializable {
         maps = new Map[mapOptions.length];
         for (int index = 0; index < mapOptions.length; index++) {
             maps[index] = new Map(mapOptions[index],
-                    new Image("/" + mapOptions[index].toLowerCase() + ".png"));
+                    new Image(String.valueOf(getClass().getResource(
+                            "/images/" + mapOptions[index].toLowerCase() + ".png"))));
         }
 
         mapLabel.setText(maps[mapIndex].name);
@@ -51,17 +53,26 @@ public class ConfigController implements Initializable {
     }
 
     @FXML
-    public void onStartButtonClick(ActionEvent actionEvent) throws IOException {
+    public void onStartButtonClick() throws IOException {
         playerName = nameTextField.getText();
         difficulty = difficultyComboBox.getSelectionModel().getSelectedItem();
         if (isConfigValid()) {
-            Node node = (Node) (actionEvent.getSource());
-            Stage stage = (Stage) (node.getScene().getWindow());
+            Stage primaryStage = Main.getPrimaryStage();
+            FXMLLoader fxmlLoader = new FXMLLoader(
+                    getClass().getResource("/views/game-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load(), 1200, 600);
+            scene.getStylesheets().add(String.valueOf(getClass().getResource(
+                    "/css/game.css")));
+
             java.util.Map<String, Object> configParams = new HashMap<>();
             configParams.put("playerName", playerName);
             configParams.put("difficulty", difficulty);
             configParams.put("mapName", maps[mapIndex].name);
-            (new GameScreen()).start(stage, configParams);
+
+            GameController gameController = fxmlLoader.getController();
+            gameController.initState(configParams);
+
+            primaryStage.setScene(scene);
         }
     }
 
