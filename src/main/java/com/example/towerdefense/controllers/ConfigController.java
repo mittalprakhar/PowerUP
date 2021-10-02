@@ -16,7 +16,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 public class ConfigController implements Initializable {
@@ -37,10 +36,10 @@ public class ConfigController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ObservableList<String> difficultyModes =
-                FXCollections.observableArrayList("Beginner", "Intermediate", "Expert");
+                FXCollections.observableArrayList("Beginner", "Moderate", "Expert");
         difficultyComboBox.setItems(difficultyModes);
 
-        String[] mapOptions = {"Garden", "Map", "Maze"};
+        String[] mapOptions = {"Forest", "Ocean", "Desert"};
         maps = new Map[mapOptions.length];
         for (int index = 0; index < mapOptions.length; index++) {
             maps[index] = new Map(mapOptions[index],
