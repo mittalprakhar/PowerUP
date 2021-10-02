@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class ConfigScreen {
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(WelcomeScreen.class.getResource("config-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(ConfigScreen.class.getResource("config-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), stage.getScene().getWidth(),
                 stage.getScene().getHeight());
         stage.setScene(scene);

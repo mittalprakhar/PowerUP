@@ -56,7 +56,7 @@ public class GameController {
 
     @FXML
     private Label killsLabel;                   // Kills label in side menu
-    private int kills;                              // Starting kills
+    private int kills;                          // Starting kills
 
     @FXML
     public void initialize() {
