@@ -1,6 +1,5 @@
-package com.example.towerdefense.controllers;
+package com.example.towerdefense;
 
-import com.example.towerdefense.screens.GameScreen;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -14,7 +13,6 @@ import javafx.scene.shape.Rectangle;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -44,8 +42,7 @@ public class GameController {
 
     @FXML
     private Label difficultyLabel;              // Difficulty label in side menu
-    private final String difficulty
-            = "Beginner";                       // Starting difficulty
+    private String difficulty;                       // Starting difficulty
 
     @FXML
     private Label timeLabel;                    // Time label in side menu
@@ -58,6 +55,12 @@ public class GameController {
     @FXML
     private Label killsLabel;                   // Kills label in side menu
     private int kills = 0;                      // Starting kills
+
+    public void initState(Map<String, Object> configParams) {
+        playerLabel.setText(String.valueOf(configParams.get("playerName")));
+        difficultyLabel.setText(String.valueOf(configParams.get("difficulty")));
+        gameOn();
+    }
 
     @FXML
     public void initialize() throws FileNotFoundException {
@@ -75,7 +78,7 @@ public class GameController {
         // Initialize tiles
         for (int i = 0; i < tiles.length; i++) {
             tiles[i] = new Tile(tileSize * (i % COLS), tileSize * (i / COLS),
-                    tileImages[i] != 0,  new Image("/" + tileImages[i] + ".jpg"));
+                    tileImages[i] != 0,  new Image(String.valueOf(getClass().getResource("/images/" + tileImages[i] + ".jpg"))));
         }
 
         // Initialize monument health bar
@@ -91,10 +94,10 @@ public class GameController {
 
         // Only for M2 - will implement drag-and-drop functionality in M3
         towers.add(new Tower(tileSize * 23, tileSize * 15,
-                tileSize * 3, 30, new Image("/tower1.png")));
+                tileSize * 3, 30, new Image(String.valueOf(getClass().getResource("/images/tower1.png")))));
 
         towers.add(new Tower(tileSize * 37, tileSize * 23,
-                tileSize * 4, 60, new Image("/tower2.png")));
+                tileSize * 4, 60, new Image(String.valueOf(getClass().getResource("/images/tower2.png")))));
     }
 
     /**
@@ -124,11 +127,8 @@ public class GameController {
     /**
      * Handles gameplay logic
      * Has an animation timer that calls other gameplay methods when required
-     * @param configParams the config parameters such as name, difficulty, and map.
      */
-    public void gameOn(Map<String, Object> configParams) {
-        playerLabel.setText(String.valueOf(configParams.get("playerName")));
-        difficultyLabel.setText(String.valueOf(configParams.get("difficulty")));
+    public void gameOn() {
         AnimationTimer gameLoop = new AnimationTimer() {
             private long lastTimeUpdate;
             private long lastMoneyUpdate;

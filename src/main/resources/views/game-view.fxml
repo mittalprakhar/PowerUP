@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<HBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.towerdefense.controllers.GameController">
+<HBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.towerdefense.GameController">
     <VBox fx:id="gameContainer">
         <Pane fx:id="gamePane" />
     </VBox>
@@ -25,7 +25,7 @@
         <HBox prefHeight="30.0" prefWidth="260.0">
             <HBox prefHeight="30.0" prefWidth="150.0">
                 <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="/difficulty.png"/>
+                    <Image url="@../images/difficulty.png"/>
                 </ImageView>
                 <Label fx:id="difficultyLabel"  prefHeight="30.0" prefWidth="90.0">
                     <font>
@@ -41,7 +41,7 @@
             </HBox>
             <HBox layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="110.0">
                 <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="/clock.png"/>
+                    <Image url="@../images/clock.png"/>
                 </ImageView>
                 <Label fx:id="timeLabel" prefHeight="30.0" prefWidth="90.0">
                     <font>
@@ -56,7 +56,7 @@
         <HBox layoutX="30.0" layoutY="83.0" prefHeight="30.0" prefWidth="260.0">
             <HBox prefHeight="30.0" prefWidth="150.0">
                 <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="/coin.png"/>
+                    <Image url="@../images/coin.png"/>
                 </ImageView>
                 <Label fx:id="moneyLabel" prefHeight="30.0" prefWidth="90.0">
                     <font>
@@ -69,7 +69,7 @@
             </HBox>
             <HBox layoutX="10.0" layoutY="10.0" prefHeight="30.0" prefWidth="110.0">
                 <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="/kills.png"/>
+                    <Image url="@../images/kills.png"/>
                 </ImageView>
                 <Label fx:id="killsLabel" prefHeight="30.0" prefWidth="90.0">
                     <font>
@@ -99,7 +99,7 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </opaqueInsets>
                 <ImageView fitHeight="65.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="/tower1.png" />
+                    <Image url="@../images/tower1.png" />
                 </ImageView>
                 <Label prefHeight="30.0" text="Cannon ($20)">
                     <font>
@@ -115,7 +115,7 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </opaqueInsets>
                 <ImageView fitHeight="65.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="/tower2.png" />
+                    <Image url="@../images/tower2.png" />
                 </ImageView>
                 <Label prefHeight="30.0" text="Artillery ($30)">
                     <font>
@@ -131,7 +131,7 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </opaqueInsets>
                 <ImageView fitHeight="65.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="/tower3.png" />
+                    <Image url="@../images/tower3.png" />
                 </ImageView>
                 <Label prefHeight="30.0" text="Bomber ($50)">
                     <font>
@@ -147,7 +147,7 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </opaqueInsets>
                 <ImageView fitHeight="65.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="/tower4.png" />
+                    <Image url="@../images/tower4.png" />
                 </ImageView>
                 <Label prefHeight="30.0" text="Wizard Tower ($75)">
                     <font>
@@ -163,7 +163,7 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </opaqueInsets>
                 <ImageView fitHeight="65.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="/tower5.png" />
+                    <Image url="@../images/tower5.png" />
                 </ImageView>
                 <Label prefHeight="30.0" text="Crossbow ($100)">
                     <font>
@@ -179,7 +179,7 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </opaqueInsets>
                 <ImageView fitHeight="65.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="/tower6.png" />
+                    <Image url="@../images/tower6.png" />
                 </ImageView>
                 <Label prefHeight="30.0" text="Tesla ($125)">
                     <font>
@@ -195,7 +195,7 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                 </opaqueInsets>
                 <ImageView fitHeight="65.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="/tower7.png"/>
+                    <Image url="@../images/tower7.png"/>
                 </ImageView>
                 <Label prefHeight="30.0" text="Drone ($150)">
                     <font>
@@ -211,7 +211,7 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                 </opaqueInsets>
                 <ImageView fitHeight="65.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="/tower8.png"/>
+                    <Image url="@../images/tower8.png"/>
                 </ImageView>
                 <Label prefHeight="30.0" text="Tank ($200)">
                     <font>
@@ -227,7 +227,7 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                 </opaqueInsets>
                 <ImageView fitHeight="65.0" fitWidth="65.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="/tower9.png"/>
+                    <Image url="@../images/tower9.png"/>
                 </ImageView>
                 <Label prefHeight="30.0" text="Rockets ($250)">
                     <font>

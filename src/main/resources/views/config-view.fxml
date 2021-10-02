@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" onMousePressed="#onMousePressed" prefHeight="578.0" prefWidth="747.0" spacing="20.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.towerdefense.controllers.ConfigController">
+<VBox alignment="CENTER" onMousePressed="#onMousePressed" prefHeight="578.0" prefWidth="747.0" spacing="20.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.towerdefense.ConfigController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -51,7 +51,7 @@
                         <graphic>
                            <ImageView fitHeight="40.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                               <image>
-                                 <Image url="@../../../../left-arrow.png" />
+                                 <Image url="@../images/left-arrow.png" />
                               </image>
                            </ImageView>
                         </graphic>
@@ -61,7 +61,7 @@
                         <graphic>
                            <ImageView fitHeight="40.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                               <image>
-                                 <Image url="@../../../../right-arrow.png" />
+                                 <Image url="@../images/right-arrow.png" />
                               </image>
                            </ImageView>
                         </graphic>
