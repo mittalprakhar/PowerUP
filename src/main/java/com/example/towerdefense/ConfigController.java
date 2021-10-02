@@ -2,10 +2,8 @@ package com.example.towerdefense;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -15,9 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.ResourceBundle;
 
 public class ConfigController {
     @FXML
@@ -41,14 +37,15 @@ public class ConfigController {
     @FXML
     public void initialize() {
         ObservableList<String> difficultyModes =
-                FXCollections.observableArrayList("Beginner", "Intermediate", "Expert");
+                FXCollections.observableArrayList("Beginner", "Moderate", "Expert");
         difficultyComboBox.setItems(difficultyModes);
 
-        String[] mapOptions = {"Garden", "Map", "Maze"};
+        String[] mapOptions = {"Forest", "Ocean", "Desert"};
         maps = new Map[mapOptions.length];
         for (int index = 0; index < mapOptions.length; index++) {
             maps[index] = new Map(mapOptions[index],
-                    new Image(String.valueOf(getClass().getResource("/images/" + mapOptions[index].toLowerCase() + ".png"))));
+                    new Image(String.valueOf(getClass().getResource(
+                            "/images/" + mapOptions[index].toLowerCase() + ".png"))));
         }
 
         mapLabel.setText(maps[mapIndex].name);
@@ -64,7 +61,8 @@ public class ConfigController {
             FXMLLoader fxmlLoader = new FXMLLoader(
                     getClass().getResource("/views/game-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), 1200, 600);
-            scene.getStylesheets().add(String.valueOf(getClass().getResource("/css/game.css")));
+            scene.getStylesheets().add(String.valueOf(getClass().getResource(
+                    "/css/game.css")));
 
             java.util.Map<String, Object> configParams = new HashMap<>();
             configParams.put("playerName", playerName);
