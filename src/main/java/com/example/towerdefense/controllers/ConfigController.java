@@ -39,7 +39,7 @@ public class ConfigController implements Initializable {
                 FXCollections.observableArrayList("Beginner", "Moderate", "Expert");
         difficultyComboBox.setItems(difficultyModes);
 
-        String[] mapOptions = {"Garden", "Map", "Maze"};
+        String[] mapOptions = {"Forest", "Ocean", "Desert"};
         maps = new Map[mapOptions.length];
         for (int index = 0; index < mapOptions.length; index++) {
             maps[index] = new Map(mapOptions[index],

@@ -28,7 +28,7 @@ public class GameController {
 
     private static final int ROWS = 40;         // Number of tiles across y-axis
     private static final int COLS = 60;         // Number of tiles across x-axis
-    private static final int tileSize
+    private static final int TILE_SIZE
             = 600 / ROWS;                       // Smallest grid unit - 1 tile size
 
     private ArrayList<Tower> towers;            // List of all towers
@@ -59,27 +59,81 @@ public class GameController {
     private int kills;                              // Starting kills
 
     @FXML
-    public void initialize() throws FileNotFoundException {
+    public void initialize() {
         // Divide game screen into two containers
-        gameContainer.setPrefWidth(tileSize * COLS);
+        gameContainer.setPrefWidth(TILE_SIZE * COLS);
         sideContainer.setPrefWidth(1200 - gameContainer.getPrefWidth());
 
         // Initialize tile array and towers list
         tiles = new Tile[ROWS * COLS];
         towers = new ArrayList<>();
 
-        // Get tile images from map file
-        tileImages = readMap("src/main/resources/map1.txt");
+        // Initialize independent game variables
+        time = 180;
+        timeLabel.setText(time / 60 + ":"
+                + new DecimalFormat("00").format(time % 60));
 
-        // Initialize tiles
-        for (int i = 0; i < tiles.length; i++) {
-            tiles[i] = new Tile(tileSize * (i % COLS), tileSize * (i / COLS),
-                    tileImages[i] != 0,  new Image("/" + tileImages[i] + ".jpg"));
-        }
+        kills = 0;
+        killsLabel.setText(kills + "");
     }
 
     /**
-     * Loads map file from path and returns array containing tile images
+     * Sets up tiles, dependent game variables, and monument
+     *
+     * @param configParams config parameters such as name, difficulty, and map
+     * @throws FileNotFoundException if map file is not present
+     */
+    public void setUp(Map<String, Object> configParams) throws FileNotFoundException {
+        // Get tile images from map file
+        tileImages = readMap("src/main/resources/" + configParams.get("mapName") + ".txt");
+
+        // Initialize tiles
+        for (int i = 0; i < tiles.length; i++) {
+            tiles[i] = new Tile(TILE_SIZE * (i % COLS), TILE_SIZE * (i / COLS),
+                    tileImages[i] != 0,  new Image("/tile" + tileImages[i] + ".png"));
+        }
+
+        // Initialize dependent game variables
+        playerLabel.setText(String.valueOf(configParams.get("playerName")));
+
+        difficulty = String.valueOf(configParams.get("difficulty"));
+        difficultyLabel.setText(difficulty);
+
+        switch (difficulty) {
+        case "Beginner":
+            money = 500;
+            monumentHealth = 1.0;
+            break;
+        case "Moderate":
+            money = 400;
+            monumentHealth = 0.9;
+            break;
+        default:
+            money = 300;
+            monumentHealth = 0.8;
+            break;
+        }
+        moneyLabel.setText(money + "");
+
+        // Initialize monument health bar
+        monumentBar.setProgress(monumentHealth);
+        gamePane.getChildren().add(monumentBar);
+
+        // Initialize starting towers (only for M2 - just to show we can place towers)
+        if (configParams.get("mapName").equals("forest")) {
+            towers.add(new Tower(TILE_SIZE * 23, TILE_SIZE * 15,
+                    TILE_SIZE * 3, 30, new Image("/tower1.png")));
+
+            towers.add(new Tower(TILE_SIZE * 37, TILE_SIZE * 23,
+                    TILE_SIZE * 4, 60, new Image("/tower2.png")));
+
+        }
+
+        gameOn();
+    }
+
+    /**
+     * Loads map file from path
      *
      * @param path path of map file
      * @return tile images array
@@ -93,60 +147,11 @@ public class GameController {
         }
 
         // Set location of monument health bar
-        monumentBar.setTranslateY(tileSize * (s.nextInt() - 1));
-        monumentBar.setTranslateX(tileSize * (s.nextInt() - 1));
-        monumentBar.setPrefWidth(tileSize * s.nextInt());
+        monumentBar.setTranslateY(TILE_SIZE * (s.nextInt() - 1));
+        monumentBar.setTranslateX(TILE_SIZE * (s.nextInt() - 1));
+        monumentBar.setPrefWidth(TILE_SIZE * s.nextInt());
 
         return array;
-    }
-
-    /**
-     * Sets up initial game state and labels
-     *
-     * @param configParams config parameters such as name, difficulty, and map
-     */
-    public void setUp(Map<String, Object> configParams) {
-        // Initialize game state variables and labels
-        playerLabel.setText(String.valueOf(configParams.get("playerName")));
-
-        difficulty = String.valueOf(configParams.get("difficulty"));
-        difficultyLabel.setText(difficulty);
-
-        time = 180;
-        timeLabel.setText(time / 60 + ":"
-                + new DecimalFormat("00").format(time % 60));
-
-        switch (difficulty) {
-            case "Beginner":
-                money = 500;
-                monumentHealth = 1.0;
-                break;
-            case "Moderate":
-                money = 400;
-                monumentHealth = 0.9;
-                break;
-            default:
-                money = 300;
-                monumentHealth = 0.8;
-                break;
-        }
-        moneyLabel.setText(money + "");
-
-        kills = 0;
-        killsLabel.setText(kills + "");
-
-        // Initialize monument health bar
-        monumentBar.setProgress(monumentHealth);
-        gamePane.getChildren().add(monumentBar);
-
-        // Only for M2 - will implement drag-and-drop functionality in M3
-        towers.add(new Tower(tileSize * 23, tileSize * 15,
-                tileSize * 3, 30, new Image("/tower1.png")));
-
-        towers.add(new Tower(tileSize * 37, tileSize * 23,
-                tileSize * 4, 60, new Image("/tower2.png")));
-
-        gameOn();
     }
 
     /**
@@ -229,7 +234,7 @@ public class GameController {
             this.y = y;
             this.occupied = occupied;
 
-            Rectangle border = new Rectangle(tileSize, tileSize);
+            Rectangle border = new Rectangle(TILE_SIZE, TILE_SIZE);
             border.setFill(new ImagePattern(background));
             getChildren().add(border);
             this.setTranslateX(x);
@@ -272,9 +277,9 @@ public class GameController {
             healthBar = new ProgressBar();
             healthBar.setProgress(1);
             healthBar.setTranslateX(x);
-            healthBar.setTranslateY(y - tileSize);
+            healthBar.setTranslateY(y - TILE_SIZE);
             healthBar.setPrefWidth(towerSize);
-            healthBar.setPrefHeight(tileSize * 0.8);
+            healthBar.setPrefHeight(TILE_SIZE * 0.8);
             gamePane.getChildren().add(healthBar);
         }
 

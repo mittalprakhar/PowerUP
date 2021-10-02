@@ -51,7 +51,7 @@
                         <graphic>
                            <ImageView fitHeight="40.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                               <image>
-                                 <Image url="@../../../../left-arrow.png" />
+                                 <Image url="@../../../../arrowLeft.png" />
                               </image>
                            </ImageView>
                         </graphic>
@@ -61,7 +61,7 @@
                         <graphic>
                            <ImageView fitHeight="40.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                               <image>
-                                 <Image url="@../../../../right-arrow.png" />
+                                 <Image url="@../../../../arrowRight.png" />
                               </image>
                            </ImageView>
                         </graphic>
