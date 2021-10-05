@@ -119,6 +119,7 @@ public class GameController {
 
         // Initialize monument health bar
         monumentBar.setProgress(monumentHealth);
+        monumentBar.setId("monumentHealth");
         gamePane.getChildren().add(monumentBar);
 
         // Initialize starting towers (only for M2 - just to show we can place towers)
