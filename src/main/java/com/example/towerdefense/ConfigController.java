@@ -17,6 +17,12 @@ import java.util.HashMap;
 
 public class ConfigController {
     @FXML
+    private Button prevButton;
+    @FXML
+    private Button nextButton;
+    @FXML
+    private Button startButton;
+    @FXML
     private ImageView mapImageView = new ImageView();
     @FXML
     private Label mapLabel;
