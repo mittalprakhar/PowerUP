@@ -132,7 +132,8 @@ public class GameController {
                     "/images/tower2.png")))));
 
         }
-
+        towers.get(0).healthBar.setId("healthbar1");
+        towers.get(0).setId("tower1");
         gameOn();
     }
 
@@ -222,6 +223,7 @@ public class GameController {
         moneyLabel.setText(money + "");
     }
 
+
     /**
      * Defines a single tile with x-y coordinates, a background image,
      * and a boolean to track if the tile is occupied by a path/building or not.
@@ -247,7 +249,6 @@ public class GameController {
             gamePane.getChildren().add(this);
         }
     }
-
     /**
      * Defines a single tower with x-y coordinates, a background image,
      * a given size (since towers can take up multiple tiles), and health variables.
@@ -296,11 +297,11 @@ public class GameController {
                 destroy();
             }
         }
-
         public void destroy() {
             gamePane.getChildren().remove(this);
             gamePane.getChildren().remove(healthBar);
             towers.remove(this);
         }
+
     }
 }
