@@ -3,11 +3,15 @@ package com.example.towerdefense;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class WelcomeController {
+    @FXML
+    private Button startButton;
+
     @FXML
     protected void onWelcomeButtonClick() throws IOException {
         Stage primaryStage = Main.getPrimaryStage();
