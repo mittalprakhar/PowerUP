@@ -3,12 +3,18 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.ProgressBar;
 import javafx.stage.Stage;
 import org.junit.Test;
+import org.testfx.api.FxAssert;
 import org.testfx.framework.junit.ApplicationTest;
+
 import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.matcher.control.LabeledMatchers;
+import org.testfx.service.query.EmptyNodeQueryException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.testfx.api.FxAssert.verifyThat;
+import static org.testfx.matcher.base.NodeMatchers.isVisible;
+
 
 public class M1Test extends ApplicationTest {
     private Stage myStage;
@@ -29,7 +35,7 @@ public class M1Test extends ApplicationTest {
         // verify before proceeding to game screen
         clickOn("#startButton");
         // verify alert opened
-        verifyThat("OK", NodeMatchers.isVisible());
+        verifyThat("OK", isVisible());
         DialogPane alert = lookup(".alert").query();
         assertEquals(alert.getContentText(), "Please enter a valid name.");
     }
@@ -42,7 +48,7 @@ public class M1Test extends ApplicationTest {
         // verify before proceeding to game screen
         clickOn("#startButton");
         // verify alert opened
-        verifyThat("OK", NodeMatchers.isVisible());
+        verifyThat("OK", isVisible());
         DialogPane alert = lookup(".alert").query();
         assertEquals(alert.getContentText(), "Please enter a valid name.");
     }
@@ -56,7 +62,7 @@ public class M1Test extends ApplicationTest {
         // verify before proceeding to game screen
         clickOn("#startButton");
         // verify alert opened
-        verifyThat("OK", NodeMatchers.isVisible());
+        verifyThat("OK", isVisible());
         DialogPane alert = lookup(".alert").query();
         assertEquals(alert.getContentText(), "Please enter a valid name.");
     }
@@ -70,7 +76,7 @@ public class M1Test extends ApplicationTest {
         // verify before proceeding to game screen
         clickOn("#startButton");
         // verify alert opened
-        verifyThat("OK", NodeMatchers.isVisible());
+        verifyThat("OK", isVisible());
         DialogPane alert = lookup(".alert").query();
         assertEquals(alert.getContentText(), "Please select a difficulty.");
     }
@@ -80,19 +86,28 @@ public class M1Test extends ApplicationTest {
         // on welcome screen
         clickOn("#startButton");
         // on config screen
-        verifyThat("Forest", NodeMatchers.isVisible());
+        verifyThat("Forest", isVisible());
 
         clickOn("#prevButton");
-        verifyThat("Desert", NodeMatchers.isVisible());
+        verifyThat("Desert", isVisible());
 
         clickOn("#prevButton");
-        verifyThat("Ocean", NodeMatchers.isVisible());
+        verifyThat("Ocean", isVisible());
 
         clickOn("#nextButton");
-        verifyThat("Desert", NodeMatchers.isVisible());
+        verifyThat("Desert", isVisible());
 
         clickOn("#nextButton");
-        verifyThat("Forest", NodeMatchers.isVisible());
+        verifyThat("Forest", isVisible());
+    }
+    @Test
+    public void testgamescreenname() {
+        clickOn("#startButton");
+        clickOn("#nameTextField").write("player1");
+        clickOn("#difficultyComboBox").clickOn("Moderate");
+        clickOn("#startButton");
+        verifyThat("#playerLabel", isVisible());
+
     }
 
     @Test
@@ -110,7 +125,6 @@ public class M1Test extends ApplicationTest {
         verifyThat("#killsLabel", LabeledMatchers.hasText("0"));
         assertEquals(1.0, ((ProgressBar) lookup("#monumentHealth").query()).getProgress());
     }
-
     @Test
     public void testGameParamsModerate() {
         // on welcome screen
@@ -141,5 +155,33 @@ public class M1Test extends ApplicationTest {
         verifyThat("#moneyLabel", LabeledMatchers.hasText("300"));
         verifyThat("#killsLabel", LabeledMatchers.hasText("0"));
         assertEquals(0.8, ((ProgressBar) lookup("#monumentHealth").query()).getProgress());
+    }
+}
+    public void testmoneydecrease() {
+        clickOn("#startButton");
+        clickOn("#nameTextField").write("player1");
+        clickOn("#difficultyComboBox").clickOn("Beginner");
+        clickOn("#startButton");
+        verifyThat("#moneyLabel", isVisible());
+        FxAssert.verifyThat("#moneyLabel", LabeledMatchers.hasText("500"));
+        sleep(20000);
+        FxAssert.verifyThat("#moneyLabel", LabeledMatchers.hasText("520"));
+    }
+
+    @Test
+    public void towerremovaltest() {
+        clickOn("#startButton");
+        clickOn("#nameTextField").write("player1");
+        clickOn("#difficultyComboBox").clickOn("Beginner");
+        clickOn("#startButton");
+        verifyThat("#healthbar1", isVisible());
+        verifyThat("#tower1", isVisible());
+        sleep(32000);
+        assertThrows(EmptyNodeQueryException.class, () -> {
+            verifyThat("#healthbar1", isVisible());
+        });
+        assertThrows(EmptyNodeQueryException.class, () -> {
+            verifyThat("#tower1", isVisible());
+        });
     }
 }
