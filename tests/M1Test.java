@@ -27,6 +27,32 @@ public class M1Test extends ApplicationTest {
     }
 
     @Test
+    public void testConfigScreenLaunch() {
+        clickOn("#startButton");
+        verifyThat("Tower Defense", isVisible());
+    }
+
+    @Test
+    public void testConfigDifficultyDisplay() {
+        clickOn("#startButton");
+        verifyThat("Tower Defense", isVisible());
+        clickOn("#difficultyComboBox");
+        verifyThat("Beginner", isVisible());
+        verifyThat("Moderate", isVisible());
+        verifyThat("Expert", isVisible());
+    }
+
+    @Test
+    public void testConfigStartButton() {
+        clickOn("#startButton");
+        verifyThat("Tower Defense", isVisible());
+        clickOn("#nameTextField").write("player1");
+        clickOn("#difficultyComboBox").clickOn("Expert");
+        clickOn("#startButton");
+        assertEquals(myStage.getTitle(), "Tower Defense");
+    }
+
+    @Test
     public void testConfigNameEmpty() {
         // on welcome screen
         clickOn("#startButton");
@@ -156,7 +182,7 @@ public class M1Test extends ApplicationTest {
         verifyThat("#killsLabel", LabeledMatchers.hasText("0"));
         assertEquals(0.8, ((ProgressBar) lookup("#monumentHealth").query()).getProgress());
     }
-}
+
     public void testmoneydecrease() {
         clickOn("#startButton");
         clickOn("#nameTextField").write("player1");
