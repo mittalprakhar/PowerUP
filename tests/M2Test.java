@@ -35,8 +35,7 @@ public class M2Test extends ApplicationTest {
     @Test
     public void testWelcomeStartButton() {
         // on welcome screen
-        clickOn("#startButton");
-        assertEquals(myStage.getTitle(), "Tower Defense");
+        verifyThat("#startButton", isVisible());
     }
 
     @Test
@@ -60,7 +59,6 @@ public class M2Test extends ApplicationTest {
         clickOn("#startButton");
 
         // on config screen
-        verifyThat("Tower Defense", isVisible());
         clickOn("#difficultyComboBox");
         verifyThat("Beginner", isVisible());
         verifyThat("Moderate", isVisible());
@@ -73,11 +71,7 @@ public class M2Test extends ApplicationTest {
         clickOn("#startButton");
 
         // on config screen
-        verifyThat("Tower Defense", isVisible());
-        clickOn("#nameTextField").write("player1");
-        clickOn("#difficultyComboBox").clickOn("Expert");
-        clickOn("#startButton");
-        assertEquals(myStage.getTitle(), "Tower Defense");
+        verifyThat("#startButton", isVisible());
     }
 
     @Test
