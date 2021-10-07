@@ -6,31 +6,32 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
+
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.towerdefense.WelcomeController">
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
     <Text layoutX="10" layoutY="30" stroke="BLACK" text="POWERED BY OLOGN">
-    <font>
-        <Font name="QUICKSAND Black" size="15.0" />
-    </font>
-</Text>
+        <font>
+            <Font name="QUICKSAND Black" size="15.0" />
+        </font>
+    </Text>
     <Text layoutX="10" layoutY="30" stroke="GREEN" text="Welcome To Tower Defense v1">
         <font>
             <Font name="OXYGEN Black" size="35.0" />
         </font>
     </Text>
     <ImageView fitHeight="160.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
-        <Image url="@../images/towerM.png"/>
+        <Image url="@../images/towerM.png" />
     </ImageView>
     <Button fx:id="startButton" text="Start Game!" onAction="#onWelcomeButtonClick">
-    <graphic>
-        <ImageView fitHeight="40.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-            <Image url="@../images/tower2.png"/>
-        </ImageView>
-    </graphic>
+        <graphic>
+            <ImageView fitHeight="40.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                <Image url="@../images/tower2.png" />
+            </ImageView>
+        </graphic>
         <font>
-            <Font size="30.0"/>
+            <Font size="30.0" />
         </font>
     </Button>
 </VBox>

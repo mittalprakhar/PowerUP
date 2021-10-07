@@ -131,10 +131,9 @@ public class GameController {
             towers.add(new Tower(TILE_SIZE * 37, TILE_SIZE * 23, TILE_SIZE * 4,
                     60, new Image(String.valueOf(getClass().getResource(
                     "/images/tower2.png")))));
-
+            towers.get(0).setId("tower1");
+            towers.get(0).healthBar.setId("towerHealth1");
         }
-        towers.get(0).healthBar.setId("healthbar1");
-        towers.get(0).setId("tower1");
         gameOn();
     }
 
@@ -224,11 +223,10 @@ public class GameController {
         moneyLabel.setText(money + "");
     }
 
-
     /**
      * Defines a single tile with x-y coordinates, a background image,
      * and a boolean to track if the tile is occupied by a path/building or not.
-     * <p>
+     *
      * Game container --> game pane --> tile stack panes
      */
     private class Tile extends StackPane {
@@ -250,12 +248,13 @@ public class GameController {
             gamePane.getChildren().add(this);
         }
     }
+
     /**
      * Defines a single tower with x-y coordinates, a background image,
      * a given size (since towers can take up multiple tiles), and health variables.
-     * <p>
+     *
      * Game container --> game pane --> tower stack panes
-     * <p>
+     *
      * Yet to implement placing towers on non-occupied tiles.
      */
     private class Tower extends StackPane {
@@ -298,11 +297,11 @@ public class GameController {
                 destroy();
             }
         }
+
         public void destroy() {
             gamePane.getChildren().remove(this);
             gamePane.getChildren().remove(healthBar);
             towers.remove(this);
         }
-
     }
 }
