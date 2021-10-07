@@ -27,6 +27,22 @@ public class M1Test extends ApplicationTest {
     }
 
     @Test
+    public void testWelcomeScreenLaunched() {
+        verifyThat("Start Game!", isVisible());
+    }
+
+    @Test
+    public void testStartButtonOnClick() {
+        clickOn("#startButton");
+        assertEquals(myStage.getTitle(), "Tower Defense");
+    }
+
+    @Test
+    public void testGameTitleOnLaunch() {
+        assertEquals(myStage.getTitle(), "Tower Defense");
+    }
+
+    @Test
     public void testConfigScreenLaunch() {
         clickOn("#startButton");
         verifyThat("Tower Defense", isVisible());
