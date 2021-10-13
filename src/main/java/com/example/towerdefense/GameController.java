@@ -1,13 +1,19 @@
 package com.example.towerdefense;
 
 import javafx.animation.AnimationTimer;
+import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
@@ -17,7 +23,8 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class GameController {
-
+    @FXML
+    private ListView<Tower> towerMenuListView;
     @FXML
     private VBox gameContainer;                 // Game container
 
@@ -31,7 +38,7 @@ public class GameController {
     private static final int TILE_SIZE
             = 600 / ROWS;                       // Smallest grid unit - 1 tile size
 
-    private ArrayList<Tower> towers;            // List of all towers
+    private ArrayList<Tower> playerTowers;      // List of all towers placed by player
     private final ProgressBar monumentBar
             = new ProgressBar();                // Monument health bar
     private double monumentHealth;              // Starting monument health
@@ -64,9 +71,11 @@ public class GameController {
         gameContainer.setPrefWidth(TILE_SIZE * COLS);
         sideContainer.setPrefWidth(1200 - gameContainer.getPrefWidth());
 
+//        gamePane.setOnMouseMoved(this::handleGamePaneMouseMoved);
+
         // Initialize tile array and towers list
         tiles = new Tile[ROWS * COLS];
-        towers = new ArrayList<>();
+        playerTowers = new ArrayList<>();
 
         // Initialize independent game variables
         time = 180;
@@ -75,7 +84,13 @@ public class GameController {
 
         kills = 0;
         killsLabel.setText(kills + "");
+
+
     }
+
+//    private void handleGamePaneMouseMoved(MouseEvent mouseEvent) {
+//        System.out.println(mouseEvent.getX() + " " + mouseEvent.getY());
+//    }
 
     /**
      * Sets up tiles, dependent game variables, and monument
@@ -124,15 +139,15 @@ public class GameController {
 
         // Initialize starting towers (only for M2 - just to show we can place towers)
         if (configParams.get("mapName").equals("Forest")) {
-            towers.add(new Tower(TILE_SIZE * 23, TILE_SIZE * 15, TILE_SIZE * 3,
+            playerTowers.add(new Tower("Tower1", "Description1", TILE_SIZE * 23, TILE_SIZE * 15, TILE_SIZE * 3,
                     30, new Image(String.valueOf(getClass().getResource(
                     "/images/tower1.png")))));
 
-            towers.add(new Tower(TILE_SIZE * 37, TILE_SIZE * 23, TILE_SIZE * 4,
+            playerTowers.add(new Tower("Tower2", "Description2",TILE_SIZE * 37, TILE_SIZE * 23, TILE_SIZE * 4,
                     60, new Image(String.valueOf(getClass().getResource(
                     "/images/tower2.png")))));
-            towers.get(0).setId("tower1");
-            towers.get(0).healthBar.setId("towerHealth1");
+            playerTowers.get(0).setId("tower1");
+            playerTowers.get(0).healthBar.setId("towerHealth1");
         }
         gameOn();
     }
@@ -178,7 +193,7 @@ public class GameController {
                     if (diff >= 1_000_000_000L) {
                         updateTime();
                         try {
-                            for (Iterator<Tower> iterator = towers.iterator();
+                            for (Iterator<Tower> iterator = playerTowers.iterator();
                                  iterator.hasNext();) {
                                 Tower t = iterator.next();
                                 t.updateHealth();
@@ -258,6 +273,8 @@ public class GameController {
      * Yet to implement placing towers on non-occupied tiles.
      */
     private class Tower extends StackPane {
+        private String name;
+        private String description;
         private int x;
         private int y;
         private double towerSize;
@@ -266,7 +283,9 @@ public class GameController {
         private double curHealth;
         private ProgressBar healthBar;
 
-        public Tower(int x, int y, double towerSize, double maxHealth, Image background) {
+        public Tower(String name, String description, int x, int y, double towerSize, double maxHealth, Image background) {
+            this.name = name;
+            this.description = description;
             this.x = x;
             this.y = y;
             this.towerSize = towerSize;
@@ -301,7 +320,7 @@ public class GameController {
         public void destroy() {
             gamePane.getChildren().remove(this);
             gamePane.getChildren().remove(healthBar);
-            towers.remove(this);
+            playerTowers.remove(this);
         }
     }
 }
