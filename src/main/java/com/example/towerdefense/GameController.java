@@ -1,11 +1,13 @@
 package com.example.towerdefense;
 
 import javafx.animation.AnimationTimer;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -32,6 +34,7 @@ public class GameController {
             = 600 / ROWS;                       // Smallest grid unit - 1 tile size
 
     private ArrayList<Tower> playerTowers;      // List of all towers placed by player
+    private Tower currentSelectedTower;         // currently selected tower from the menu
     private final ProgressBar monumentBar
             = new ProgressBar();                // Monument health bar
     private double monumentHealth;              // Starting monument health
@@ -76,7 +79,120 @@ public class GameController {
         kills = 0;
         killsLabel.setText(kills + "");
 
+        ObservableList<Tower> gameTowersObsList = FXCollections.observableArrayList();
 
+        // Initialize gameTowersObsList with all available game towers
+        initializeGameTowersObsList(gameTowersObsList);
+
+        // Set up the CellFactory
+        towerMenuListView.setCellFactory(listCell -> new ListCell<Tower>() {
+            @Override
+            protected void updateItem(Tower tower, boolean empty) {
+                super.updateItem(tower, empty);
+
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    // Create a HBox to hold each tower with complete info
+                    HBox hBox = new HBox();
+                    hBox.setAlignment(Pos.CENTER);
+
+                    // Create a VBox to hold each tower's name and image
+                    VBox vBox = new VBox();
+
+                    // Scale the tower image for display in vBox
+                    ImageView imageView = new ImageView(tower.background);
+                    imageView.setFitWidth(50);
+                    imageView.setFitHeight(50);
+                    imageView.setPreserveRatio(true);
+
+                    // Create a label with tower data to display
+                    Label label = new Label(tower.name + " ($" + tower.cost + ")");
+                    label.setWrapText(true);
+
+                    // Fill the VBox with imageView and label
+                    vBox.getChildren().addAll(imageView, label);
+                    vBox.setAlignment(Pos.CENTER);
+
+                    // Fill the HBox with nodes and additional tower metadata
+                    hBox.getChildren().addAll(
+                            vBox,
+                            new Label(tower.description)
+                    );
+
+                    hBox.setSpacing(10);
+
+                    // Set the HBox as the display
+                    setGraphic(hBox);
+                }
+            }
+        });
+
+        // Bind our list of pieces to the ListView
+        towerMenuListView.setItems(gameTowersObsList);
+        // Add listener to track which tower is currently selected by player
+        towerMenuListView.getSelectionModel().selectedItemProperty().addListener(
+                (observableValue, towerOld, towerNew) -> currentSelectedTower = towerNew);
+    }
+
+    /**
+     *  Initializes gameTowersObsList with all available game towers.
+     * @param gameTowersObsList the observable list to fill all game towers with
+     */
+    private void initializeGameTowersObsList(ObservableList<Tower> gameTowersObsList) {
+        gameTowersObsList.add(new Tower("Tower1",
+                "Description1 contains description of properties about tower1 so player can use tower1",
+                50,
+                new Image(String.valueOf(getClass().getResource(
+                "/images/tower1.png")))));
+
+        gameTowersObsList.add(new Tower("Tower2",
+                "Description2 contains description of properties about tower2 so player can use tower2",
+                100,
+                new Image(String.valueOf(getClass().getResource(
+                        "/images/tower2.png")))));
+
+        gameTowersObsList.add(new Tower("Tower3",
+                "Description3 contains description of properties about tower3 so player can use tower3",
+                50,
+                new Image(String.valueOf(getClass().getResource(
+                        "/images/tower3.png")))));
+
+        gameTowersObsList.add(new Tower("Tower4",
+                "Description4 contains description of properties about tower4 so player can use tower4",
+                100,
+                new Image(String.valueOf(getClass().getResource(
+                        "/images/tower4.png")))));
+
+        gameTowersObsList.add(new Tower("Tower5",
+                "Description5 contains description of properties about tower5 so player can use tower5",
+                50,
+                new Image(String.valueOf(getClass().getResource(
+                        "/images/tower5.png")))));
+
+        gameTowersObsList.add(new Tower("Tower6",
+                "Description6 contains description of properties about tower6 so player can use tower6",
+                100,
+                new Image(String.valueOf(getClass().getResource(
+                        "/images/tower6.png")))));
+
+        gameTowersObsList.add(new Tower("Tower7",
+                "Description7 contains description of properties about tower7 so player can use tower7",
+                50,
+                new Image(String.valueOf(getClass().getResource(
+                        "/images/tower7.png")))));
+
+        gameTowersObsList.add(new Tower("Tower8",
+                "Description8 contains description of properties about tower8 so player can use tower8",
+                100,
+                new Image(String.valueOf(getClass().getResource(
+                        "/images/tower8.png")))));
+
+        gameTowersObsList.add(new Tower("Tower9",
+                "Description9 contains description of properties about tower9 so player can use tower9",
+                50,
+                new Image(String.valueOf(getClass().getResource(
+                        "/images/tower9.png")))));
     }
 
     /**
@@ -126,12 +242,12 @@ public class GameController {
 
         // Initialize starting towers (only for M2 - just to show we can place towers)
         if (configParams.get("mapName").equals("Forest")) {
-            playerTowers.add(new Tower("Tower1", "Description1",
+            playerTowers.add(new Tower("Tower1", "Description1", 50,
                     TILE_SIZE * 23, TILE_SIZE * 15, TILE_SIZE * 3,
                     30, new Image(String.valueOf(getClass().getResource(
                     "/images/tower1.png")))));
 
-            playerTowers.add(new Tower("Tower2", "Description2",
+            playerTowers.add(new Tower("Tower2", "Description2", 100,
                     TILE_SIZE * 37, TILE_SIZE * 23, TILE_SIZE * 4,
                     60, new Image(String.valueOf(getClass().getResource(
                     "/images/tower2.png")))));
@@ -264,6 +380,7 @@ public class GameController {
     private class Tower extends StackPane {
         private String name;
         private String description;
+        private int cost;
         private int x;
         private int y;
         private double towerSize;
@@ -272,15 +389,24 @@ public class GameController {
         private double curHealth;
         private ProgressBar healthBar;
 
-        public Tower(String name, String description, int x, int y,
+        public Tower(String name, String description, int cost, Image background) {
+            this.name = name;
+            this.description = description;
+            this.cost = cost;
+            this.background = background;
+        }
+
+        public Tower(String name, String description, int cost, int x, int y,
                      double towerSize, double maxHealth, Image background) {
             this.name = name;
             this.description = description;
+            this.cost = cost;
             this.x = x;
             this.y = y;
             this.towerSize = towerSize;
             this.maxHealth = maxHealth;
             this.curHealth = maxHealth;
+            this.background = background;
 
             Rectangle border = new Rectangle(towerSize, towerSize);
             border.setFill(new ImagePattern(background));
