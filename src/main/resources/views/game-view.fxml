@@ -85,6 +85,6 @@
                 </Label>
             </HBox>
         </HBox>
-      <ListView fx:id="towerMenuListView" prefHeight="426.0" prefWidth="260.0" />
+      <ListView fx:id="towerMenu" prefHeight="426.0" prefWidth="260.0" />
     </VBox>
 </HBox>
