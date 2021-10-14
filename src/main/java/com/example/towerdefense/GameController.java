@@ -368,7 +368,8 @@ public class GameController {
                             && this.location.y + towerSize <= ROWS * TILE_SIZE) {
                         for (int i = 0; i < towerSize; i += TILE_SIZE) {
                             for (int j = 0; j < towerSize; j += TILE_SIZE) {
-                                currentTowerTiles.add(tiles[((this.location.y + i) / TILE_SIZE) * COLS
+                                currentTowerTiles.add(tiles[
+                                        ((this.location.y + i) / TILE_SIZE) * COLS
                                         + ((this.location.x + j) / TILE_SIZE)]);
                             }
                         }
@@ -405,7 +406,8 @@ public class GameController {
                         moneyLabel.setText(money + "");
                         playerTowers.add(new Tower(selectedTower.name,
                                 selectedTower.description, selectedTower.cost, location,
-                                selectedTower.towerSize, selectedTower.maxHealth, currentTowerTiles));
+                                selectedTower.towerSize, selectedTower.maxHealth,
+                                currentTowerTiles));
                         for (Tile tile: currentTowerTiles) {
                             tile.occupied = true;
                         }
