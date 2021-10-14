@@ -15,7 +15,6 @@ import javafx.scene.shape.Rectangle;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -33,10 +32,7 @@ public class GameController {
     private static final int TILE_SIZE
             = 600 / ROWS;                       // Smallest grid unit - 1 tile size
 
-    private ArrayList<Tower> playerTowers;      // List of all towers placed by player
-    private Tower selectedTower;         // currently selected tower from the menu
-    private final ProgressBar monumentBar
-            = new ProgressBar();                // Monument health bar
+    private ProgressBar monumentBar;            // Monument health bar
     private double monumentHealth;              // Starting monument health
 
     @FXML
@@ -63,9 +59,10 @@ public class GameController {
 
     @FXML
     private ListView<Tower> towerMenu;          // Tower list view in side menu
+    private ObservableList<Tower> gameTowers;   // List of towers in game
 
-    private ObservableList<Tower> gameTowers    // List of towers in game
-            = FXCollections.observableArrayList();
+    private Tower selectedTower;                // Currently selected tower from the menu
+    private List<Tower> playerTowers;           // List of all towers placed by player
 
     @FXML
     public void initialize() {
@@ -73,9 +70,11 @@ public class GameController {
         gameContainer.setPrefWidth(TILE_SIZE * COLS);
         sideContainer.setPrefWidth(1200 - gameContainer.getPrefWidth());
 
-        // Initialize tile array and towers list
+        // Initialize variables
         tiles = new Tile[ROWS * COLS];
         playerTowers = new ArrayList<>();
+        monumentBar = new ProgressBar();
+        gameTowers = FXCollections.observableArrayList();
 
         // Initialize independent game variables
         time = 180;
@@ -98,10 +97,7 @@ public class GameController {
                 + configParams.get("mapName").toString().toLowerCase() + ".txt");
 
         // Initialize tiles
-        HashSet<Integer> ground = new HashSet<>();
-        ground.add(0);
-        ground.add(5);
-        ground.add(6);
+        Set<Integer> ground = new HashSet<>(Arrays.asList(0, 5, 6));
         for (int i = 0; i < tiles.length; i++) {
             tiles[i] = new Tile(TILE_SIZE * (i % COLS), TILE_SIZE * (i / COLS),
                     !ground.contains(tileImages[i]), new Image(String.valueOf(getClass().
@@ -115,6 +111,7 @@ public class GameController {
         difficultyLabel.setText(difficulty);
 
         int costDifficultyFactor;
+
         switch (difficulty) {
         case "Beginner":
             money = 500;
@@ -122,12 +119,12 @@ public class GameController {
             costDifficultyFactor = 0;
             break;
         case "Moderate":
-            money = 400;
+            money = 450;
             monumentHealth = 0.9;
             costDifficultyFactor = 10;
             break;
         default:
-            money = 300;
+            money = 400;
             monumentHealth = 0.8;
             costDifficultyFactor = 20;
             break;
@@ -143,7 +140,7 @@ public class GameController {
         initializeGameTowers(gameTowers, costDifficultyFactor);
 
         // Set up the CellFactory
-        towerMenu.setCellFactory(listCell -> new ListCell<Tower>() {
+        towerMenu.setCellFactory(listCell -> new ListCell<>() {
             @Override
             protected void updateItem(Tower tower, boolean empty) {
                 super.updateItem(tower, empty);
@@ -225,7 +222,6 @@ public class GameController {
      */
     private void initializeGameTowers(ObservableList<Tower> gameTowers,
                                       int costDifficultyFactor) {
-
         gameTowers.add(new Tower("Tower1",
                 "Description1 contains description of properties about tower1" +
                         "so player can use tower1", 50 + costDifficultyFactor,
@@ -358,7 +354,7 @@ public class GameController {
         private Image background;
 
         private Rectangle rectangle;
-        private ArrayList<Tile> neighbors = new ArrayList<>();
+        private List<Tile> currentTowerTiles;
         private boolean canPlace;
 
         public Tile(int x, int y, boolean occupied, Image background) {
@@ -373,29 +369,31 @@ public class GameController {
             this.setTranslateX(x);
             this.setTranslateY(y);
 
+            currentTowerTiles = new ArrayList<>();
+
             setOnMouseEntered(mouseEvent -> {
                 if (selectedTower != null) {
                     int towerSize = selectedTower.towerSize;
-                    if (x + towerSize <= COLS * TILE_SIZE
-                            && y + towerSize <= ROWS * TILE_SIZE) {
+                    if (this.x + towerSize <= COLS * TILE_SIZE
+                            && this.y + towerSize <= ROWS * TILE_SIZE) {
                         for (int i = 0; i < towerSize; i += TILE_SIZE) {
                             for (int j = 0; j < towerSize; j += TILE_SIZE) {
-                                neighbors.add(tiles[((y + i) / TILE_SIZE) * COLS
-                                        + ((x + j) / TILE_SIZE)]);
+                                currentTowerTiles.add(tiles[((this.y + i) / TILE_SIZE) * COLS
+                                        + ((this.x + j) / TILE_SIZE)]);
                             }
                         }
                         canPlace = true;
-                        for (Tile neighbor: neighbors) {
-                            neighbor.rectangle.setOpacity(0.7);
-                            if (neighbor.occupied) {
+                        for (Tile tile: currentTowerTiles) {
+                            tile.rectangle.setOpacity(0.7);
+                            if (tile.occupied) {
                                 canPlace = false;
                                 break;
                             }
                         }
                         if (!canPlace) {
-                            for (Tile neighbor: neighbors) {
-                                neighbor.rectangle.setFill(Color.RED);
-                                neighbor.rectangle.setOpacity(0.4);
+                            for (Tile tile: currentTowerTiles) {
+                                tile.rectangle.setFill(Color.RED);
+                                tile.rectangle.setOpacity(0.4);
                             }
                         }
                     }
@@ -403,35 +401,32 @@ public class GameController {
             });
 
             setOnMouseExited(mouseEvent -> {
-                for (Tile neighbor: neighbors) {
-                    neighbor.rectangle.setFill(new ImagePattern(neighbor.background));
-                    neighbor.rectangle.setOpacity(1.0);
+                for (Tile tile: currentTowerTiles) {
+                    tile.rectangle.setFill(new ImagePattern(tile.background));
+                    tile.rectangle.setOpacity(1.0);
                 }
-                neighbors = new ArrayList<>();
+                currentTowerTiles = new ArrayList<>();
             });
 
             setOnMouseClicked(mouseEvent -> {
-                if (selectedTower != null) {
-                    if (canPlace) {
-                        if (money >= selectedTower.cost) {
-                            money = money - selectedTower.cost;
-                            moneyLabel.setText(money + "");
-                            playerTowers.add(new Tower(
-                                    selectedTower.name, selectedTower.description,
-                                    selectedTower.cost, x, y, selectedTower.towerSize,
-                                    selectedTower.maxHealth, selectedTower.background, neighbors));
-                            for (Tile neighbor : neighbors) {
-                                neighbor.occupied = true;
-                            }
+                if (selectedTower != null && canPlace) {
+                    if (money >= selectedTower.cost) {
+                        money = money - selectedTower.cost;
+                        moneyLabel.setText(money + "");
+                        playerTowers.add(new Tower(selectedTower.name,
+                                selectedTower.description, selectedTower.cost, x, y,
+                                selectedTower.towerSize, selectedTower.maxHealth,
+                                selectedTower.background, currentTowerTiles));
+                        for (Tile tile: currentTowerTiles) {
+                            tile.occupied = true;
                         }
-                        else {
-                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                            alert.setHeaderText("Not Enough Money, Try Harder!");
-                            alert.setContentText("Please come back when you have enough money!");
-                            alert.show();
-                        }
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setHeaderText("Insufficient Funds");
+                        alert.setContentText("You do not have the money required" +
+                                "to buy this tower!");
+                        alert.show();
                     }
-
                 }
             });
 
@@ -444,8 +439,6 @@ public class GameController {
      * a given size (since towers can take up multiple tiles), and health variables.
      *
      * Game container --> game pane --> tower stack panes
-     *
-     * Yet to implement placing towers on non-occupied tiles.
      */
     private class Tower extends StackPane {
         private String name;
@@ -458,8 +451,7 @@ public class GameController {
         private double maxHealth;
         private double curHealth;
         private ProgressBar healthBar;
-        private ArrayList<Tile> neibor;
-
+        private List<Tile> onTiles;
 
         public Tower(String name, String description, int cost, int towerSize,
                      double maxHealth, Image background) {
@@ -473,11 +465,11 @@ public class GameController {
         }
 
         public Tower(String name, String description, int cost, int x, int y,
-                     int towerSize, double maxHealth, Image background, ArrayList<Tile> neibor ) {
+                     int towerSize, double maxHealth, Image background, List<Tile> onTiles) {
             this(name, description, cost, towerSize, maxHealth, background);
             this.x = x;
             this.y = y;
-            this.neibor = neibor;
+            this.onTiles = onTiles;
 
             Rectangle border = new Rectangle(towerSize, towerSize);
             border.setFill(new ImagePattern(background));
@@ -493,7 +485,6 @@ public class GameController {
             healthBar.setPrefWidth(towerSize);
             healthBar.setPrefHeight(TILE_SIZE * 0.8);
             gamePane.getChildren().add(healthBar);
-
         }
 
         public void updateHealth() {
@@ -509,8 +500,8 @@ public class GameController {
             gamePane.getChildren().remove(this);
             gamePane.getChildren().remove(healthBar);
             playerTowers.remove(this);
-            for (Tile neighbor: this.neibor) {
-                neighbor.occupied = false;
+            for (Tile tile: this.onTiles) {
+                tile.occupied = false;
             }
         }
     }
