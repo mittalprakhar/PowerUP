@@ -15,6 +15,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -412,14 +413,25 @@ public class GameController {
             setOnMouseClicked(mouseEvent -> {
                 if (selectedTower != null) {
                     if (canPlace) {
-                        playerTowers.add(new Tower(
-                                selectedTower.name, selectedTower.description,
-                                selectedTower.cost, x, y, selectedTower.towerSize,
-                                selectedTower.maxHealth, selectedTower.background));
-                        for (Tile neighbor: neighbors) {
-                            neighbor.occupied = true;
+                        if (money >= selectedTower.cost) {
+                            money = money - selectedTower.cost;
+                            moneyLabel.setText(money + "");
+                            playerTowers.add(new Tower(
+                                    selectedTower.name, selectedTower.description,
+                                    selectedTower.cost, x, y, selectedTower.towerSize,
+                                    selectedTower.maxHealth, selectedTower.background, neighbors));
+                            for (Tile neighbor : neighbors) {
+                                neighbor.occupied = true;
+                            }
+                        }
+                        else {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setHeaderText("Not Enough Money, Try Harder!");
+                            alert.setContentText("Please come back when you have enough money!");
+                            alert.show();
                         }
                     }
+
                 }
             });
 
@@ -446,6 +458,8 @@ public class GameController {
         private double maxHealth;
         private double curHealth;
         private ProgressBar healthBar;
+        private ArrayList<Tile> neibor;
+
 
         public Tower(String name, String description, int cost, int towerSize,
                      double maxHealth, Image background) {
@@ -459,10 +473,11 @@ public class GameController {
         }
 
         public Tower(String name, String description, int cost, int x, int y,
-                     int towerSize, double maxHealth, Image background) {
+                     int towerSize, double maxHealth, Image background, ArrayList<Tile> neibor ) {
             this(name, description, cost, towerSize, maxHealth, background);
             this.x = x;
             this.y = y;
+            this.neibor = neibor;
 
             Rectangle border = new Rectangle(towerSize, towerSize);
             border.setFill(new ImagePattern(background));
@@ -478,6 +493,7 @@ public class GameController {
             healthBar.setPrefWidth(towerSize);
             healthBar.setPrefHeight(TILE_SIZE * 0.8);
             gamePane.getChildren().add(healthBar);
+
         }
 
         public void updateHealth() {
@@ -493,6 +509,9 @@ public class GameController {
             gamePane.getChildren().remove(this);
             gamePane.getChildren().remove(healthBar);
             playerTowers.remove(this);
+            for (Tile neighbor: this.neibor) {
+                neighbor.occupied = false;
+            }
         }
     }
 }
