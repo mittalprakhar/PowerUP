@@ -27,7 +27,7 @@
     <Button fx:id="startButton" text="Start Game!" onAction="#onWelcomeButtonClick">
         <graphic>
             <ImageView fitHeight="40.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                <Image url="@../images/tower2.png" />
+                <Image url="@../images/towerSpiky.png" />
             </ImageView>
         </graphic>
         <font>
