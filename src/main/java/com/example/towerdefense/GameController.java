@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
@@ -32,7 +33,7 @@ public class GameController {
             = 600 / ROWS;                       // Smallest grid unit - 1 tile size
 
     private ArrayList<Tower> playerTowers;      // List of all towers placed by player
-    private Tower currentSelectedTower;         // currently selected tower from the menu
+    private Tower selectedTower;         // currently selected tower from the menu
     private final ProgressBar monumentBar
             = new ProgressBar();                // Monument health bar
     private double monumentHealth;              // Starting monument health
@@ -188,7 +189,7 @@ public class GameController {
 
         // Add listener to track which tower is currently selected by player
         towerMenu.getSelectionModel().selectedItemProperty().addListener(
-                (observableValue, towerOld, towerNew) -> currentSelectedTower = towerNew);
+                (observableValue, towerOld, towerNew) -> selectedTower = towerNew);
 
         gameOn();
     }
@@ -239,7 +240,7 @@ public class GameController {
         gameTowers.add(new Tower("Tower3",
                 "Description3 contains description of properties about tower3" +
                         "so player can use tower3", 100 + costDifficultyFactor,
-                TILE_SIZE * 2, 70, new Image(String.valueOf(
+                TILE_SIZE * 3, 70, new Image(String.valueOf(
                         getClass().getResource("/images/tower3.png")))));
 
         gameTowers.add(new Tower("Tower4",
@@ -257,7 +258,7 @@ public class GameController {
         gameTowers.add(new Tower("Tower6",
                 "Description6 contains description of properties about tower6" +
                         "so player can use tower6", 200 + costDifficultyFactor,
-                TILE_SIZE * 3, 130, new Image(String.valueOf(
+                TILE_SIZE * 4, 130, new Image(String.valueOf(
                         getClass().getResource("/images/tower6.png")))));
 
         gameTowers.add(new Tower("Tower7",
@@ -269,13 +270,13 @@ public class GameController {
         gameTowers.add(new Tower("Tower8",
                 "Description8 contains description of properties about tower8" +
                         "so player can use tower8", 300 + costDifficultyFactor,
-                TILE_SIZE * 4, 190, new Image(String.valueOf(
+                TILE_SIZE * 5, 190, new Image(String.valueOf(
                         getClass().getResource("/images/tower8.png")))));
 
         gameTowers.add(new Tower("Tower9",
                 "Description9 contains description of properties about tower9" +
                         "so player can use tower9", 350 + costDifficultyFactor,
-                TILE_SIZE * 4, 220, new Image(String.valueOf(
+                TILE_SIZE * 5, 220, new Image(String.valueOf(
                         getClass().getResource("/images/tower9.png")))));
     }
 
@@ -355,25 +356,70 @@ public class GameController {
         private boolean occupied;
         private Image background;
 
+        private Rectangle rectangle;
+        private ArrayList<Tile> neighbors = new ArrayList<>();
+        private boolean canPlace;
+
         public Tile(int x, int y, boolean occupied, Image background) {
             this.x = x;
             this.y = y;
             this.occupied = occupied;
+            this.background = background;
 
-            Rectangle border = new Rectangle(TILE_SIZE, TILE_SIZE);
-            border.setFill(new ImagePattern(background));
-            getChildren().add(border);
+            rectangle = new Rectangle(TILE_SIZE, TILE_SIZE);
+            rectangle.setFill(new ImagePattern(background));
+            getChildren().add(rectangle);
             this.setTranslateX(x);
             this.setTranslateY(y);
 
-            setOnMouseClicked(mouseEvent -> {
-                if (!occupied && currentSelectedTower != null) {
-                    // TODO Collision Detection Logic
+            setOnMouseEntered(mouseEvent -> {
+                if (selectedTower != null) {
+                    int towerSize = selectedTower.towerSize;
+                    if (x + towerSize <= COLS * TILE_SIZE
+                            && y + towerSize <= ROWS * TILE_SIZE) {
+                        for (int i = 0; i < towerSize; i += TILE_SIZE) {
+                            for (int j = 0; j < towerSize; j += TILE_SIZE) {
+                                neighbors.add(tiles[((y + i) / TILE_SIZE) * COLS
+                                        + ((x + j) / TILE_SIZE)]);
+                            }
+                        }
+                        canPlace = true;
+                        for (Tile neighbor: neighbors) {
+                            neighbor.rectangle.setOpacity(0.7);
+                            if (neighbor.occupied) {
+                                canPlace = false;
+                                break;
+                            }
+                        }
+                        if (!canPlace) {
+                            for (Tile neighbor: neighbors) {
+                                neighbor.rectangle.setFill(Color.RED);
+                                neighbor.rectangle.setOpacity(0.4);
+                            }
+                        }
+                    }
+                }
+            });
 
-                    playerTowers.add(new Tower(currentSelectedTower.name,
-                            currentSelectedTower.description, currentSelectedTower.cost,
-                            x, y, currentSelectedTower.towerSize, currentSelectedTower.maxHealth,
-                            currentSelectedTower.background));
+            setOnMouseExited(mouseEvent -> {
+                for (Tile neighbor: neighbors) {
+                    neighbor.rectangle.setFill(new ImagePattern(neighbor.background));
+                    neighbor.rectangle.setOpacity(1.0);
+                }
+                neighbors = new ArrayList<>();
+            });
+
+            setOnMouseClicked(mouseEvent -> {
+                if (selectedTower != null) {
+                    if (canPlace) {
+                        playerTowers.add(new Tower(
+                                selectedTower.name, selectedTower.description,
+                                selectedTower.cost, x, y, selectedTower.towerSize,
+                                selectedTower.maxHealth, selectedTower.background));
+                        for (Tile neighbor: neighbors) {
+                            neighbor.occupied = true;
+                        }
+                    }
                 }
             });
 
@@ -395,13 +441,13 @@ public class GameController {
         private int cost;
         private int x;
         private int y;
-        private double towerSize;
+        private int towerSize;
         private Image background;
         private double maxHealth;
         private double curHealth;
         private ProgressBar healthBar;
 
-        public Tower(String name, String description, int cost, double towerSize,
+        public Tower(String name, String description, int cost, int towerSize,
                      double maxHealth, Image background) {
             this.name = name;
             this.description = description;
@@ -413,7 +459,7 @@ public class GameController {
         }
 
         public Tower(String name, String description, int cost, int x, int y,
-                     double towerSize, double maxHealth, Image background) {
+                     int towerSize, double maxHealth, Image background) {
             this(name, description, cost, towerSize, maxHealth, background);
             this.x = x;
             this.y = y;
