@@ -383,19 +383,19 @@ public class GameController {
                                         + ((x + j) / TILE_SIZE)]);
                             }
                         }
-                    }
-                    canPlace = true;
-                    for (Tile neighbor : neighbors) {
-                        neighbor.rectangle.setOpacity(0.7);
-                        if (neighbor.occupied) {
-                            canPlace = false;
-                            break;
-                        }
-                    }
-                    if (!canPlace) {
+                        canPlace = true;
                         for (Tile neighbor: neighbors) {
-                            neighbor.rectangle.setFill(Color.RED);
-                            neighbor.rectangle.setOpacity(0.4);
+                            neighbor.rectangle.setOpacity(0.7);
+                            if (neighbor.occupied) {
+                                canPlace = false;
+                                break;
+                            }
+                        }
+                        if (!canPlace) {
+                            for (Tile neighbor: neighbors) {
+                                neighbor.rectangle.setFill(Color.RED);
+                                neighbor.rectangle.setOpacity(0.4);
+                            }
                         }
                     }
                 }
@@ -406,6 +406,7 @@ public class GameController {
                     neighbor.rectangle.setFill(new ImagePattern(neighbor.background));
                     neighbor.rectangle.setOpacity(1.0);
                 }
+                neighbors = new ArrayList<>();
             });
 
             setOnMouseClicked(mouseEvent -> {
@@ -415,13 +416,15 @@ public class GameController {
                                 selectedTower.name, selectedTower.description,
                                 selectedTower.cost, x, y, selectedTower.towerSize,
                                 selectedTower.maxHealth, selectedTower.background));
+                        for (Tile neighbor: neighbors) {
+                            neighbor.occupied = true;
+                        }
                     }
                 }
             });
 
             gamePane.getChildren().add(this);
         }
-
     }
 
     /**
