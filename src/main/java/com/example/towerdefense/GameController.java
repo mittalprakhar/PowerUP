@@ -3,12 +3,14 @@ package com.example.towerdefense;
 import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -141,7 +143,84 @@ public class GameController {
         // Initialize gameTowers with all available game towers
         initializeGameTowers(gameTowers, costDifficultyFactor);
 
-        // Set up the CellFactory
+        // Initialize towerMenu with gameTowers
+        initializeTowerMenu();
+
+        gameOn();
+    }
+
+    /**
+     * Loads map file from path
+     *
+     * @param path path of map file
+     * @return tile images array
+     * @throws FileNotFoundException if map file is not present
+     */
+    private int[] readMap(String path) throws FileNotFoundException {
+        Scanner s = new Scanner(new File(path));
+        int[] array = new int[ROWS * COLS];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = s.nextInt();
+        }
+
+        // Set location of monument health bar
+        monumentBar.setTranslateY(TILE_SIZE * (s.nextInt() - 1));
+        monumentBar.setTranslateX(TILE_SIZE * (s.nextInt() - 1));
+        monumentBar.setPrefWidth(TILE_SIZE * s.nextInt());
+
+        return array;
+    }
+
+    /**
+     * Initializes gameTowers with all available game towers.
+     *
+     * @param gameTowers the observable list to fill all game towers with
+     * @param costDifficultyFactor the amount by which the cost of each tower increases
+     *                             because of the difficulty
+     */
+    private void initializeGameTowers(ObservableList<Tower> gameTowers,
+                                      int costDifficultyFactor) {
+        gameTowers.add(new Tower("Cannon",
+                "Fires cannon balls to crush enemies.",
+                50 + costDifficultyFactor, TILE_SIZE * 2, 50));
+
+        gameTowers.add(new Tower("Spiky",
+                "Spikes troops when they are not looking.",
+                75 + costDifficultyFactor, TILE_SIZE * 2, 60));
+
+        gameTowers.add(new Tower("Bomber",
+                "Hurls bombs and wreaks havoc upon attackers.",
+                100 + costDifficultyFactor, TILE_SIZE * 3, 70));
+
+        gameTowers.add(new Tower("Wizard",
+                "Hypnotizes fighters into surrendering.",
+                130 + costDifficultyFactor, TILE_SIZE * 3, 90));
+
+        gameTowers.add(new Tower("Xbow",
+                "Chips away attackers at a blistering pace.",
+                160 + costDifficultyFactor, TILE_SIZE * 3, 110));
+
+        gameTowers.add(new Tower("Electro",
+                "Stuns enemies through the power of electrons.",
+                200 + costDifficultyFactor, TILE_SIZE * 4, 130));
+
+        gameTowers.add(new Tower("Drone",
+                "Drops deadly artillery from the skies.",
+                250 + costDifficultyFactor, TILE_SIZE * 4, 160));
+
+        gameTowers.add(new Tower("Tank",
+                "Shoots shells that will impale enemies.",
+                300 + costDifficultyFactor, TILE_SIZE * 5, 190));
+
+        gameTowers.add(new Tower("Missile",
+                "Obliterates anything and everything.",
+                350 + costDifficultyFactor, TILE_SIZE * 5, 220));
+    }
+
+    /**
+     * Initializes tower menu with available game towers.
+     */
+    private void initializeTowerMenu() {
         towerMenu.setCellFactory(listCell -> new ListCell<>() {
             @Override
             protected void updateItem(Tower tower, boolean empty) {
@@ -223,7 +302,8 @@ public class GameController {
                     damageImage.setPreserveRatio(true);
 
                     // Create damage label
-                    Label damageLabel = new Label((int) (tower.maxHealth / 20 * (tower.cost/ 40)) + "");
+                    Label damageLabel = new Label((int) (tower.maxHealth / 20 * (tower.cost / 40))
+                            + "");
                     damageLabel.setPadding(new Insets(0, 13, 0, 3));
 
                     // Fill tower stats box with stats
@@ -246,78 +326,18 @@ public class GameController {
         towerMenu.setItems(gameTowers);
 
         // Add listener to track which tower is currently selected by player
-        towerMenu.getSelectionModel().selectedItemProperty()
-                .addListener((observableValue, towerOld, towerNew) -> selectedTower = towerNew);
-
-        gameOn();
-    }
-
-    /**
-     * Loads map file from path
-     *
-     * @param path path of map file
-     * @return tile images array
-     * @throws FileNotFoundException if map file is not present
-     */
-    private int[] readMap(String path) throws FileNotFoundException {
-        Scanner s = new Scanner(new File(path));
-        int[] array = new int[ROWS * COLS];
-        for (int i = 0; i < array.length; i++) {
-            array[i] = s.nextInt();
-        }
-
-        // Set location of monument health bar
-        monumentBar.setTranslateY(TILE_SIZE * (s.nextInt() - 1));
-        monumentBar.setTranslateX(TILE_SIZE * (s.nextInt() - 1));
-        monumentBar.setPrefWidth(TILE_SIZE * s.nextInt());
-
-        return array;
-    }
-
-    /**
-     * Initializes gameTowers with all available game towers.
-     *
-     * @param gameTowers the observable list to fill all game towers with
-     * @param costDifficultyFactor the amount by which the cost of each tower increases
-     *                             because of the difficulty
-     */
-    private void initializeGameTowers(ObservableList<Tower> gameTowers,
-                                      int costDifficultyFactor) {
-        gameTowers.add(new Tower("Cannon",
-                "Fires cannon balls to crush enemies.",
-                50 + costDifficultyFactor, TILE_SIZE * 2, 50));
-
-        gameTowers.add(new Tower("Spiky",
-                "Spikes troops when they are not looking.",
-                75 + costDifficultyFactor, TILE_SIZE * 2, 60));
-
-        gameTowers.add(new Tower("Bomber",
-                "Hurls bombs and wreaks havoc upon attackers.",
-                100 + costDifficultyFactor, TILE_SIZE * 3, 70));
-
-        gameTowers.add(new Tower("Wizard",
-                "Hypnotizes fighters into surrendering.",
-                130 + costDifficultyFactor, TILE_SIZE * 3, 90));
-
-        gameTowers.add(new Tower("Xbow",
-                "Chips away attackers at a blistering pace.",
-                160 + costDifficultyFactor, TILE_SIZE * 3, 110));
-
-        gameTowers.add(new Tower("Electro",
-                "Stuns enemies through the power of electrons.",
-                200 + costDifficultyFactor, TILE_SIZE * 4, 130));
-
-        gameTowers.add(new Tower("Drone",
-                "Drops deadly artillery from the skies.",
-                250 + costDifficultyFactor, TILE_SIZE * 4, 160));
-
-        gameTowers.add(new Tower("Tank",
-                "Shoots shells that will impale enemies.",
-                300 + costDifficultyFactor, TILE_SIZE * 5, 190));
-
-        gameTowers.add(new Tower("Missile",
-                "Obliterates anything and everything.",
-                350 + costDifficultyFactor, TILE_SIZE * 5, 220));
+        towerMenu.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                Tower tower = towerMenu.getSelectionModel().getSelectedItem();
+                if (tower == selectedTower) {
+                    towerMenu.getSelectionModel().clearSelection();
+                    selectedTower = null;
+                } else {
+                    selectedTower = tower;
+                }
+            }
+        });
     }
 
     /**
