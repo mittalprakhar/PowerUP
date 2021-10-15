@@ -4,6 +4,7 @@ import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -12,6 +13,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,7 +27,6 @@ public class GameController {
     @FXML
     private Pane gamePane;                      // Game pane within game container
     private Tile[] tiles;                       // Array of all tiles
-    private int[] tileImages;                   // Array of tile backgrounds
 
     private static final int ROWS = 40;         // Number of tiles across y-axis
     private static final int COLS = 60;         // Number of tiles across x-axis
@@ -43,7 +44,6 @@ public class GameController {
 
     @FXML
     private Label difficultyLabel;              // Difficulty label in side menu
-    private String difficulty;                  // Starting difficulty
 
     @FXML
     private Label timeLabel;                    // Time label in side menu
@@ -93,7 +93,8 @@ public class GameController {
      */
     public void initState(Map<String, Object> configParams) throws FileNotFoundException {
         // Get tile images from map file
-        tileImages = readMap("src/main/resources/maps/"
+        // Array of tile backgrounds
+        int[] tileImages = readMap("src/main/resources/maps/"
                 + configParams.get("mapName").toString().toLowerCase() + ".txt");
 
         // Initialize tiles
@@ -107,7 +108,8 @@ public class GameController {
         // Initialize dependent game variables
         playerLabel.setText(String.valueOf(configParams.get("playerName")));
 
-        difficulty = String.valueOf(configParams.get("difficulty"));
+        // Starting difficulty
+        String difficulty = String.valueOf(configParams.get("difficulty"));
         difficultyLabel.setText(difficulty);
 
         int costDifficultyFactor;
@@ -147,38 +149,95 @@ public class GameController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    // Create a HBox to hold each tower with complete info
-                    HBox hBox = new HBox();
-                    hBox.setAlignment(Pos.CENTER);
+                    // Create cell to hold each tower with complete info
+                    HBox cell = new HBox();
+                    cell.setAlignment(Pos.CENTER);
+                    cell.prefWidthProperty().bind(towerMenu.widthProperty().subtract(30));
+                    cell.maxWidthProperty().bind(towerMenu.widthProperty().subtract(30));
+                    cell.setSpacing(7);
 
-                    // Create a VBox to hold each tower's name and image
-                    VBox vBox = new VBox();
+                    // Create left box to hold each tower's name and image
+                    VBox leftBox = new VBox();
+                    leftBox.setAlignment(Pos.CENTER);
+                    leftBox.setMinWidth(60);
+                    leftBox.setPadding(new Insets(0, 0, 5, 0));
+                    leftBox.setSpacing(3);
 
-                    // Scale the tower image for display in vBox
-                    ImageView imageView = new ImageView(new Image(String.valueOf(
+                    // Create label with tower name
+                    Label towerName = new Label(tower.name);
+                    towerName.setFont(new Font("System Bold", 13.0));
+
+                    // Create tower image
+                    ImageView towerImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/tower" + tower.name + ".png"))));
-                    imageView.setFitWidth(50);
-                    imageView.setFitHeight(50);
-                    imageView.setPreserveRatio(true);
+                    towerImage.setFitWidth(45);
+                    towerImage.setFitHeight(45);
+                    towerImage.setPreserveRatio(true);
 
-                    // Create a label with tower data to display
-                    Label label = new Label(tower.name + " ($" + tower.cost + ")");
-                    label.setWrapText(true);
+                    // Fill left box with tower name and image
+                    leftBox.getChildren().addAll(towerName, towerImage);
 
-                    // Fill the VBox with imageView and label
-                    vBox.getChildren().addAll(imageView, label);
-                    vBox.setAlignment(Pos.CENTER);
+                    // Create right box to hold each tower's description and stats
+                    VBox rightBox = new VBox();
+                    rightBox.setAlignment(Pos.CENTER_LEFT);
+                    rightBox.setPadding(new Insets(0, 3, 11, 3));
+                    rightBox.setSpacing(5);
+                    rightBox.prefHeightProperty().bind(leftBox.heightProperty());
 
-                    // Fill the HBox with nodes and additional tower metadata
-                    hBox.getChildren().addAll(
-                            vBox,
-                            new Label(tower.description)
-                    );
+                    // Create label with tower description
+                    Label towerDescription = new Label(tower.description);
+                    towerDescription.setWrapText(true);
 
-                    hBox.setSpacing(10);
+                    // Create tower stats box
+                    HBox towerStats = new HBox();
+                    towerStats.setPrefHeight(20);
+                    towerStats.setAlignment(Pos.CENTER_LEFT);
+
+                    // Create cost image
+                    ImageView costImage = new ImageView(new Image(String.valueOf(
+                            getClass().getResource("/images/menuMoney.png"))));
+                    costImage.setFitWidth(15);
+                    costImage.setFitHeight(15);
+                    costImage.setPreserveRatio(true);
+
+                    // Create cost label
+                    Label costLabel = new Label(tower.cost + "");
+                    costLabel.setPadding(new Insets(0, 13, 0, 3));
+
+                    // Create health image
+                    ImageView healthImage = new ImageView(new Image(String.valueOf(
+                            getClass().getResource("/images/menuHealth.png"))));
+                    healthImage.setFitWidth(15);
+                    healthImage.setFitHeight(15);
+                    healthImage.setPreserveRatio(true);
+
+                    // Create health label
+                    Label healthLabel = new Label((int) tower.maxHealth + "");
+                    healthLabel.setPadding(new Insets(0, 13, 0, 3));
+
+                    // Create damage image
+                    ImageView damageImage = new ImageView(new Image(String.valueOf(
+                            getClass().getResource("/images/menuDamage.png"))));
+                    damageImage.setFitWidth(15);
+                    damageImage.setFitHeight(15);
+                    damageImage.setPreserveRatio(true);
+
+                    // Create damage label
+                    Label damageLabel = new Label((int) (tower.maxHealth / 20 * (tower.cost/ 40)) + "");
+                    damageLabel.setPadding(new Insets(0, 13, 0, 3));
+
+                    // Fill tower stats box with stats
+                    towerStats.getChildren().addAll(costImage, costLabel, healthImage,
+                            healthLabel, damageImage, damageLabel);
+
+                    // Fill right box with tower description and stats
+                    rightBox.getChildren().addAll(towerDescription, towerStats);
+
+                    // Fill cell with left and right boxes
+                    cell.getChildren().addAll(leftBox, rightBox);
 
                     // Set the HBox as the display
-                    setGraphic(hBox);
+                    setGraphic(cell);
                 }
             }
         });
@@ -217,6 +276,7 @@ public class GameController {
 
     /**
      * Initializes gameTowers with all available game towers.
+     *
      * @param gameTowers the observable list to fill all game towers with
      * @param costDifficultyFactor the amount by which the cost of each tower increases
      *                             because of the difficulty
@@ -224,49 +284,40 @@ public class GameController {
     private void initializeGameTowers(ObservableList<Tower> gameTowers,
                                       int costDifficultyFactor) {
         gameTowers.add(new Tower("Cannon",
-                "Description1 contains description of properties about tower1"
-                        + "so player can use tower1", 50 + costDifficultyFactor,
-                TILE_SIZE * 2, 50));
+                "Fires cannon balls to crush enemies.",
+                50 + costDifficultyFactor, TILE_SIZE * 2, 50));
 
         gameTowers.add(new Tower("Spiky",
-                "Description2 contains description of properties about tower2"
-                        + "so player can use tower2", 75 + costDifficultyFactor,
-                TILE_SIZE * 2, 60));
+                "Spikes troops when they are not looking.",
+                75 + costDifficultyFactor, TILE_SIZE * 2, 60));
 
         gameTowers.add(new Tower("Bomber",
-                "Description3 contains description of properties about tower3"
-                        + "so player can use tower3", 100 + costDifficultyFactor,
-                TILE_SIZE * 3, 70));
+                "Hurls bombs and wreaks havoc upon attackers.",
+                100 + costDifficultyFactor, TILE_SIZE * 3, 70));
 
         gameTowers.add(new Tower("Wizard",
-                "Description4 contains description of properties about tower4"
-                        + "so player can use tower4", 130 + costDifficultyFactor,
-                TILE_SIZE * 3, 90));
+                "Hypnotizes fighters into surrendering.",
+                130 + costDifficultyFactor, TILE_SIZE * 3, 90));
 
         gameTowers.add(new Tower("Xbow",
-                "Description5 contains description of properties about tower5"
-                        + "so player can use tower5", 160 + costDifficultyFactor,
-                TILE_SIZE * 3, 110));
+                "Chips away attackers at a blistering pace.",
+                160 + costDifficultyFactor, TILE_SIZE * 3, 110));
 
         gameTowers.add(new Tower("Electro",
-                "Description6 contains description of properties about tower6"
-                        + "so player can use tower6", 200 + costDifficultyFactor,
-                TILE_SIZE * 4, 130));
+                "Stuns enemies through the power of electrons.",
+                200 + costDifficultyFactor, TILE_SIZE * 4, 130));
 
         gameTowers.add(new Tower("Drone",
-                "Description7 contains description of properties about tower7"
-                        + "so player can use tower7", 250 + costDifficultyFactor,
-                TILE_SIZE * 4, 160));
+                "Drops deadly artillery from the skies.",
+                250 + costDifficultyFactor, TILE_SIZE * 4, 160));
 
         gameTowers.add(new Tower("Tank",
-                "Description8 contains description of properties about tower8"
-                        + "so player can use tower8", 300 + costDifficultyFactor,
-                TILE_SIZE * 5, 190));
+                "Shoots shells that will impale enemies.",
+                300 + costDifficultyFactor, TILE_SIZE * 5, 190));
 
         gameTowers.add(new Tower("Missile",
-                "Description9 contains description of properties about tower9"
-                        + "so player can use tower9", 350 + costDifficultyFactor,
-                TILE_SIZE * 5, 220));
+                "Obliterates anything and everything.",
+                350 + costDifficultyFactor, TILE_SIZE * 5, 220));
     }
 
     /**
@@ -288,10 +339,8 @@ public class GameController {
                     if (diff >= 1_000_000_000L) {
                         updateTime();
                         try {
-                            for (Iterator<Tower> iterator = playerTowers.iterator();
-                                 iterator.hasNext();) {
-                                Tower t = iterator.next();
-                                t.updateHealth();
+                            for (Tower tower: playerTowers) {
+                                tower.updateHealth();
                             }
                         } catch (ConcurrentModificationException ignored) {
                         }
@@ -340,11 +389,11 @@ public class GameController {
      * Game container --> game pane --> tile stack panes
      */
     private class Tile extends StackPane {
-        private Location location;
+        private final Location location;
         private boolean occupied;
-        private Image background;
+        private final Image background;
 
-        private Rectangle rectangle;
+        private final Rectangle rectangle;
         private List<Tile> currentTowerTiles;
         private boolean canPlace;
 
@@ -405,7 +454,7 @@ public class GameController {
                         money = money - selectedTower.cost;
                         moneyLabel.setText(money + "");
                         playerTowers.add(new Tower(selectedTower.name,
-                                selectedTower.description, selectedTower.cost, location,
+                                selectedTower.description, selectedTower.cost,
                                 selectedTower.towerSize, selectedTower.maxHealth,
                                 currentTowerTiles));
                         for (Tile tile: currentTowerTiles) {
@@ -432,15 +481,16 @@ public class GameController {
      * Game container --> game pane --> tower stack panes
      */
     private class Tower extends StackPane {
-        private String name;
-        private String description;
-        private int cost;
+        private final String name;
+        private final String description;
+        private final int cost;
+        private final int towerSize;
+        private final double maxHealth;
+        private List<Tile> onTiles;
+
         private Location location;
-        private int towerSize;
-        private double maxHealth;
         private double curHealth;
         private ProgressBar healthBar;
-        private List<Tile> onTiles;
 
         public Tower(String name, String description, int cost, int towerSize,
                      double maxHealth) {
@@ -452,11 +502,11 @@ public class GameController {
             this.curHealth = maxHealth;
         }
 
-        public Tower(String name, String description, int cost, Location location,
-                     int towerSize, double maxHealth, List<Tile> onTiles) {
+        public Tower(String name, String description, int cost, int towerSize,
+                     double maxHealth, List<Tile> onTiles) {
             this(name, description, cost, towerSize, maxHealth);
-            this.location = location;
             this.onTiles = onTiles;
+            this.location = onTiles.get(0).location;
 
             Rectangle border = new Rectangle(towerSize, towerSize);
             border.setFill(new ImagePattern(new Image(String.valueOf(
@@ -495,11 +545,11 @@ public class GameController {
     }
 
     /**
-     * Defines a location object associated with each tower object (Tower aggregates Location).
+     * Defines a location object associated with a tile or a tower object.
      */
     private static class Location {
-        private int x;
-        private int y;
+        private final int x;
+        private final int y;
 
         public Location(int x, int y) {
             this.x = x;
