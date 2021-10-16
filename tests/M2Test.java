@@ -27,7 +27,7 @@ public class M2Test extends ApplicationTest {
     @Test
     public void testWelcomeScreenLaunch() {
         // on welcome screen
-        verifyThat(" Start Game!", isVisible());
+        verifyThat("Start Game!", isVisible());
     }
 
     @Test

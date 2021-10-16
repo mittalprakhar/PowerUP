@@ -11,3 +11,15 @@
 .welcomeTitle {
     -fx-font-family: "Future TimeSplitters";
 }
+
+.welcomeButton {
+    -fx-background-color: #0f5e24;
+    -fx-background-radius: 30;
+    -fx-text-fill: white;
+    -fx-padding: 10 20 10 20;
+    -fx-cursor: hand;
+    /*-fx-border-radius: 30;
+    -fx-border-color: black;
+    -fx-border-width: 3 3 3 3;
+    -fx-background-insets: 0;*/
+}

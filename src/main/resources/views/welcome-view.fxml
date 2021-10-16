@@ -13,31 +13,20 @@
     </padding>
     <Text layoutX="10" layoutY="30" text="Tower Defense" stroke="black" strokeWidth="3" fill="#0f5e24" styleClass="welcomeTitle">
         <font>
-            <Font size="110.0" />
+            <Font size="155.0" />
         </font>
     </Text>
     <Text layoutX="10" layoutY="30" stroke="BLACK" text="Powered by Team OLogN">
         <font>
-            <Font size="20.0" />
+            <Font size="27.0" />
         </font>
         <VBox.margin>
-            <Insets bottom="25.0" top="5.0" />
+            <Insets bottom="65.0" top="5.0" />
         </VBox.margin>
     </Text>
-    <ImageView fitHeight="260.0" pickOnBounds="true" preserveRatio="true">
-        <Image url="@../images/welcomeImage.png" />
-        <VBox.margin>
-            <Insets bottom="25.0" />
-        </VBox.margin>
-    </ImageView>
-    <Button fx:id="startButton" alignment="CENTER" onAction="#onWelcomeButtonClick" text=" Start Game!">
-        <graphic>
-            <ImageView fitHeight="40.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                <Image url="@../images/towerSpiky.png" />
-            </ImageView>
-        </graphic>
+    <Button fx:id="startButton" alignment="CENTER" onAction="#onWelcomeButtonClick" text="Start Game!" styleClass="welcomeButton">
         <font>
-            <Font size="26.0" />
+            <Font size="24.0" />
         </font>
     </Button>
 </VBox>
