@@ -7,6 +7,7 @@ import org.junit.runners.MethodSorters;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.util.WaitForAsyncUtils;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 
@@ -38,6 +39,7 @@ public class M3Test extends ApplicationTest {
     @Test
     public void testTowerMenuScroll() {
         setup("Beginner");
+
         verifyThat("#towerMenu", isVisible());
         ListView<Object> towerMenu = lookup("#towerMenu").queryListView();
         towerMenu.scrollTo(8);
@@ -48,72 +50,94 @@ public class M3Test extends ApplicationTest {
     @Test
     public void testTowerMenuSelection() {
         setup("Beginner");
+
         verifyThat("#towerMenu", isVisible());
         ListView<Object> towerMenu = lookup("#towerMenu").queryListView();
         towerMenu.getSelectionModel().select(3);
         WaitForAsyncUtils.waitForFxEvents();
-        assert towerMenu.getSelectionModel().isSelected(3);
+        assertTrue(towerMenu.getSelectionModel().isSelected(3));
 
         towerMenu.getSelectionModel().select(5);
         WaitForAsyncUtils.waitForFxEvents();
-        assert towerMenu.getSelectionModel().isSelected(5);
+        assertTrue(towerMenu.getSelectionModel().isSelected(5));
 
         towerMenu.getSelectionModel().clearSelection();
         WaitForAsyncUtils.waitForFxEvents();
-        assert towerMenu.getSelectionModel().isEmpty();
+        assertTrue(towerMenu.getSelectionModel().isEmpty());
     }
 
     @Test
     public void testTowerCannotPlaceOnPath() {
         setup("Beginner");
-        // TODO
+        // TODO Maniya
     }
 
     @Test
     public void testTowerCanPlaceOnGround() {
         setup("Beginner");
-        // TODO
+        // TODO Maniya
     }
 
     @Test
     public void testTowerDies() {
         setup("Beginner");
-        // TODO
+        // TODO Mehul
     }
 
     @Test
     public void testTowerCanPlaceOnDeadTower() {
         setup("Beginner");
-        // TODO
+        // TODO Mehul
     }
 
     @Test
     public void testTowerMoneyBeginner() {
         setup("Beginner");
-        // TODO
+
+        ListView<Object> towerMenu = lookup("#towerMenu").queryListView();
+        towerMenu.getSelectionModel().select(0);
+        WaitForAsyncUtils.waitForFxEvents();
+        assertTrue(towerMenu.getSelectionModel().isSelected(0));
+
+        String towerParams = towerMenu.getSelectionModel().getSelectedItem().toString();
+        assertTrue(towerParams.contains("Cost: 50"));
     }
 
     @Test
     public void testTowerMoneyModerate() {
         setup("Moderate");
-        // TODO
+
+        ListView<Object> towerMenu = lookup("#towerMenu").queryListView();
+        towerMenu.getSelectionModel().select(0);
+        WaitForAsyncUtils.waitForFxEvents();
+        assertTrue(towerMenu.getSelectionModel().isSelected(0));
+
+        String towerParams = towerMenu.getSelectionModel().getSelectedItem().toString();
+        assertTrue(towerParams.contains("Cost: 60"));
     }
 
     @Test
     public void testTowerMoneyExpert() {
         setup("Expert");
-        // TODO
+
+        ListView<Object> towerMenu = lookup("#towerMenu").queryListView();
+        towerMenu.getSelectionModel().select(0);
+        WaitForAsyncUtils.waitForFxEvents();
+        assertTrue(towerMenu.getSelectionModel().isSelected(0));
+
+        String towerParams = towerMenu.getSelectionModel().getSelectedItem().toString();
+        assertTrue(towerParams.contains("Cost: 70"));
     }
 
     @Test
     public void testTowerCostsMoney() {
         setup("Beginner");
-        // TODO
+        // TODO Navya
     }
 
     @Test
     public void testAlertOnInsufficientMoney() {
         setup("Beginner");
-        // TODO
+        // TODO Navya
     }
 }
