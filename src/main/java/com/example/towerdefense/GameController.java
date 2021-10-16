@@ -567,6 +567,12 @@ public class GameController {
                 tile.occupied = false;
             }
         }
+
+        @Override
+        public String toString() {
+            return String.format("Name: %s, Cost: %d, Max Health: %f, Cur Health: %f, "
+                    + "Location: %s", name, cost, maxHealth, curHealth, location);
+        }
     }
 
     /**
@@ -579,6 +585,11 @@ public class GameController {
         public Location(int x, int y) {
             this.x = x;
             this.y = y;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(%d, %d)" + x, y);
         }
     }
 }
