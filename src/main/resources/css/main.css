@@ -3,23 +3,52 @@
     -fx-accent: #ba1322;
 }
 
-.welcomeBox {
-    -fx-background-image: url("../images/welcomeBackground.png");
-    -fx-background-size: cover;
+.startBox {
+    -fx-background-image: url("../images/startBackground.png");
 }
 
 .welcomeTitle {
     -fx-font-family: "Future TimeSplitters";
 }
 
-.welcomeButton {
+.customButton {
     -fx-background-color: #0f5e24;
     -fx-background-radius: 30;
     -fx-text-fill: white;
     -fx-padding: 10 20 10 20;
     -fx-cursor: hand;
-    /*-fx-border-radius: 30;
-    -fx-border-color: black;
-    -fx-border-width: 3 3 3 3;
-    -fx-background-insets: 0;*/
+}
+
+.text-field {
+    -fx-prompt-text-fill: black;
+    -fx-text-fill: black;
+}
+
+.text-field:focused {
+    -fx-prompt-text-fill: transparent;
+}
+
+.combo-box {
+    -fx-font-size: 16;
+}
+
+.mapName .text {
+    -fx-fill: black;
+    -fx-stroke: black;
+}
+
+.dialog-pane:header .header-panel {
+    -fx-background-color: #7A9857;
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-border-width: 5;
+    -fx-border-color: #0f5e24;
+}
+
+.dialog-pane:header .header-panel .label {
+    -fx-font-size: 16;
+    -fx-text-fill: black;
+}
+
+.dialog-pane Button{
+    -fx-padding: 4 8;
 }

@@ -140,6 +140,15 @@ public class ConfigController {
             } else {
                 alert.setContentText("Please select a difficulty.");
             }
+
+            Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+            alertStage.getIcons().add(new Image(String.valueOf(getClass().getResource(
+                    "/images/towerSpiky.png"))));
+
+            DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.getStylesheets().add(String.valueOf(getClass().getResource(
+                    "/css/main.css")));
+
             alert.show();
             return false;
         }

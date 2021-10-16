@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -479,7 +480,16 @@ public class GameController {
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setHeaderText("Insufficient Funds");
                         alert.setContentText("You do not have the money required"
-                                + "to buy this tower!");
+                                + " to buy this tower!");
+
+                        Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+                        alertStage.getIcons().add(new Image(String.valueOf(getClass().getResource(
+                                "/images/towerSpiky.png"))));
+
+                        DialogPane dialogPane = alert.getDialogPane();
+                        dialogPane.getStylesheets().add(String.valueOf(getClass().getResource(
+                                "/css/main.css")));
+
                         alert.show();
                     }
                 }

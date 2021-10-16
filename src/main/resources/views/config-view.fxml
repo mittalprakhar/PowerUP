@@ -1,47 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.effect.Glow?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" onMousePressed="#onMousePressed" prefHeight="578.0" prefWidth="747.0" spacing="20.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.towerdefense.ConfigController">
+<VBox alignment="CENTER" onMousePressed="#onMousePressed" prefHeight="600.0" prefWidth="1200.0" styleClass="startBox" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.towerdefense.ConfigController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
-    <Label text="Tower Defense">
+    <Text fill="#0f5e24" stroke="black" strokeWidth="2" styleClass="welcomeTitle" text="Tower Defense">
         <font>
-            <Font size="36.0" />
+            <Font size="80.0" />
         </font>
-    </Label>
+    </Text>
+    <Text stroke="BLACK" text="Configuration">
+        <font>
+            <Font size="24.0" />
+        </font>
+        <VBox.margin>
+            <Insets bottom="43.0" top="5.0" />
+        </VBox.margin>
+    </Text>
     <HBox alignment="CENTER" prefHeight="200.0" prefWidth="400.0" spacing="70.0">
-        <VBox prefHeight="228.0" prefWidth="183.0" spacing="50.0">
-            <TextField fx:id="nameTextField" focusTraversable="false" prefHeight="30.0" prefWidth="190.0" promptText="Enter your name">
+        <VBox alignment="CENTER" prefHeight="228.0" prefWidth="183.0" spacing="50.0">
+            <TextField fx:id="nameTextField" focusTraversable="false" prefHeight="30.0" prefWidth="190.0" promptText="Enter player name">
                 <effect>
                     <Glow />
                 </effect>
                 <font>
-                    <Font size="18.0" />
+                    <Font size="16.0" />
                 </font>
                 <VBox.margin>
-                    <Insets top="70.0" />
+                    <Insets />
                 </VBox.margin>
             </TextField>
-            <ComboBox fx:id="difficultyComboBox" focusTraversable="false" prefHeight="30.0" prefWidth="190.0" promptText="Select difficulty" />
+            <ComboBox fx:id="difficultyComboBox" focusTraversable="false" prefHeight="35.0" prefWidth="190.0" promptText="Select difficulty" />
         </VBox>
         <VBox prefHeight="200.0" prefWidth="139.0" spacing="10.0">
-            <Label fx:id="mapLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="364.0">
-                <font>
-                    <Font size="14.0" />
-                </font>
-            </Label>
             <HBox prefHeight="100.0" prefWidth="200.0">
                 <Button fx:id="prevButton" alignment="CENTER" focusTraversable="false" minWidth="40.0" mnemonicParsing="false" onAction="#onPrevButtonClick" prefHeight="256.0" prefWidth="50.0">
                     <graphic>
@@ -50,7 +48,7 @@
                         </ImageView>
                     </graphic>
                 </Button>
-                <ImageView fx:id="mapImageView" fitHeight="256.0" fitWidth="256.0" pickOnBounds="true" preserveRatio="true" />
+                <ImageView fx:id="mapImageView" fitHeight="220.0" fitWidth="220.0" pickOnBounds="true" preserveRatio="true" />
                 <Button fx:id="nextButton" alignment="BASELINE_LEFT" focusTraversable="false" minWidth="40.0" mnemonicParsing="false" onAction="#onNextButtonClick" prefHeight="256.0" prefWidth="50.0">
                     <graphic>
                         <ImageView fitHeight="40.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
@@ -59,11 +57,16 @@
                     </graphic>
                 </Button>
             </HBox>
+            <Label fx:id="mapLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="364.0" styleClass="mapName">
+                <font>
+                    <Font size="18.0" />
+                </font>
+            </Label>
         </VBox>
     </HBox>
-    <Button fx:id="startButton" focusTraversable="false" onAction="#onStartButtonClick" prefHeight="31.0" prefWidth="231.0" text="Start">
+    <Button fx:id="startButton" focusTraversable="false" onAction="#onStartButtonClick" styleClass="customButton" text="Let's Play!">
         <VBox.margin>
-            <Insets top="20.0" />
+            <Insets top="30.0" />
         </VBox.margin>
         <font>
             <Font size="18.0" />
