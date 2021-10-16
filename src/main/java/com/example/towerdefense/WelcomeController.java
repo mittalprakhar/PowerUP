@@ -19,6 +19,8 @@ public class WelcomeController {
         FXMLLoader fxmlLoader = new FXMLLoader(
                 getClass().getResource("/views/config-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 600);
+        scene.getStylesheets().add(String.valueOf(getClass().getResource(
+                "/css/main.css")));
 
         ConfigController configController = fxmlLoader.getController();
         configController.initState();

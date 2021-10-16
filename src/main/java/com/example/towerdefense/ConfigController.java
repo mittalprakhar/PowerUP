@@ -75,7 +75,7 @@ public class ConfigController {
                     getClass().getResource("/views/game-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), 1200, 600);
             scene.getStylesheets().add(String.valueOf(getClass().getResource(
-                    "/css/game.css")));
+                    "/css/main.css")));
 
             java.util.Map<String, Object> configParams = new HashMap<>();
             configParams.put("playerName", playerName);

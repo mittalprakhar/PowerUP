@@ -6,10 +6,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.testfx.framework.junit.ApplicationTest;
-import org.testfx.service.query.EmptyNodeQueryException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import static org.testfx.matcher.control.LabeledMatchers.hasText;
@@ -29,7 +27,7 @@ public class M2Test extends ApplicationTest {
     @Test
     public void testWelcomeScreenLaunch() {
         // on welcome screen
-        verifyThat("Start Game!", isVisible());
+        verifyThat(" Start Game!", isVisible());
     }
 
     @Test
@@ -188,7 +186,7 @@ public class M2Test extends ApplicationTest {
 
         // on game screen
         verifyThat("#difficultyLabel", hasText("Moderate"));
-        verifyThat("#moneyLabel", hasText("400"));
+        verifyThat("#moneyLabel", hasText("450"));
         verifyThat("#killsLabel", hasText("0"));
         assertEquals(0.9, ((ProgressBar) lookup("#monumentHealth").query()).getProgress());
     }
@@ -206,7 +204,7 @@ public class M2Test extends ApplicationTest {
 
         // on game screen
         verifyThat("#difficultyLabel", hasText("Expert"));
-        verifyThat("#moneyLabel", hasText("300"));
+        verifyThat("#moneyLabel", hasText("400"));
         verifyThat("#killsLabel", hasText("0"));
         assertEquals(0.8, ((ProgressBar) lookup("#monumentHealth").query()).getProgress());
     }
@@ -227,28 +225,5 @@ public class M2Test extends ApplicationTest {
         verifyThat("#moneyLabel", hasText("500"));
         sleep(20000);
         verifyThat("#moneyLabel", hasText("520"));
-    }
-
-    @Test
-    public void testGameTowerDestroy() {
-        // on welcome screen
-        clickOn("#startButton");
-
-        // on config screen
-        clickOn("#nameTextField").write("player1");
-        clickOn("#difficultyComboBox");
-        clickOn("Beginner");
-        clickOn("#startButton");
-
-        // on game screen
-        verifyThat("#towerHealth1", isVisible());
-        verifyThat("#tower1", isVisible());
-        sleep(32000);
-        assertThrows(EmptyNodeQueryException.class, () ->
-                verifyThat("#tower1", isVisible())
-        );
-        assertThrows(EmptyNodeQueryException.class, () ->
-            verifyThat("#towerHealth1", isVisible())
-        );
     }
 }

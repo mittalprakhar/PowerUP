@@ -3,14 +3,12 @@ package com.example.towerdefense;
 import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -79,7 +77,7 @@ public class GameController {
         gameTowers = FXCollections.observableArrayList();
 
         // Initialize independent game variables
-        time = 180;
+        time = 300;
         timeLabel.setText(time / 60 + ":"
                 + new DecimalFormat("00").format(time % 60));
 
@@ -326,16 +324,13 @@ public class GameController {
         towerMenu.setItems(gameTowers);
 
         // Add listener to track which tower is currently selected by player
-        towerMenu.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                Tower tower = towerMenu.getSelectionModel().getSelectedItem();
-                if (tower == selectedTower) {
-                    towerMenu.getSelectionModel().clearSelection();
-                    selectedTower = null;
-                } else {
-                    selectedTower = tower;
-                }
+        towerMenu.setOnMouseClicked(mouseEvent -> {
+            Tower tower = towerMenu.getSelectionModel().getSelectedItem();
+            if (tower == selectedTower) {
+                towerMenu.getSelectionModel().clearSelection();
+                selectedTower = null;
+            } else {
+                selectedTower = tower;
             }
         });
     }
