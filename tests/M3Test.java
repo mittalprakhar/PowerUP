@@ -1,7 +1,6 @@
 import com.example.towerdefense.Main;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
-import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -23,15 +22,14 @@ public class M3Test extends ApplicationTest {
         myStage = primaryStage;
     }
 
-    @Before
-    public void setup() {
+    public void setup(String difficulty) {
         // on welcome screen
         clickOn("#startButton");
 
         // on config screen
-        clickOn("#nameTextField").write("p1");
+        clickOn("#nameTextField").write("player1");
         clickOn("#difficultyComboBox");
-        clickOn("Beginner");
+        clickOn(difficulty);
         clickOn("#startButton");
 
         // on game screen now, time to test!
@@ -39,6 +37,7 @@ public class M3Test extends ApplicationTest {
 
     @Test
     public void testTowerMenuScroll() {
+        setup("Beginner");
         verifyThat("#towerMenu", isVisible());
         ListView<Object> towerMenu = lookup("#towerMenu").queryListView();
         towerMenu.scrollTo(8);
@@ -48,6 +47,7 @@ public class M3Test extends ApplicationTest {
 
     @Test
     public void testTowerMenuSelection() {
+        setup("Beginner");
         verifyThat("#towerMenu", isVisible());
         ListView<Object> towerMenu = lookup("#towerMenu").queryListView();
         towerMenu.getSelectionModel().select(3);
@@ -61,5 +61,59 @@ public class M3Test extends ApplicationTest {
         towerMenu.getSelectionModel().clearSelection();
         WaitForAsyncUtils.waitForFxEvents();
         assert towerMenu.getSelectionModel().isEmpty();
+    }
+
+    @Test
+    public void testTowerCannotPlaceOnPath() {
+        setup("Beginner");
+        // TODO
+    }
+
+    @Test
+    public void testTowerCanPlaceOnGround() {
+        setup("Beginner");
+        // TODO
+    }
+
+    @Test
+    public void testTowerDies() {
+        setup("Beginner");
+        // TODO
+    }
+
+    @Test
+    public void testTowerCanPlaceOnDeadTower() {
+        setup("Beginner");
+        // TODO
+    }
+
+    @Test
+    public void testTowerMoneyBeginner() {
+        setup("Beginner");
+        // TODO
+    }
+
+    @Test
+    public void testTowerMoneyModerate() {
+        setup("Moderate");
+        // TODO
+    }
+
+    @Test
+    public void testTowerMoneyExpert() {
+        setup("Expert");
+        // TODO
+    }
+
+    @Test
+    public void testTowerCostsMoney() {
+        setup("Beginner");
+        // TODO
+    }
+
+    @Test
+    public void testAlertOnInsufficientMoney() {
+        setup("Beginner");
+        // TODO
     }
 }
