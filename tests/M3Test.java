@@ -5,8 +5,10 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.service.query.EmptyNodeQueryException;
 import org.testfx.util.WaitForAsyncUtils;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
@@ -81,14 +83,28 @@ public class M3Test extends ApplicationTest {
     @Test
     public void testTowerDies() {
         setup("Beginner");
-        // TODO Mehul
+        clickOn(1140, 300);
+        clickOn(300, 340);
+        sleep(2000);
+        verifyThat("#tower1", isVisible());
+        sleep(32000);
+        assertThrows(EmptyNodeQueryException.class, () -> verifyThat("#tower1", isVisible()));
     }
 
     @Test
     public void testTowerCanPlaceOnDeadTower() {
         setup("Beginner");
-        // TODO Mehul
+        clickOn(1140, 300);
+        clickOn(300, 340);
+        sleep(2000);
+        verifyThat("#tower1", isVisible());
+        sleep(33000);
+        assertThrows(EmptyNodeQueryException.class, () -> verifyThat("#tower1", isVisible()));
+        clickOn(300, 340);
+        sleep(2000);
+        verifyThat("#tower1", isVisible());
     }
+
 
     @Test
     public void testTowerMoneyBeginner() {

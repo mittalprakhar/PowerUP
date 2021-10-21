@@ -167,7 +167,9 @@ public class GameController {
         monumentBar.setTranslateX(TILE_SIZE * (s.nextInt() - 1));
         monumentBar.setPrefWidth(TILE_SIZE * s.nextInt());
 
+
         return array;
+
     }
 
     /**
@@ -181,39 +183,39 @@ public class GameController {
                                       int costDifficultyFactor) {
         gameTowers.add(new Tower("Cannon",
                 "Fires cannon balls to crush enemies.",
-                50 + costDifficultyFactor, TILE_SIZE * 2, 50));
+                50 + costDifficultyFactor, TILE_SIZE * 2, 30));
 
         gameTowers.add(new Tower("Spiky",
                 "Spikes troops when they are not looking.",
-                75 + costDifficultyFactor, TILE_SIZE * 2, 60));
+                75 + costDifficultyFactor, TILE_SIZE * 2, 40));
 
         gameTowers.add(new Tower("Bomber",
                 "Hurls bombs and wreaks havoc upon attackers.",
-                100 + costDifficultyFactor, TILE_SIZE * 3, 70));
+                100 + costDifficultyFactor, TILE_SIZE * 3, 50));
 
         gameTowers.add(new Tower("Wizard",
                 "Hypnotizes fighters into surrendering.",
-                130 + costDifficultyFactor, TILE_SIZE * 3, 90));
+                130 + costDifficultyFactor, TILE_SIZE * 3, 70));
 
         gameTowers.add(new Tower("Xbow",
                 "Chips away attackers at a blistering pace.",
-                160 + costDifficultyFactor, TILE_SIZE * 3, 110));
+                160 + costDifficultyFactor, TILE_SIZE * 3, 90));
 
         gameTowers.add(new Tower("Electro",
                 "Stuns enemies through the power of electrons.",
-                200 + costDifficultyFactor, TILE_SIZE * 4, 130));
+                200 + costDifficultyFactor, TILE_SIZE * 4, 110));
 
         gameTowers.add(new Tower("Drone",
                 "Drops deadly artillery from the skies.",
-                250 + costDifficultyFactor, TILE_SIZE * 4, 160));
+                250 + costDifficultyFactor, TILE_SIZE * 4, 140));
 
         gameTowers.add(new Tower("Tank",
                 "Shoots shells that will impale enemies.",
-                300 + costDifficultyFactor, TILE_SIZE * 5, 190));
+                300 + costDifficultyFactor, TILE_SIZE * 5, 170));
 
         gameTowers.add(new Tower("Missile",
                 "Obliterates anything and everything.",
-                350 + costDifficultyFactor, TILE_SIZE * 5, 220));
+                350 + costDifficultyFactor, TILE_SIZE * 5, 200));
     }
 
     /**
@@ -491,6 +493,9 @@ public class GameController {
                                 "/css/main.css")));
 
                         alert.show();
+                    }
+                    if (playerTowers.size() == 1) {
+                        playerTowers.get(0).setId("tower1");
                     }
                 }
             });
