@@ -84,26 +84,26 @@ public class M3Test extends ApplicationTest {
     @Test
     public void testTowerDies() {
         setup("Beginner");
-        clickOn(1140, 300);
+        clickOn("#gameTower1");
         clickOn(300, 340);
         sleep(2000);
-        verifyThat("#tower1", isVisible());
+        verifyThat("#playerTower1", isVisible());
         sleep(32000);
-        assertThrows(EmptyNodeQueryException.class, () -> verifyThat("#tower1", isVisible()));
+        assertThrows(EmptyNodeQueryException.class, () -> verifyThat("#playerTower1", isVisible()));
     }
 
     @Test
     public void testTowerCanPlaceOnDeadTower() {
         setup("Beginner");
-        clickOn(1140, 300);
+        clickOn("#gameTower1");
         clickOn(300, 340);
         sleep(2000);
-        verifyThat("#tower1", isVisible());
+        verifyThat("#playerTower1", isVisible());
         sleep(33000);
-        assertThrows(EmptyNodeQueryException.class, () -> verifyThat("#tower1", isVisible()));
+        assertThrows(EmptyNodeQueryException.class, () -> verifyThat("#playerTower1", isVisible()));
         clickOn(300, 340);
         sleep(2000);
-        verifyThat("#tower1", isVisible());
+        verifyThat("#playerTower1", isVisible());
     }
 
 
@@ -150,7 +150,7 @@ public class M3Test extends ApplicationTest {
     public void testTowerCostsMoney() {
         setup("Beginner");
         verifyThat("#moneyLabel", hasText("500"));
-        clickOn(1240, 350);
+        clickOn("#gameTower1");
         clickOn(300, 340);
         sleep(2000);
         verifyThat("#moneyLabel", hasText("450"));
