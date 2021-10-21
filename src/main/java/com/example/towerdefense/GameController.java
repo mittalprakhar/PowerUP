@@ -167,9 +167,7 @@ public class GameController {
         monumentBar.setTranslateX(TILE_SIZE * (s.nextInt() - 1));
         monumentBar.setPrefWidth(TILE_SIZE * s.nextInt());
 
-
         return array;
-
     }
 
     /**
@@ -235,6 +233,7 @@ public class GameController {
                     cell.prefWidthProperty().bind(towerMenu.widthProperty().subtract(30));
                     cell.maxWidthProperty().bind(towerMenu.widthProperty().subtract(30));
                     cell.setSpacing(7);
+                    cell.setId("gameTower" + (gameTowers.indexOf(tower) + 1));
 
                     // Create left box to hold each tower's name and image
                     VBox leftBox = new VBox();
@@ -378,6 +377,7 @@ public class GameController {
                 }
             }
         };
+
         gameLoop.start();
     }
 
@@ -431,21 +431,18 @@ public class GameController {
             setOnMouseEntered(mouseEvent -> {
                 if (selectedTower != null) {
                     int towerSize = selectedTower.towerSize;
+                    canPlace = true;
                     if (this.location.x + towerSize <= COLS * TILE_SIZE
                             && this.location.y + towerSize <= ROWS * TILE_SIZE) {
                         for (int i = 0; i < towerSize; i += TILE_SIZE) {
                             for (int j = 0; j < towerSize; j += TILE_SIZE) {
-                                currentTowerTiles.add(tiles[
-                                        ((this.location.y + i) / TILE_SIZE) * COLS
-                                        + ((this.location.x + j) / TILE_SIZE)]);
-                            }
-                        }
-                        canPlace = true;
-                        for (Tile tile: currentTowerTiles) {
-                            tile.rectangle.setOpacity(0.7);
-                            if (tile.occupied) {
-                                canPlace = false;
-                                break;
+                                Tile tile = tiles[((this.location.y + i) / TILE_SIZE)
+                                        * COLS + ((this.location.x + j) / TILE_SIZE)];
+                                tile.rectangle.setOpacity(0.7);
+                                if (tile.occupied) {
+                                    canPlace = false;
+                                }
+                                currentTowerTiles.add(tile);
                             }
                         }
                         if (!canPlace) {
@@ -471,10 +468,12 @@ public class GameController {
                     if (money >= selectedTower.cost) {
                         money = money - selectedTower.cost;
                         moneyLabel.setText(money + "");
-                        playerTowers.add(new Tower(selectedTower.name,
+                        Tower playerTower = new Tower(selectedTower.name,
                                 selectedTower.description, selectedTower.cost,
                                 selectedTower.towerSize, selectedTower.maxHealth,
-                                currentTowerTiles));
+                                currentTowerTiles);
+                        playerTower.setId("playerTower" + (playerTowers.size() + 1));
+                        playerTowers.add(playerTower);
                         for (Tile tile: currentTowerTiles) {
                             tile.occupied = true;
                         }
@@ -493,9 +492,6 @@ public class GameController {
                                 "/css/main.css")));
 
                         alert.show();
-                    }
-                    if (playerTowers.size() == 1) {
-                        playerTowers.get(0).setId("tower1");
                     }
                 }
             });
