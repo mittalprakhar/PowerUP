@@ -1,4 +1,5 @@
 import com.example.towerdefense.Main;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import org.junit.FixMethodOrder;
@@ -8,10 +9,10 @@ import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.service.query.EmptyNodeQueryException;
 import org.testfx.util.WaitForAsyncUtils;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
+import static org.testfx.matcher.control.LabeledMatchers.hasText;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class M3Test extends ApplicationTest {
@@ -148,12 +149,25 @@ public class M3Test extends ApplicationTest {
     @Test
     public void testTowerCostsMoney() {
         setup("Beginner");
-        // TODO Navya
+        verifyThat("#moneyLabel", hasText("500"));
+        clickOn(1240, 350);
+        clickOn(300, 340);
+        sleep(2000);
+        verifyThat("#moneyLabel", hasText("450"));
     }
 
     @Test
     public void testAlertOnInsufficientMoney() {
         setup("Beginner");
-        // TODO Navya
+        verifyThat("#moneyLabel", hasText("500"));
+        clickOn(1240, 550);
+        clickOn(300, 340);
+        clickOn(1160, 340);
+        clickOn(300, 390);
+        clickOn(550, 240);
+        clickOn(300, 490);
+        clickOn(300, 300);
+        DialogPane alert = lookup(".alert").query();
+        assertEquals(alert.getContentText(), "You do not have the money required to buy this tower!");
     }
 }
