@@ -105,6 +105,11 @@ public class GameController {
                     !ground.contains(tileImages[i]), new Image(String.valueOf(getClass().
                     getResource("/images/tile" + tileImages[i] + ".png"))));
         }
+        tiles[21].setId("tilePath");
+        tiles[60].setId("tileGround1");
+        tiles[63].setId("tileGround2");
+        tiles[66].setId("tileGround3");
+        tiles[69].setId("tileGround4");
 
         // Initialize dependent game variables
         playerLabel.setText(String.valueOf(configParams.get("playerName")));

@@ -72,37 +72,53 @@ public class M3Test extends ApplicationTest {
     @Test
     public void testTowerCannotPlaceOnPath() {
         setup("Beginner");
-        // TODO Maniya
+
+        clickOn("#gameTower1");
+        clickOn("#tilePath");
+        WaitForAsyncUtils.waitForFxEvents();
+        assertThrows(EmptyNodeQueryException.class, () ->
+                verifyThat("#playerTower1", isVisible()));
     }
 
     @Test
     public void testTowerCanPlaceOnGround() {
         setup("Beginner");
-        // TODO Maniya
+
+        clickOn("#gameTower1");
+        clickOn("#tileGround1");
+        WaitForAsyncUtils.waitForFxEvents();
+        verifyThat("#playerTower1", isVisible());
     }
 
     @Test
     public void testTowerDies() {
         setup("Beginner");
+
         clickOn("#gameTower1");
-        clickOn(300, 340);
-        sleep(2000);
+        clickOn("#tileGround1");
+        WaitForAsyncUtils.waitForFxEvents();
         verifyThat("#playerTower1", isVisible());
-        sleep(32000);
-        assertThrows(EmptyNodeQueryException.class, () -> verifyThat("#playerTower1", isVisible()));
+
+        sleep(35000);
+        assertThrows(EmptyNodeQueryException.class, () ->
+                verifyThat("#playerTower1", isVisible()));
     }
 
     @Test
     public void testTowerCanPlaceOnDeadTower() {
         setup("Beginner");
+
         clickOn("#gameTower1");
-        clickOn(300, 340);
-        sleep(2000);
+        clickOn("#tileGround1");
+        WaitForAsyncUtils.waitForFxEvents();
         verifyThat("#playerTower1", isVisible());
-        sleep(33000);
-        assertThrows(EmptyNodeQueryException.class, () -> verifyThat("#playerTower1", isVisible()));
-        clickOn(300, 340);
-        sleep(2000);
+
+        sleep(35000);
+        assertThrows(EmptyNodeQueryException.class, () ->
+                verifyThat("#playerTower1", isVisible()));
+
+        clickOn("#tileGround1");
+        WaitForAsyncUtils.waitForFxEvents();
         verifyThat("#playerTower1", isVisible());
     }
 
@@ -149,25 +165,27 @@ public class M3Test extends ApplicationTest {
     @Test
     public void testTowerCostsMoney() {
         setup("Beginner");
+
         verifyThat("#moneyLabel", hasText("500"));
         clickOn("#gameTower1");
-        clickOn(300, 340);
-        sleep(2000);
+        clickOn("#tileGround1");
+        WaitForAsyncUtils.waitForFxEvents();
         verifyThat("#moneyLabel", hasText("450"));
     }
 
     @Test
     public void testAlertOnInsufficientMoney() {
         setup("Beginner");
-        verifyThat("#moneyLabel", hasText("500"));
-        clickOn(1240, 550);
-        clickOn(300, 340);
-        clickOn(1160, 340);
-        clickOn(300, 390);
-        clickOn(550, 240);
-        clickOn(300, 490);
-        clickOn(300, 300);
+
+        clickOn("#gameTower4");
+        clickOn("#tileGround1");
+        clickOn("#tileGround2");
+        clickOn("#tileGround3");
+        clickOn("#tileGround4");
+        WaitForAsyncUtils.waitForFxEvents();
+
         DialogPane alert = lookup(".alert").query();
-        assertEquals(alert.getContentText(), "You do not have the money required to buy this tower!");
+        assertEquals(alert.getContentText(),
+                "You do not have the money required to buy this tower!");
     }
 }
