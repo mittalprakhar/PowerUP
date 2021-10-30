@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.image.Image?>
@@ -14,7 +15,7 @@
     <VBox fx:id="gameContainer">
         <Pane fx:id="gamePane" />
     </VBox>
-    <VBox fx:id="sideContainer" prefHeight="600.0" prefWidth="300.0">
+    <VBox fx:id="sideContainer" alignment="CENTER" prefHeight="600.0" prefWidth="300.0">
         <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
         </padding>
@@ -85,6 +86,14 @@
                 </Label>
             </HBox>
         </HBox>
-      <ListView fx:id="towerMenu" prefHeight="426.0" prefWidth="260.0" />
+      <ListView fx:id="towerMenu" prefHeight="371.0" prefWidth="260.0">
+         <VBox.margin>
+            <Insets bottom="20.0" />
+         </VBox.margin></ListView>
+      <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onEndButtonClick" prefHeight="35.0" prefWidth="160.0" styleClass="customButton" text="End Game" textAlignment="CENTER">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Button>
     </VBox>
 </HBox>

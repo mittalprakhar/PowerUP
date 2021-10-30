@@ -3,9 +3,12 @@ package com.example.towerdefense;
 import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -18,6 +21,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -403,6 +407,25 @@ public class GameController {
     public void addMoney() {
         money += 20;
         moneyLabel.setText(money + "");
+    }
+
+    @FXML
+    private void onEndButtonClick(ActionEvent actionEvent) throws IOException {
+        Stage primaryStage = Main.getPrimaryStage();
+        FXMLLoader fxmlLoader = new FXMLLoader(
+                getClass().getResource("/views/gameOver-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 1200, 600);
+        scene.getStylesheets().add(String.valueOf(getClass().getResource(
+                "/css/main.css")));
+
+        java.util.Map<String, Object> gameParams = new HashMap<>();
+        gameParams.put("playerName", playerLabel.getText());
+        gameParams.put("kills", killsLabel.getText());
+
+        GameOverController gameOverController = fxmlLoader.getController();
+        gameOverController.initState(gameParams);
+
+        primaryStage.setScene(scene);
     }
 
     /**
