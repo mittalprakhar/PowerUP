@@ -3,7 +3,6 @@ package com.example.towerdefense;
 import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -70,6 +69,9 @@ public class GameController {
     private List<Tower> playerTowers;           // List of all towers placed by player
 
     @FXML
+    private Button endButton;
+
+    @FXML
     public void initialize() {
         // Divide game screen into two containers
         gameContainer.setPrefWidth(TILE_SIZE * COLS);
@@ -82,7 +84,7 @@ public class GameController {
         gameTowers = FXCollections.observableArrayList();
 
         // Initialize independent game variables
-        time = 300;
+        time = 15;
         timeLabel.setText(time / 60 + ":"
                 + new DecimalFormat("00").format(time % 60));
 
@@ -364,6 +366,10 @@ public class GameController {
                     long diff = now - lastTimeUpdate;
                     if (diff >= 1_000_000_000L) {
                         updateTime();
+                        if (time == 0) {
+                            this.stop();
+                            endButton.fire();
+                        }
                         try {
                             for (Tower tower: playerTowers) {
                                 tower.updateHealth();
@@ -410,7 +416,7 @@ public class GameController {
     }
 
     @FXML
-    private void onEndButtonClick(ActionEvent actionEvent) throws IOException {
+    private void onEndButtonClick() throws IOException {
         Stage primaryStage = Main.getPrimaryStage();
         FXMLLoader fxmlLoader = new FXMLLoader(
                 getClass().getResource("/views/gameOver-view.fxml"));
