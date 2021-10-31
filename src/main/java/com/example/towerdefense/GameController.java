@@ -65,6 +65,12 @@ public class GameController {
     private Tower selectedTower;                // Currently selected tower from the menu
     private List<Tower> playerTowers;           // List of all towers placed by player
 
+    private int spawnRate;                      // Number of enemies spawned every game cycle
+    private List<Location> spawnPoints;         // List of all spawn points in the map
+    private List<Enemy> enemies;                // List of all alive enemies
+
+    private Random rand;
+
     @FXML
     public void initialize() {
         // Divide game screen into two containers
@@ -76,6 +82,10 @@ public class GameController {
         playerTowers = new ArrayList<>();
         monumentBar = new ProgressBar();
         gameTowers = FXCollections.observableArrayList();
+        spawnRate = 3;
+        spawnPoints = new ArrayList<>();
+        enemies = new ArrayList<>();
+        rand = new Random();
 
         // Initialize independent game variables
         time = 300;
@@ -105,11 +115,15 @@ public class GameController {
                     !ground.contains(tileImages[i]), new Image(String.valueOf(getClass().
                     getResource("/images/tile" + tileImages[i] + ".png"))));
         }
+
+        // M3 Test IDs
+        /*
         tiles[21].setId("tilePath");
         tiles[60].setId("tileGround1");
         tiles[63].setId("tileGround2");
         tiles[66].setId("tileGround3");
         tiles[69].setId("tileGround4");
+        */
 
         // Initialize dependent game variables
         playerLabel.setText(String.valueOf(configParams.get("playerName")));
@@ -168,9 +182,16 @@ public class GameController {
         }
 
         // Set location of monument health bar
-        monumentBar.setTranslateY(TILE_SIZE * (s.nextInt() - 1));
         monumentBar.setTranslateX(TILE_SIZE * (s.nextInt() - 1));
+        monumentBar.setTranslateY(TILE_SIZE * (s.nextInt() - 1));
         monumentBar.setPrefWidth(TILE_SIZE * s.nextInt());
+
+        // Load spawn points
+        int spawnPointCount = s.nextInt();
+        for (int i = 0; i < spawnPointCount; i++) {
+            spawnPoints.add(new Location(TILE_SIZE * (s.nextInt() - 1),
+                    TILE_SIZE * (s.nextInt() - 1)));
+        }
 
         return array;
     }
@@ -350,6 +371,7 @@ public class GameController {
         AnimationTimer gameLoop = new AnimationTimer() {
             private long lastTimeUpdate;
             private long lastMoneyUpdate;
+            private long lastEnemySpawned;
 
             @Override
             public void handle(long now) {
@@ -380,6 +402,19 @@ public class GameController {
                         lastMoneyUpdate = now;
                     }
                 }
+
+                // Every [spawnRate] seconds, spawn enemy
+                if (lastEnemySpawned == 0L) {
+                    lastEnemySpawned = now;
+                } else {
+                    long diff = now - lastEnemySpawned;
+                    if (diff >= 1_000_000_000L * spawnRate) {
+                        spawnEnemy();
+                        lastEnemySpawned = now;
+                    }
+                }
+
+                moveEnemies();
             }
         };
 
@@ -387,7 +422,7 @@ public class GameController {
     }
 
     /**
-     * Updates time every 1 second
+     * Updates time
      */
     public void updateTime() {
         if (time > 0) {
@@ -398,11 +433,28 @@ public class GameController {
     }
 
     /**
-     * Adds money every 20 seconds
+     * Adds money
      */
     public void addMoney() {
         money += 20;
         moneyLabel.setText(money + "");
+    }
+
+    /**
+     * Spawns enemy
+     */
+    public void spawnEnemy() {
+        enemies.add(new Enemy(
+                spawnPoints.get(rand.nextInt(spawnPoints.size())), 0.3));
+    }
+
+    /**
+     * Move all alive enemies
+     */
+    public void moveEnemies() {
+        for (Enemy enemy: enemies) {
+            enemy.move();
+        }
     }
 
     /**
@@ -441,8 +493,8 @@ public class GameController {
                             && this.location.y + towerSize <= ROWS * TILE_SIZE) {
                         for (int i = 0; i < towerSize; i += TILE_SIZE) {
                             for (int j = 0; j < towerSize; j += TILE_SIZE) {
-                                Tile tile = tiles[((this.location.y + i) / TILE_SIZE)
-                                        * COLS + ((this.location.x + j) / TILE_SIZE)];
+                                Tile tile = tiles[(int) ((this.location.y + i) / TILE_SIZE
+                                        * COLS + (this.location.x + j) / TILE_SIZE)];
                                 tile.rectangle.setOpacity(0.7);
                                 if (tile.occupied) {
                                     canPlace = false;
@@ -585,17 +637,147 @@ public class GameController {
      * Defines a location object associated with a tile or a tower object.
      */
     private static class Location {
-        private final int x;
-        private final int y;
+        private double x;
+        private double y;
 
-        public Location(int x, int y) {
+        public Location(double x, double y) {
             this.x = x;
             this.y = y;
         }
 
         @Override
         public String toString() {
-            return String.format("(%d, %d)" + x, y);
+            return String.format("(%f, %f)", x, y);
+        }
+    }
+
+    private class Enemy extends StackPane {
+        private Location location;
+        private ProgressBar healthBar;
+        private double speed;
+        private int nextIndex;
+        private int heading;
+
+        public Enemy(Location location, double speed) {
+            this.location = location;
+            this.speed = speed;
+            nextIndex = -1;
+
+            Rectangle border = new Rectangle(TILE_SIZE * 2, TILE_SIZE * 2);
+            border.setFill(new ImagePattern(new Image(String.valueOf(
+                    getClass().getResource("/images/enemy.png")))));
+            getChildren().add(border);
+            this.setTranslateX(location.x);
+            this.setTranslateY(location.y);
+            gamePane.getChildren().add(this);
+
+            healthBar = new ProgressBar();
+            healthBar.setProgress(1);
+            healthBar.setTranslateX(location.x + TILE_SIZE * 0.2);
+            healthBar.setTranslateY(location.y - TILE_SIZE * 0.65);
+            healthBar.setPrefWidth(TILE_SIZE * 1.6);
+            healthBar.setPrefHeight(TILE_SIZE * 0.55);
+            gamePane.getChildren().add(healthBar);
+        }
+
+        public void move() {
+            int currentIndex = (((int) location.y / TILE_SIZE) * COLS + ((int) location.x / TILE_SIZE));
+            try {
+                tiles[nextIndex].rectangle.setFill(Color.BLACK);
+            } catch (Exception ignored) {}
+            if (nextIndex == -1 || nextIndex == currentIndex) {
+                List<Integer> possibleHeadings = new ArrayList<>();
+                if (location.x < monumentBar.getTranslateX()) {
+                    if (tiles[currentIndex + 2].occupied
+                            && tiles[currentIndex + 2 + COLS].occupied) {
+                        possibleHeadings.add(2);
+                    }
+                } else {
+                    if (tiles[currentIndex].occupied
+                            && tiles[currentIndex + COLS].occupied) {
+                        possibleHeadings.add(4);
+                    }
+                }
+                try {
+                    if (tiles[currentIndex - COLS].occupied
+                            && tiles[currentIndex - COLS + 1].occupied) {
+                        if (possibleHeadings.size() > 0) {
+                            if (tiles[currentIndex - (2 * COLS)].occupied
+                                    && tiles[currentIndex - (2 * COLS) + 1].occupied) {
+                                possibleHeadings.add(12);
+                            }
+                        } else {
+                            possibleHeadings.add(1);
+                        }
+                    }
+                } catch (Exception ignored) {}
+                try {
+                    if (tiles[currentIndex + (2 * COLS)].occupied
+                            && tiles[currentIndex + (2 * COLS) + 1].occupied) {
+                        if (possibleHeadings.size() > 0) {
+                            if (tiles[currentIndex + (3 * COLS)].occupied
+                                    && tiles[currentIndex + (3 * COLS) + 1].occupied) {
+                                possibleHeadings.add(32);
+                            }
+                        } else {
+                            possibleHeadings.add(3);
+                        }
+                    }
+                } catch (Exception ignored) {}
+                if (possibleHeadings.size() > 0) {
+                    heading = possibleHeadings.get(rand.nextInt(possibleHeadings.size()));
+                    switch (heading) {
+                        case 1:
+                            nextIndex = currentIndex - COLS;
+                            break;
+                        case 12:
+                            nextIndex = currentIndex - (2 * COLS);
+                            break;
+                        case 2:
+                            nextIndex = currentIndex + 1;
+                            break;
+                        case 3:
+                            nextIndex = currentIndex + COLS;
+                            break;
+                        case 32:
+                            nextIndex = currentIndex + (2 * COLS);
+                            break;
+                        case 4:
+                            nextIndex = currentIndex - 1;
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    heading = 0;
+                }
+            }
+            switch (heading) {
+                case 1:
+                case 12:
+                    location.y -= speed;
+                    tiles[currentIndex].rectangle.setFill(Color.WHITE);
+                    break;
+                case 2:
+                    location.x += speed;
+                    tiles[currentIndex].rectangle.setFill(Color.YELLOW);
+                    break;
+                case 3:
+                case 32:
+                    location.y += speed;
+                    tiles[currentIndex].rectangle.setFill(Color.ORANGE);
+                    break;
+                case 4:
+                    location.x -= speed;
+                    tiles[currentIndex].rectangle.setFill(Color.PINK);
+                    break;
+                default:
+                    break;
+            }
+            this.setTranslateX(location.x);
+            this.setTranslateY(location.y);
+            healthBar.setTranslateX(location.x + TILE_SIZE * 0.2);
+            healthBar.setTranslateY(location.y - TILE_SIZE * 0.65);
         }
     }
 }
