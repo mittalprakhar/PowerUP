@@ -67,6 +67,7 @@ public class GameController {
 
     private int spawnRate;                      // Number of enemies spawned every game cycle
     private List<Location> spawnPoints;         // List of all spawn points in the map
+    private List<Integer> spawnHeadings;        // List of headings corresponding to spawn points
     private List<Enemy> enemies;                // List of all alive enemies
 
     private Random rand;
@@ -84,6 +85,7 @@ public class GameController {
         gameTowers = FXCollections.observableArrayList();
         spawnRate = 3;
         spawnPoints = new ArrayList<>();
+        spawnHeadings = new ArrayList<>();
         enemies = new ArrayList<>();
         rand = new Random();
 
@@ -191,6 +193,7 @@ public class GameController {
         for (int i = 0; i < spawnPointCount; i++) {
             spawnPoints.add(new Location(TILE_SIZE * (s.nextInt() - 1),
                     TILE_SIZE * (s.nextInt() - 1)));
+            spawnHeadings.add(s.nextInt());
         }
 
         return array;
@@ -382,12 +385,12 @@ public class GameController {
                     long diff = now - lastTimeUpdate;
                     if (diff >= 1_000_000_000L) {
                         updateTime();
+                        moveEnemies();
                         try {
                             for (Tower tower: playerTowers) {
                                 tower.updateHealth();
                             }
-                        } catch (ConcurrentModificationException ignored) {
-                        }
+                        } catch (ConcurrentModificationException ignored) {}
                         lastTimeUpdate = now;
                     }
                 }
@@ -413,8 +416,6 @@ public class GameController {
                         lastEnemySpawned = now;
                     }
                 }
-
-                moveEnemies();
             }
         };
 
@@ -444,8 +445,8 @@ public class GameController {
      * Spawns enemy
      */
     public void spawnEnemy() {
-        enemies.add(new Enemy(
-                spawnPoints.get(rand.nextInt(spawnPoints.size())), 0.3));
+        int index = rand.nextInt(spawnPoints.size());
+        enemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index), TILE_SIZE));
     }
 
     /**
@@ -652,16 +653,18 @@ public class GameController {
     }
 
     private class Enemy extends StackPane {
-        private Location location;
-        private ProgressBar healthBar;
-        private double speed;
-        private int nextIndex;
-        private int heading;
+        private final Location location;
+        private final ProgressBar healthBar;
 
-        public Enemy(Location location, double speed) {
+        private int heading;
+        private final double speed;
+
+        private int tileIndex;
+
+        public Enemy(Location location, int heading, double speed) {
             this.location = location;
             this.speed = speed;
-            nextIndex = -1;
+            this.heading = heading;
 
             Rectangle border = new Rectangle(TILE_SIZE * 2, TILE_SIZE * 2);
             border.setFill(new ImagePattern(new Image(String.valueOf(
@@ -681,95 +684,83 @@ public class GameController {
         }
 
         public void move() {
-            int currentIndex = (((int) location.y / TILE_SIZE) * COLS + ((int) location.x / TILE_SIZE));
-            try {
-                tiles[nextIndex].rectangle.setFill(Color.BLACK);
-            } catch (Exception ignored) {}
-            if (nextIndex == -1 || nextIndex == currentIndex) {
-                List<Integer> possibleHeadings = new ArrayList<>();
-                if (location.x < monumentBar.getTranslateX()) {
-                    if (tiles[currentIndex + 2].occupied
-                            && tiles[currentIndex + 2 + COLS].occupied) {
-                        possibleHeadings.add(2);
-                    }
-                } else {
-                    if (tiles[currentIndex].occupied
-                            && tiles[currentIndex + COLS].occupied) {
-                        possibleHeadings.add(4);
-                    }
-                }
-                try {
-                    if (tiles[currentIndex - COLS].occupied
-                            && tiles[currentIndex - COLS + 1].occupied) {
-                        if (possibleHeadings.size() > 0) {
-                            if (tiles[currentIndex - (2 * COLS)].occupied
-                                    && tiles[currentIndex - (2 * COLS) + 1].occupied) {
-                                possibleHeadings.add(12);
-                            }
-                        } else {
-                            possibleHeadings.add(1);
-                        }
-                    }
-                } catch (Exception ignored) {}
-                try {
-                    if (tiles[currentIndex + (2 * COLS)].occupied
-                            && tiles[currentIndex + (2 * COLS) + 1].occupied) {
-                        if (possibleHeadings.size() > 0) {
-                            if (tiles[currentIndex + (3 * COLS)].occupied
-                                    && tiles[currentIndex + (3 * COLS) + 1].occupied) {
-                                possibleHeadings.add(32);
-                            }
-                        } else {
-                            possibleHeadings.add(3);
-                        }
-                    }
-                } catch (Exception ignored) {}
-                if (possibleHeadings.size() > 0) {
-                    heading = possibleHeadings.get(rand.nextInt(possibleHeadings.size()));
-                    switch (heading) {
-                        case 1:
-                            nextIndex = currentIndex - COLS;
-                            break;
-                        case 12:
-                            nextIndex = currentIndex - (2 * COLS);
-                            break;
-                        case 2:
-                            nextIndex = currentIndex + 1;
-                            break;
-                        case 3:
-                            nextIndex = currentIndex + COLS;
-                            break;
-                        case 32:
-                            nextIndex = currentIndex + (2 * COLS);
-                            break;
-                        case 4:
-                            nextIndex = currentIndex - 1;
-                            break;
-                        default:
-                            break;
-                    }
-                } else {
-                    heading = 0;
-                }
+            tileIndex = (int) (location.y / TILE_SIZE)
+                    * COLS + (int) (location.x / TILE_SIZE);
+
+            List<Integer> possibleHeadings = new ArrayList<>();
+
+            if (heading != 4 && checkForward()) {
+                possibleHeadings.add(2);
             }
+            if (heading != 2 && checkBackward()) {
+                possibleHeadings.add(4);
+            }
+            if (heading != 1 && checkDown()) {
+                possibleHeadings.add(3);
+            }
+            if (heading != 3 && checkUp()) {
+                possibleHeadings.add(1);
+            }
+
+            if (possibleHeadings.size() > 0) {
+                heading = possibleHeadings.get(rand.nextInt(possibleHeadings.size()));
+                updateLocation();
+            }
+        }
+
+        private boolean checkForward() {
+            try {
+                return tiles[tileIndex + 2].occupied
+                        && tiles[tileIndex + 2 + COLS].occupied;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        private boolean checkBackward() {
+            try {
+                return tiles[tileIndex - 1].occupied
+                        && tiles[tileIndex - 1 + COLS].occupied;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        private boolean checkUp() {
+            try {
+                return tiles[tileIndex - COLS].occupied
+                        && tiles[tileIndex - COLS + 1].occupied;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        private boolean checkDown() {
+            try {
+                return tiles[tileIndex + (2 * COLS)].occupied
+                        && tiles[tileIndex + (2 * COLS) + 1].occupied;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        private void updateLocation() {
             switch (heading) {
                 case 1:
-                case 12:
+                    tiles[tileIndex].rectangle.setFill(Color.WHITE);
                     location.y -= speed;
-                    tiles[currentIndex].rectangle.setFill(Color.WHITE);
                     break;
                 case 2:
+                    tiles[tileIndex].rectangle.setFill(Color.BLACK);
                     location.x += speed;
-                    tiles[currentIndex].rectangle.setFill(Color.YELLOW);
                     break;
                 case 3:
-                case 32:
+                    tiles[tileIndex].rectangle.setFill(Color.YELLOW);
                     location.y += speed;
-                    tiles[currentIndex].rectangle.setFill(Color.ORANGE);
                     break;
                 case 4:
+                    tiles[tileIndex].rectangle.setFill(Color.PINK);
                     location.x -= speed;
-                    tiles[currentIndex].rectangle.setFill(Color.PINK);
                     break;
                 default:
                     break;
