@@ -414,6 +414,10 @@ public class GameController {
                         updateTime();
                         updateTowers();
                         updateMonument();
+                        if (time == 0) {
+                            this.stop();
+                            gameButton.fire();
+                        }
                         lastTimeUpdate = now;
                     }
                 }
@@ -896,8 +900,7 @@ public class GameController {
                 monumentCurHealth -= 0.001;
                 monumentBar.setProgress(monumentCurHealth / monumentMaxHealth);
             } else {
-                this.stop();
-                endButton.fire();
+                gameButton.fire();
             }
         }
     }
