@@ -69,11 +69,8 @@ public class GameController {
     private List<Tower> playerTowers;           // List of all towers placed by player
 
     @FXML
-    private Button startButton;                 // Button to start game
+    private Button gameButton;                  // Button to start combat or surrender
     private boolean isStarted = false;          // Game started or not
-
-    @FXML
-    private Button endButton;                   // Button to end game
 
     @FXML
     public void initialize() {
@@ -156,8 +153,6 @@ public class GameController {
 
         // Initialize towerMenu with gameTowers
         initializeTowerMenu();
-
-        gameOn();
     }
 
     /**
@@ -385,7 +380,7 @@ public class GameController {
                         updateTime();
                         if (time == 0) {
                             this.stop();
-                            endButton.fire();
+                            gameButton.fire();
                         }
                         try {
                             for (Tower tower: playerTowers) {
@@ -410,9 +405,7 @@ public class GameController {
             }
         };
 
-        if (isStarted) {
-            gameLoop.start();
-        }
+        gameLoop.start();
     }
 
     /**
@@ -435,27 +428,28 @@ public class GameController {
     }
 
     @FXML
-    private void onEndButtonClick() throws IOException {
-        Stage primaryStage = Main.getPrimaryStage();
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                getClass().getResource("/views/game-over-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1200, 600);
-        scene.getStylesheets().add(String.valueOf(getClass().getResource(
-                "/css/main.css")));
+    public void onGameButtonClick() throws IOException {
+        if (!isStarted) {
+            isStarted = true;
+            gameOn();
+            gameButton.setText("Surrender");
+        } else {
+            Stage primaryStage = Main.getPrimaryStage();
+            FXMLLoader fxmlLoader = new FXMLLoader(
+                    getClass().getResource("/views/game-over-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load(), 1200, 600);
+            scene.getStylesheets().add(String.valueOf(getClass().getResource(
+                    "/css/main.css")));
 
-        java.util.Map<String, Object> gameParams = new HashMap<>();
-        gameParams.put("playerName", playerLabel.getText());
-        gameParams.put("kills", killsLabel.getText());
+            java.util.Map<String, Object> gameParams = new HashMap<>();
+            gameParams.put("playerName", playerLabel.getText());
+            gameParams.put("kills", killsLabel.getText());
 
-        GameOverController gameOverController = fxmlLoader.getController();
-        gameOverController.initState(gameParams);
+            GameOverController gameOverController = fxmlLoader.getController();
+            gameOverController.initState(gameParams);
 
-        primaryStage.setScene(scene);
-    }
-
-    @FXML
-    public void onStartButtonClick() {
-        isStarted = true;
+            primaryStage.setScene(scene);
+        }
     }
 
     /**
