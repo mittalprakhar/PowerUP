@@ -414,7 +414,7 @@ public class GameController {
                         updateTime();
                         updateTowers();
                         updateMonument();
-                        if (time == 0) {
+                        if (time == 0 || monumentCurHealth < 0.01) {
                             this.stop();
                             gameButton.fire();
                         }
@@ -897,10 +897,8 @@ public class GameController {
 
         public void damageMonument() {
             if (monumentCurHealth > 0) {
-                monumentCurHealth -= 0.001;
+                monumentCurHealth -= 0.01;
                 monumentBar.setProgress(monumentCurHealth / monumentMaxHealth);
-            } else {
-                gameButton.fire();
             }
         }
     }
