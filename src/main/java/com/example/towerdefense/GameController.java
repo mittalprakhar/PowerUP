@@ -38,7 +38,9 @@ public class GameController {
             = 600 / ROWS;                       // Smallest grid unit - 1 tile size
 
     private ProgressBar monumentBar;            // Monument health bar
-    private double monumentHealth;              // Starting monument health
+    private double monumentMaxHealth;           // Starting monument health
+    private double monumentCurHealth;           // Current monument health
+    private Location monumentLocation;          // Monument center location
 
     @FXML
     private VBox sideContainer;                 // Side menu container
@@ -68,6 +70,13 @@ public class GameController {
     private Tower selectedTower;                // Currently selected tower from the menu
     private List<Tower> playerTowers;           // List of all towers placed by player
 
+    private List<Location> spawnPoints;         // List of all spawn points in the map
+    private List<Integer> spawnHeadings;        // List of headings corresponding to spawn points
+    private List<Enemy> movingEnemies;          // List of all enemies still moving
+    private List<Enemy> reachedEnemies;         // List of all enemies that have reached monument
+
+    private Random rand;
+
     @FXML
     private Button gameButton;                  // Button to start combat or surrender
     private boolean isStarted = false;          // Game started or not
@@ -83,6 +92,11 @@ public class GameController {
         playerTowers = new ArrayList<>();
         monumentBar = new ProgressBar();
         gameTowers = FXCollections.observableArrayList();
+        spawnPoints = new ArrayList<>();
+        spawnHeadings = new ArrayList<>();
+        movingEnemies = new ArrayList<>();
+        reachedEnemies = new ArrayList<>();
+        rand = new Random();
 
         // Set time and kills labels
         timeLabel.setText(time / 60 + ":"
@@ -109,11 +123,15 @@ public class GameController {
                     !ground.contains(tileImages[i]), new Image(String.valueOf(getClass().
                     getResource("/images/tile" + tileImages[i] + ".png"))));
         }
+
+        // M3 Test IDs
+        /*
         tiles[21].setId("tilePath");
         tiles[60].setId("tileGround1");
         tiles[63].setId("tileGround2");
         tiles[66].setId("tileGround3");
         tiles[69].setId("tileGround4");
+        */
 
         // Initialize dependent game variables
         playerLabel.setText(String.valueOf(configParams.get("playerName")));
@@ -127,24 +145,25 @@ public class GameController {
         switch (difficulty) {
         case "Beginner":
             money = 500;
-            monumentHealth = 1.0;
+            monumentMaxHealth = 1.0;
             costDifficultyFactor = 0;
             break;
         case "Moderate":
             money = 450;
-            monumentHealth = 0.9;
+            monumentMaxHealth = 0.9;
             costDifficultyFactor = 10;
             break;
         default:
             money = 400;
-            monumentHealth = 0.8;
+            monumentMaxHealth = 0.8;
             costDifficultyFactor = 20;
             break;
         }
+        monumentCurHealth = monumentMaxHealth;
         moneyLabel.setText(money + "");
 
         // Initialize monument health bar
-        monumentBar.setProgress(monumentHealth);
+        monumentBar.setProgress(monumentMaxHealth);
         monumentBar.setId("monumentHealth");
         gamePane.getChildren().add(monumentBar);
 
@@ -170,9 +189,22 @@ public class GameController {
         }
 
         // Set location of monument health bar
-        monumentBar.setTranslateY(TILE_SIZE * (s.nextInt() - 1));
-        monumentBar.setTranslateX(TILE_SIZE * (s.nextInt() - 1));
+        int x = s.nextInt() - 1;
+        int y = s.nextInt() - 1;
+        monumentBar.setTranslateX(TILE_SIZE * x);
+        monumentBar.setTranslateY(TILE_SIZE * y);
         monumentBar.setPrefWidth(TILE_SIZE * s.nextInt());
+
+        // Set location of monument
+        monumentLocation = new Location(TILE_SIZE * (x + 2), TILE_SIZE * (y + 5));
+
+        // Load spawn points
+        int spawnPointCount = s.nextInt();
+        for (int i = 0; i < spawnPointCount; i++) {
+            spawnPoints.add(new Location(TILE_SIZE * (s.nextInt() - 1),
+                    TILE_SIZE * (s.nextInt() - 1)));
+            spawnHeadings.add(s.nextInt());
+        }
 
         return array;
     }
@@ -368,6 +400,8 @@ public class GameController {
         AnimationTimer gameLoop = new AnimationTimer() {
             private long lastTimeUpdate;
             private long lastMoneyUpdate;
+            private long lastEnemySpawned;
+            private long lastEnemyMoved;
 
             @Override
             public void handle(long now) {
@@ -378,16 +412,8 @@ public class GameController {
                     long diff = now - lastTimeUpdate;
                     if (diff >= 1_000_000_000L) {
                         updateTime();
-                        if (time == 0) {
-                            this.stop();
-                            gameButton.fire();
-                        }
-                        try {
-                            for (Tower tower: playerTowers) {
-                                tower.updateHealth();
-                            }
-                        } catch (ConcurrentModificationException ignored) {
-                        }
+                        updateTowers();
+                        updateMonument();
                         lastTimeUpdate = now;
                     }
                 }
@@ -402,6 +428,28 @@ public class GameController {
                         lastMoneyUpdate = now;
                     }
                 }
+
+                // Every 3 seconds, spawn enemy
+                if (lastEnemySpawned == 0L) {
+                    lastEnemySpawned = now;
+                } else {
+                    long diff = now - lastEnemySpawned;
+                    if (diff >= 3_000_000_000L) {
+                        spawnEnemy();
+                        lastEnemySpawned = now;
+                    }
+                }
+
+                // Move enemies
+                if (lastEnemyMoved == 0L) {
+                    lastEnemyMoved = now;
+                } else {
+                    long diff = now - lastEnemyMoved;
+                    if (diff >= 10_000_000L) {
+                        moveEnemies();
+                        lastEnemyMoved = now;
+                    }
+                }
             }
         };
 
@@ -409,7 +457,7 @@ public class GameController {
     }
 
     /**
-     * Updates time every 1 second
+     * Updates time
      */
     public void updateTime() {
         if (time > 0) {
@@ -420,13 +468,55 @@ public class GameController {
     }
 
     /**
-     * Adds money every 20 seconds
+     * Adds money
      */
     public void addMoney() {
         money += 20;
         moneyLabel.setText(money + "");
     }
 
+    /**
+     * Spawns enemy
+     */
+    public void spawnEnemy() {
+        int index = rand.nextInt(spawnPoints.size());
+        movingEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index), TILE_SIZE));
+    }
+
+    /**
+     * Move all alive enemies
+     */
+    public void moveEnemies() {
+        try {
+            for (Enemy enemy: movingEnemies) {
+                enemy.move();
+            }
+        } catch (ConcurrentModificationException ignored) {}
+    }
+
+    /**
+     * Updates health of towers
+     */
+    public void updateTowers() {
+        try {
+            for (Tower tower: playerTowers) {
+                tower.updateHealth();
+            }
+        } catch (ConcurrentModificationException ignored) {
+        }
+    }
+
+    /**
+     * Updates health of monument
+     */
+    public void updateMonument() {
+        try {
+            for (Enemy enemy: reachedEnemies) {
+                enemy.damageMonument();
+            }
+        } catch (ConcurrentModificationException ignored) {}
+    }
+  
     @FXML
     public void onGameButtonClick() throws IOException {
         if (!isStarted) {
@@ -460,16 +550,18 @@ public class GameController {
      */
     private class Tile extends StackPane {
         private final Location location;
-        private boolean occupied;
         private final Image background;
+        private final boolean isPath;
 
         private final Rectangle rectangle;
         private List<Tile> currentTowerTiles;
+        private boolean occupied;
         private boolean canPlace;
 
-        public Tile(Location location, boolean occupied, Image background) {
+        public Tile(Location location, boolean isPath, Image background) {
             this.location = location;
-            this.occupied = occupied;
+            this.isPath = isPath;
+            this.occupied = isPath;
             this.background = background;
 
             rectangle = new Rectangle(TILE_SIZE, TILE_SIZE);
@@ -488,8 +580,8 @@ public class GameController {
                             && this.location.y + towerSize <= ROWS * TILE_SIZE) {
                         for (int i = 0; i < towerSize; i += TILE_SIZE) {
                             for (int j = 0; j < towerSize; j += TILE_SIZE) {
-                                Tile tile = tiles[((this.location.y + i) / TILE_SIZE)
-                                        * COLS + ((this.location.x + j) / TILE_SIZE)];
+                                Tile tile = tiles[(int) ((this.location.y + i) / TILE_SIZE
+                                        * COLS + (this.location.x + j) / TILE_SIZE)];
                                 tile.rectangle.setOpacity(0.7);
                                 if (tile.occupied) {
                                     canPlace = false;
@@ -632,17 +724,181 @@ public class GameController {
      * Defines a location object associated with a tile or a tower object.
      */
     private static class Location {
-        private final int x;
-        private final int y;
+        private final double x;
+        private final double y;
 
-        public Location(int x, int y) {
+        public Location(double x, double y) {
             this.x = x;
             this.y = y;
         }
 
         @Override
         public String toString() {
-            return String.format("(%d, %d)" + x, y);
+            return String.format("(%f, %f)", x, y);
+        }
+    }
+
+    private class Enemy extends StackPane {
+        private Location location;
+        private final ProgressBar healthBar;
+
+        private int heading;
+        private final double speed;
+
+        private int tileIndex;
+
+        public Enemy(Location location, int heading, double speed) {
+            this.location = location;
+            this.speed = speed;
+            this.heading = heading;
+
+            Rectangle border = new Rectangle(TILE_SIZE * 2, TILE_SIZE * 2);
+            border.setFill(new ImagePattern(new Image(String.valueOf(
+                    getClass().getResource("/images/enemy.png")))));
+            getChildren().add(border);
+            this.setTranslateX(location.x);
+            this.setTranslateY(location.y);
+            gamePane.getChildren().add(this);
+
+            healthBar = new ProgressBar();
+            healthBar.setProgress(1);
+            healthBar.setTranslateX(location.x + TILE_SIZE * 0.2);
+            healthBar.setTranslateY(location.y - TILE_SIZE * 0.65);
+            healthBar.setPrefWidth(TILE_SIZE * 1.6);
+            healthBar.setPrefHeight(TILE_SIZE * 0.55);
+            gamePane.getChildren().add(healthBar);
+        }
+
+        public void move() {
+            boolean equalsMonumentX = monumentLocation.x - TILE_SIZE <= location.x
+                    && location.x <= monumentLocation.x + TILE_SIZE;
+            if (equalsMonumentX
+                    && monumentLocation.y - TILE_SIZE <= location.y
+                    && location.y <= monumentLocation.y + TILE_SIZE) {
+                movingEnemies.remove(this);
+                reachedEnemies.add(this);
+                return;
+            }
+
+            tileIndex = (int) (location.y / TILE_SIZE)
+                    * COLS + (int) (location.x / TILE_SIZE);
+
+            List<Integer> possibleHeadings = new ArrayList<>();
+
+            if (checkForward()) {
+                possibleHeadings.add(2);
+            }
+            if (checkBackward()) {
+                possibleHeadings.add(4);
+            }
+            if (checkDown()) {
+                possibleHeadings.add(3);
+            }
+            if (checkUp()) {
+                possibleHeadings.add(1);
+            }
+
+            if (possibleHeadings.contains(2) && possibleHeadings.contains(4)) {
+                if (location.x < monumentLocation.x) {
+                    possibleHeadings.remove(Integer.valueOf(4));
+                } else {
+                    possibleHeadings.remove(Integer.valueOf(2));
+                }
+            }
+            if (equalsMonumentX
+                    && possibleHeadings.contains(1) && possibleHeadings.contains(3)) {
+                if (location.y < monumentLocation.y) {
+                    possibleHeadings.remove(Integer.valueOf(1));
+                } else {
+                    possibleHeadings.remove(Integer.valueOf(3));
+                }
+            }
+            if (possibleHeadings.size() > 1) {
+                if (heading == 1 && possibleHeadings.contains(3)) {
+                    possibleHeadings.remove(Integer.valueOf(3));
+                } else if (heading == 3 && possibleHeadings.contains(1)) {
+                    possibleHeadings.remove(Integer.valueOf(1));
+                }
+            }
+            if (possibleHeadings.size() > 1) {
+                if (heading == 2 && possibleHeadings.contains(4)) {
+                    possibleHeadings.remove(Integer.valueOf(4));
+                } else if (heading == 4 && possibleHeadings.contains(2)) {
+                    possibleHeadings.remove(Integer.valueOf(2));
+                }
+            }
+
+            heading = possibleHeadings.get(rand.nextInt(possibleHeadings.size()));
+            updateLocation();
+        }
+
+        private boolean checkForward() {
+            try {
+                return tiles[tileIndex + 2].isPath
+                        && tiles[tileIndex + 2 + COLS].isPath;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        private boolean checkBackward() {
+            try {
+                return tiles[tileIndex - 1].isPath
+                        && tiles[tileIndex - 1 + COLS].isPath;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        private boolean checkUp() {
+            try {
+                return tiles[tileIndex - COLS].isPath
+                        && tiles[tileIndex - COLS + 1].isPath;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        private boolean checkDown() {
+            try {
+                return tiles[tileIndex + (2 * COLS)].isPath
+                        && tiles[tileIndex + (2 * COLS) + 1].isPath;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        private void updateLocation() {
+            switch (heading) {
+                case 1:
+                    location = new Location(location.x, location.y - speed);
+                    break;
+                case 2:
+                    location = new Location(location.x + speed, location.y);
+                    break;
+                case 3:
+                    location = new Location(location.x, location.y + speed);
+                    break;
+                case 4:
+                    location = new Location(location.x - speed, location.y);
+                    break;
+                default:
+                    break;
+            }
+            this.setTranslateX(location.x);
+            this.setTranslateY(location.y);
+            healthBar.setTranslateX(location.x + TILE_SIZE * 0.2);
+            healthBar.setTranslateY(location.y - TILE_SIZE * 0.65);
+        }
+
+        public void damageMonument() {
+            if (monumentCurHealth > 0) {
+                monumentCurHealth -= 0.001;
+                monumentBar.setProgress(monumentCurHealth / monumentMaxHealth);
+            } else {
+                this.stop();
+                endButton.fire();
+            }
         }
     }
 }
