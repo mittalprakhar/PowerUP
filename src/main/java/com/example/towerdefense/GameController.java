@@ -4,8 +4,10 @@ import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -18,6 +20,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -50,7 +53,7 @@ public class GameController {
 
     @FXML
     private Label timeLabel;                    // Time label in side menu
-    private int time;                           // Starting time in seconds
+    private int time = 300;                     // Starting time in seconds
 
     @FXML
     private Label moneyLabel;                   // Money label in side menu
@@ -58,7 +61,7 @@ public class GameController {
 
     @FXML
     private Label killsLabel;                   // Kills label in side menu
-    private int kills;                          // Starting kills
+    private int kills = 0;                      // Starting kills
 
     @FXML
     private ListView<Tower> towerMenu;          // Tower list view in side menu
@@ -73,6 +76,10 @@ public class GameController {
     private List<Enemy> reachedEnemies;         // List of all enemies that have reached monument
 
     private Random rand;
+
+    @FXML
+    private Button gameButton;                  // Button to start combat or surrender
+    private boolean isStarted = false;          // Game started or not
 
     @FXML
     public void initialize() {
@@ -91,12 +98,9 @@ public class GameController {
         reachedEnemies = new ArrayList<>();
         rand = new Random();
 
-        // Initialize independent game variables
-        time = 300;
+        // Set time and kills labels
         timeLabel.setText(time / 60 + ":"
                 + new DecimalFormat("00").format(time % 60));
-
-        kills = 0;
         killsLabel.setText(kills + "");
     }
 
@@ -168,8 +172,6 @@ public class GameController {
 
         // Initialize towerMenu with gameTowers
         initializeTowerMenu();
-
-        gameOn();
     }
 
     /**
@@ -364,12 +366,28 @@ public class GameController {
 
         // Add listener to track which tower is currently selected by player
         towerMenu.setOnMouseClicked(mouseEvent -> {
-            Tower tower = towerMenu.getSelectionModel().getSelectedItem();
-            if (tower == selectedTower) {
-                towerMenu.getSelectionModel().clearSelection();
-                selectedTower = null;
+            if (isStarted) {
+                Tower tower = towerMenu.getSelectionModel().getSelectedItem();
+                if (tower == selectedTower) {
+                    towerMenu.getSelectionModel().clearSelection();
+                    selectedTower = null;
+                } else {
+                    selectedTower = tower;
+                }
             } else {
-                selectedTower = tower;
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setHeaderText("Game Not Started");
+                alert.setContentText("You must start combat before buying towers!");
+
+                Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+                alertStage.getIcons().add(new Image(String.valueOf(getClass().getResource(
+                        "/images/towerSpiky.png"))));
+
+                DialogPane dialogPane = alert.getDialogPane();
+                dialogPane.getStylesheets().add(String.valueOf(getClass().getResource(
+                        "/css/main.css")));
+
+                alert.show();
             }
         });
     }
@@ -497,6 +515,31 @@ public class GameController {
                 enemy.damageMonument();
             }
         } catch (ConcurrentModificationException ignored) {}
+    }
+  
+    @FXML
+    public void onGameButtonClick() throws IOException {
+        if (!isStarted) {
+            isStarted = true;
+            gameOn();
+            gameButton.setText("Surrender");
+        } else {
+            Stage primaryStage = Main.getPrimaryStage();
+            FXMLLoader fxmlLoader = new FXMLLoader(
+                    getClass().getResource("/views/game-over-view.fxml"));
+            Scene scene = new Scene(fxmlLoader.load(), 1200, 600);
+            scene.getStylesheets().add(String.valueOf(getClass().getResource(
+                    "/css/main.css")));
+
+            java.util.Map<String, Object> gameParams = new HashMap<>();
+            gameParams.put("playerName", playerLabel.getText());
+            gameParams.put("kills", killsLabel.getText());
+
+            GameOverController gameOverController = fxmlLoader.getController();
+            gameOverController.initState(gameParams);
+
+            primaryStage.setScene(scene);
+        }
     }
 
     /**
@@ -852,10 +895,10 @@ public class GameController {
             if (monumentCurHealth > 0) {
                 monumentCurHealth -= 0.001;
                 monumentBar.setProgress(monumentCurHealth / monumentMaxHealth);
-            } /*else {
+            } else {
                 this.stop();
                 endButton.fire();
-            }*/
+            }
         }
     }
 }
