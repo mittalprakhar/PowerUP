@@ -51,7 +51,7 @@ public class GameController {
 
     @FXML
     private Label timeLabel;                    // Time label in side menu
-    private int time;                           // Starting time in seconds
+    private int time = 300;                     // Starting time in seconds
 
     @FXML
     private Label moneyLabel;                   // Money label in side menu
@@ -59,7 +59,7 @@ public class GameController {
 
     @FXML
     private Label killsLabel;                   // Kills label in side menu
-    private int kills;                          // Starting kills
+    private int kills = 0;                      // Starting kills
 
     @FXML
     private ListView<Tower> towerMenu;          // Tower list view in side menu
@@ -69,7 +69,11 @@ public class GameController {
     private List<Tower> playerTowers;           // List of all towers placed by player
 
     @FXML
-    private Button endButton;
+    private Button startButton;                 // Button to start game
+    private boolean isStarted = false;          // Game started or not
+
+    @FXML
+    private Button endButton;                   // Button to end game
 
     @FXML
     public void initialize() {
@@ -83,12 +87,9 @@ public class GameController {
         monumentBar = new ProgressBar();
         gameTowers = FXCollections.observableArrayList();
 
-        // Initialize independent game variables
-        time = 15;
+        // Set time and kills labels
         timeLabel.setText(time / 60 + ":"
                 + new DecimalFormat("00").format(time % 60));
-
-        kills = 0;
         killsLabel.setText(kills + "");
     }
 
@@ -338,12 +339,28 @@ public class GameController {
 
         // Add listener to track which tower is currently selected by player
         towerMenu.setOnMouseClicked(mouseEvent -> {
-            Tower tower = towerMenu.getSelectionModel().getSelectedItem();
-            if (tower == selectedTower) {
-                towerMenu.getSelectionModel().clearSelection();
-                selectedTower = null;
+            if (isStarted) {
+                Tower tower = towerMenu.getSelectionModel().getSelectedItem();
+                if (tower == selectedTower) {
+                    towerMenu.getSelectionModel().clearSelection();
+                    selectedTower = null;
+                } else {
+                    selectedTower = tower;
+                }
             } else {
-                selectedTower = tower;
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setHeaderText("Game Not Started");
+                alert.setContentText("You must start combat before buying towers!");
+
+                Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+                alertStage.getIcons().add(new Image(String.valueOf(getClass().getResource(
+                        "/images/towerSpiky.png"))));
+
+                DialogPane dialogPane = alert.getDialogPane();
+                dialogPane.getStylesheets().add(String.valueOf(getClass().getResource(
+                        "/css/main.css")));
+
+                alert.show();
             }
         });
     }
@@ -393,7 +410,9 @@ public class GameController {
             }
         };
 
-        gameLoop.start();
+        if (isStarted) {
+            gameLoop.start();
+        }
     }
 
     /**
@@ -419,7 +438,7 @@ public class GameController {
     private void onEndButtonClick() throws IOException {
         Stage primaryStage = Main.getPrimaryStage();
         FXMLLoader fxmlLoader = new FXMLLoader(
-                getClass().getResource("/views/gameOver-view.fxml"));
+                getClass().getResource("/views/game-over-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 600);
         scene.getStylesheets().add(String.valueOf(getClass().getResource(
                 "/css/main.css")));
@@ -432,6 +451,11 @@ public class GameController {
         gameOverController.initState(gameParams);
 
         primaryStage.setScene(scene);
+    }
+
+    @FXML
+    public void onStartButtonClick() {
+        isStarted = true;
     }
 
     /**

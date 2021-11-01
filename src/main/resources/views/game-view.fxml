@@ -86,14 +86,19 @@
                 </Label>
             </HBox>
         </HBox>
-      <ListView fx:id="towerMenu" prefHeight="371.0" prefWidth="260.0">
-         <VBox.margin>
-            <Insets bottom="20.0" />
-         </VBox.margin></ListView>
-      <Button fx:id="endButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onEndButtonClick" prefHeight="35.0" prefWidth="160.0" styleClass="customButton" text="End Game" textAlignment="CENTER">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Button>
+        <ListView fx:id="towerMenu" prefHeight="371.0" prefWidth="260.0">
+            <VBox.margin>
+                <Insets bottom="20.0" />
+            </VBox.margin></ListView>
+        <Button fx:id="startButton" alignment="CENTER" contentDisplay="CENTER" onAction="#onStartButtonClick" prefHeight="30.0" prefWidth="140.0" styleClass="customButton" text="Start Combat" textAlignment="CENTER">
+            <font>
+                <Font size="16.0" />
+            </font>
+        </Button>
+        <Button fx:id="endButton" alignment="CENTER" contentDisplay="CENTER" onAction="#onEndButtonClick" prefHeight="30.0" prefWidth="140.0" styleClass="customButton" text="Surrender" textAlignment="CENTER">
+            <font>
+                <Font size="16.0" />
+            </font>
+        </Button>
     </VBox>
 </HBox>
