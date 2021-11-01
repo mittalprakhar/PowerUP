@@ -507,16 +507,18 @@ public class GameController {
      */
     private class Tile extends StackPane {
         private final Location location;
-        private boolean occupied;
         private final Image background;
+        private final boolean isPath;
 
         private final Rectangle rectangle;
         private List<Tile> currentTowerTiles;
+        private boolean occupied;
         private boolean canPlace;
 
-        public Tile(Location location, boolean occupied, Image background) {
+        public Tile(Location location, boolean isPath, Image background) {
             this.location = location;
-            this.occupied = occupied;
+            this.isPath = isPath;
+            this.occupied = isPath;
             this.background = background;
 
             rectangle = new Rectangle(TILE_SIZE, TILE_SIZE);
@@ -789,8 +791,8 @@ public class GameController {
 
         private boolean checkForward() {
             try {
-                return tiles[tileIndex + 2].occupied
-                        && tiles[tileIndex + 2 + COLS].occupied;
+                return tiles[tileIndex + 2].isPath
+                        && tiles[tileIndex + 2 + COLS].isPath;
             } catch (Exception e) {
                 return false;
             }
@@ -798,8 +800,8 @@ public class GameController {
 
         private boolean checkBackward() {
             try {
-                return tiles[tileIndex - 1].occupied
-                        && tiles[tileIndex - 1 + COLS].occupied;
+                return tiles[tileIndex - 1].isPath
+                        && tiles[tileIndex - 1 + COLS].isPath;
             } catch (Exception e) {
                 return false;
             }
@@ -807,8 +809,8 @@ public class GameController {
 
         private boolean checkUp() {
             try {
-                return tiles[tileIndex - COLS].occupied
-                        && tiles[tileIndex - COLS + 1].occupied;
+                return tiles[tileIndex - COLS].isPath
+                        && tiles[tileIndex - COLS + 1].isPath;
             } catch (Exception e) {
                 return false;
             }
@@ -816,8 +818,8 @@ public class GameController {
 
         private boolean checkDown() {
             try {
-                return tiles[tileIndex + (2 * COLS)].occupied
-                        && tiles[tileIndex + (2 * COLS) + 1].occupied;
+                return tiles[tileIndex + (2 * COLS)].isPath
+                        && tiles[tileIndex + (2 * COLS) + 1].isPath;
             } catch (Exception e) {
                 return false;
             }
