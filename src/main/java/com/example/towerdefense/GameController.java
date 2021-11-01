@@ -288,8 +288,8 @@ public class GameController {
                     // Create tower image
                     ImageView towerImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/tower" + tower.name + ".png"))));
-                    towerImage.setFitWidth(45);
-                    towerImage.setFitHeight(45);
+                    towerImage.setFitWidth(43);
+                    towerImage.setFitHeight(43);
                     towerImage.setPreserveRatio(true);
 
                     // Fill left box with tower name and image
@@ -298,7 +298,7 @@ public class GameController {
                     // Create right box to hold each tower's description and stats
                     VBox rightBox = new VBox();
                     rightBox.setAlignment(Pos.CENTER_LEFT);
-                    rightBox.setPadding(new Insets(0, 3, 11, 3));
+                    rightBox.setPadding(new Insets(0, 3, 9, 3));
                     rightBox.setSpacing(5);
                     rightBox.prefHeightProperty().bind(leftBox.heightProperty());
 
@@ -495,7 +495,7 @@ public class GameController {
             for (Enemy enemy: movingEnemies) {
                 enemy.move();
             }
-        } catch (ConcurrentModificationException ignored) {}
+        } catch (ConcurrentModificationException ignored) { }
     }
 
     /**
@@ -518,7 +518,7 @@ public class GameController {
             for (Enemy enemy: reachedEnemies) {
                 enemy.damageMonument();
             }
-        } catch (ConcurrentModificationException ignored) {}
+        } catch (ConcurrentModificationException ignored) { }
     }
   
     @FXML
@@ -874,20 +874,20 @@ public class GameController {
 
         private void updateLocation() {
             switch (heading) {
-                case 1:
-                    location = new Location(location.x, location.y - speed);
-                    break;
-                case 2:
-                    location = new Location(location.x + speed, location.y);
-                    break;
-                case 3:
-                    location = new Location(location.x, location.y + speed);
-                    break;
-                case 4:
-                    location = new Location(location.x - speed, location.y);
-                    break;
-                default:
-                    break;
+            case 1:
+                location = new Location(location.x, location.y - speed);
+                break;
+            case 2:
+                location = new Location(location.x + speed, location.y);
+                break;
+            case 3:
+                location = new Location(location.x, location.y + speed);
+                break;
+            case 4:
+                location = new Location(location.x - speed, location.y);
+                break;
+            default:
+                break;
             }
             this.setTranslateX(location.x);
             this.setTranslateY(location.y);
