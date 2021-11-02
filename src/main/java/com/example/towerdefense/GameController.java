@@ -75,11 +75,13 @@ public class GameController {
     private List<Enemy> movingEnemies;          // List of all enemies still moving
     private List<Enemy> reachedEnemies;         // List of all enemies that have reached monument
 
-    private Random rand;
+    private Random rand;                        // Random object
 
     @FXML
     private Button gameButton;                  // Button to start combat or surrender
     private boolean isStarted = false;          // Game started or not
+
+    private AnimationTimer gameLoop;            // Game loop animation timer
 
     @FXML
     public void initialize() {
@@ -132,7 +134,6 @@ public class GameController {
         tiles[66].setId("tileGround3");
         tiles[69].setId("tileGround4");
 
-
         // Initialize dependent game variables
         playerLabel.setText(String.valueOf(configParams.get("playerName")));
 
@@ -141,7 +142,6 @@ public class GameController {
         difficultyLabel.setText(difficulty);
 
         int costDifficultyFactor;
-
         switch (difficulty) {
         case "Beginner":
             money = 500;
@@ -375,6 +375,7 @@ public class GameController {
                     selectedTower = tower;
                 }
             } else {
+                // Show alert if the game is not yet started
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setHeaderText("Game Not Started");
                 alert.setContentText("You must start combat before buying towers!");
@@ -397,7 +398,7 @@ public class GameController {
      * Has an animation timer that calls other gameplay methods when required
      */
     public void gameOn() {
-        AnimationTimer gameLoop = new AnimationTimer() {
+        gameLoop = new AnimationTimer() {
             private long lastTimeUpdate;
             private long lastMoneyUpdate;
             private long lastEnemySpawned;
@@ -405,7 +406,7 @@ public class GameController {
 
             @Override
             public void handle(long now) {
-                // Every 1 second, updates timer and tower health
+                // Every 1 second, updates timer, tower and monument health
                 if (lastTimeUpdate == 0L) {
                     lastTimeUpdate = now;
                 } else {
@@ -415,7 +416,6 @@ public class GameController {
                         updateTowers();
                         updateMonument();
                         if (time == 0 || monumentCurHealth < 0.01) {
-                            this.stop();
                             gameButton.fire();
                         }
                         lastTimeUpdate = now;
@@ -506,8 +506,7 @@ public class GameController {
             for (Tower tower: playerTowers) {
                 tower.updateHealth();
             }
-        } catch (ConcurrentModificationException ignored) {
-        }
+        } catch (ConcurrentModificationException ignored) { }
     }
 
     /**
@@ -520,7 +519,12 @@ public class GameController {
             }
         } catch (ConcurrentModificationException ignored) { }
     }
-  
+
+    /**
+     * Handler for start game / surrender button
+     *
+     * @throws IOException if fxml file is not present
+     */
     @FXML
     public void onGameButtonClick() throws IOException {
         if (!isStarted) {
@@ -528,6 +532,8 @@ public class GameController {
             gameOn();
             gameButton.setText("Surrender");
         } else {
+            gameLoop.stop();
+
             Stage primaryStage = Main.getPrimaryStage();
             FXMLLoader fxmlLoader = new FXMLLoader(
                     getClass().getResource("/views/game-over-view.fxml"));
@@ -538,6 +544,7 @@ public class GameController {
             java.util.Map<String, Object> gameParams = new HashMap<>();
             gameParams.put("playerName", playerLabel.getText());
             gameParams.put("kills", killsLabel.getText());
+            gameParams.put("result", time == 0);
 
             GameOverController gameOverController = fxmlLoader.getController();
             gameOverController.initState(gameParams);
@@ -742,6 +749,9 @@ public class GameController {
         }
     }
 
+    /**
+     * Defines a single enemy with a location, heading, and health
+     */
     private class Enemy extends StackPane {
         private Location location;
         private final ProgressBar healthBar;
