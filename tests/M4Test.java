@@ -63,7 +63,7 @@ public class M4Test extends ApplicationTest {
 
 */
     @Test
-    public void teststartbuttontimeandmoney() {
+    public void teststartbuttonmoney() {git
         setup("Beginner");
         WaitForAsyncUtils.waitForFxEvents();
         verifyThat("#moneyLabel", hasText("500"));
