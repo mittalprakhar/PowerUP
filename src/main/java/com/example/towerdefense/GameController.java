@@ -127,7 +127,6 @@ public class GameController {
         }
 
         // M3 Test IDs
-
         tiles[21].setId("tilePath");
         tiles[60].setId("tileGround1");
         tiles[63].setId("tileGround2");
@@ -422,12 +421,12 @@ public class GameController {
                     }
                 }
 
-                // Every 20 seconds, adds money
+                // Every 10 seconds, adds money
                 if (lastMoneyUpdate == 0L) {
                     lastMoneyUpdate = now;
                 } else {
                     long diff = now - lastMoneyUpdate;
-                    if (diff >= 20_000_000_000L) {
+                    if (diff >= 10_000_000_000L) {
                         addMoney();
                         lastMoneyUpdate = now;
                     }
@@ -475,7 +474,7 @@ public class GameController {
      * Adds money
      */
     public void addMoney() {
-        money += 20;
+        money += 10;
         moneyLabel.setText(money + "");
     }
 
@@ -907,7 +906,7 @@ public class GameController {
 
         public void damageMonument() {
             if (monumentCurHealth > 0) {
-                monumentCurHealth -= 0.01;
+                monumentCurHealth -= 0.005;
                 monumentBar.setProgress(monumentCurHealth / monumentMaxHealth);
             }
         }

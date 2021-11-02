@@ -1,5 +1,4 @@
 import com.example.towerdefense.Main;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.stage.Stage;
 import org.junit.FixMethodOrder;
@@ -60,47 +59,61 @@ public class M4Test extends ApplicationTest {
         assertFalse(myStage.isShowing());
     }
 
-
-
     @Test
-    public void teststartbuttonmoney() {
+    public void testSurrenderButtonVisibleAfterStart() {
         setup("Beginner");
-        WaitForAsyncUtils.waitForFxEvents();
-        verifyThat("#moneyLabel", hasText("500"));
-        sleep(21000);
-        verifyThat("#moneyLabel", hasText("500"));
+
         clickOn("#gameButton");
         WaitForAsyncUtils.waitForFxEvents();
-        sleep(21000);
-        WaitForAsyncUtils.waitForFxEvents();
-        verifyThat("#moneyLabel", hasText("520"));
-        // verifyThat("#timeLabel", hasText("4:40"));
+        verifyThat("Surrender", isVisible());
     }
+
     @Test
-    public void testtowernotplacedwhengamenotstarted() {
+    public void testTowersNotPlacedBeforeStart() {
         setup("Beginner");
-        WaitForAsyncUtils.waitForFxEvents();
+
         clickOn("#gameTower1");
         WaitForAsyncUtils.waitForFxEvents();
         DialogPane alert = lookup(".alert").query();
-        WaitForAsyncUtils.waitForFxEvents();
         assertEquals(alert.getContentText(),
                 "You must start combat before buying towers!");
-        clickOn(alert.lookupButton(ButtonType.OK));
-       /*
-        sleep(10000);
+    }
 
-        clickOn("#gameButton");
-        WaitForAsyncUtils.waitForFxEvents();
-        clickOn("#gameTower1");
-        WaitForAsyncUtils.waitForFxEvents();
-        clickOn("#tileGround1");
-        verifyThat("#playerTower1", isVisible());
+    @Test
+    public void testTimeNotUpdatedBeforeStart() {
+        setup("Beginner");
 
-        */
+        verifyThat("#timeLabel", hasText("5:00"));
+        sleep(5000);
+        verifyThat("#timeLabel", hasText("5:00"));
+    }
+
+    @Test
+    public void testMoneyNotUpdatedBeforeStart() {
+        setup("Beginner");
+
+        verifyThat("#moneyLabel", hasText("500"));
+        sleep(12000);
+        verifyThat("#moneyLabel", hasText("500"));
+    }
+
+    @Test
+    public void testNavya1() {
 
     }
 
+    @Test
+    public void testNavya2() {
 
+    }
 
+    @Test
+    public void testManiya1() {
+
+    }
+
+    @Test
+    public void testManiya2() {
+
+    }
 }
