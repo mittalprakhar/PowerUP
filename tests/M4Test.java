@@ -37,7 +37,7 @@ public class M4Test extends ApplicationTest {
 
         // on game screen now, time to test!
     }
-/*
+
     @Test
     public void testRestartButton() {
         setup("Beginner");
@@ -61,9 +61,9 @@ public class M4Test extends ApplicationTest {
     }
 
 
-*/
+
     @Test
-    public void teststartbuttonmoney() {git
+    public void teststartbuttonmoney() {
         setup("Beginner");
         WaitForAsyncUtils.waitForFxEvents();
         verifyThat("#moneyLabel", hasText("500"));
