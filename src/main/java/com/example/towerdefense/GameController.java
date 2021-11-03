@@ -576,7 +576,7 @@ public class GameController {
 
             rectangle = new Rectangle(TILE_SIZE, TILE_SIZE);
             rectangle.setFill(new ImagePattern(background));
-            getChildren().add(rectangle);
+            this.getChildren().add(rectangle);
             this.setTranslateX(location.x);
             this.setTranslateY(location.y);
 
@@ -691,7 +691,7 @@ public class GameController {
             Rectangle border = new Rectangle(towerSize, towerSize);
             border.setFill(new ImagePattern(new Image(String.valueOf(
                     getClass().getResource("/images/tower" + this.name + ".png")))));
-            getChildren().add(border);
+            this.getChildren().add(border);
             this.setTranslateX(location.x);
             this.setTranslateY(location.y);
             gamePane.getChildren().add(this);
@@ -768,9 +768,10 @@ public class GameController {
             Rectangle border = new Rectangle(TILE_SIZE * 2, TILE_SIZE * 2);
             border.setFill(new ImagePattern(new Image(String.valueOf(
                     getClass().getResource("/images/enemy.png")))));
-            getChildren().add(border);
+            this.getChildren().add(border);
             this.setTranslateX(location.x);
             this.setTranslateY(location.y);
+            this.setId("enemy" + (movingEnemies.size() + reachedEnemies.size() + 1));
             gamePane.getChildren().add(this);
 
             healthBar = new ProgressBar();
@@ -790,6 +791,7 @@ public class GameController {
                     && location.y <= monumentLocation.y + TILE_SIZE) {
                 movingEnemies.remove(this);
                 reachedEnemies.add(this);
+                this.setId(getId() + "reached");
                 return;
             }
 
@@ -906,9 +908,15 @@ public class GameController {
 
         public void damageMonument() {
             if (monumentCurHealth > 0) {
-                monumentCurHealth -= 0.005;
+                monumentCurHealth -= 0.002;
                 monumentBar.setProgress(monumentCurHealth / monumentMaxHealth);
             }
+        }
+
+        @Override
+        public String toString() {
+            return String.format("Location: %s, Heading: %d, Speed: %f",
+                    location, heading, speed);
         }
     }
 }

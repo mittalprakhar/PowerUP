@@ -1,10 +1,13 @@
 import com.example.towerdefense.Main;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.ProgressBar;
 import javafx.stage.Stage;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.service.query.EmptyNodeQueryException;
 import org.testfx.util.WaitForAsyncUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,54 +27,22 @@ public class M4Test extends ApplicationTest {
         myStage = primaryStage;
     }
 
-    public void setup(String difficulty) {
+    @Before
+    public void setup() {
         // on welcome screen
         clickOn("#startButton");
 
         // on config screen
         clickOn("#nameTextField").write("player1");
         clickOn("#difficultyComboBox");
-        clickOn(difficulty);
+        clickOn("Beginner");
         clickOn("#startButton");
 
         // on game screen now, time to test!
     }
 
     @Test
-    public void testRestartButton() {
-        setup("Beginner");
-
-        doubleClickOn("#gameButton");
-        WaitForAsyncUtils.waitForFxEvents();
-        clickOn("#restartButton");
-        WaitForAsyncUtils.waitForFxEvents();
-        verifyThat("Start Game!", isVisible());
-    }
-
-    @Test
-    public void testExitButton() {
-        setup("Beginner");
-
-        doubleClickOn("#gameButton");
-        WaitForAsyncUtils.waitForFxEvents();
-        clickOn("#exitButton");
-        WaitForAsyncUtils.waitForFxEvents();
-        assertFalse(myStage.isShowing());
-    }
-
-    @Test
-    public void testSurrenderButtonVisibleAfterStart() {
-        setup("Beginner");
-
-        clickOn("#gameButton");
-        WaitForAsyncUtils.waitForFxEvents();
-        verifyThat("Surrender", isVisible());
-    }
-
-    @Test
-    public void testTowersNotPlacedBeforeStart() {
-        setup("Beginner");
-
+    public void t01TowersNotPlacedBeforeStart() {
         clickOn("#gameTower1");
         WaitForAsyncUtils.waitForFxEvents();
         DialogPane alert = lookup(".alert").query();
@@ -80,40 +51,80 @@ public class M4Test extends ApplicationTest {
     }
 
     @Test
-    public void testTimeNotUpdatedBeforeStart() {
-        setup("Beginner");
-
+    public void t02TimeNotUpdatedBeforeStart() {
         verifyThat("#timeLabel", hasText("5:00"));
-        sleep(5000);
+        sleep(1000);
         verifyThat("#timeLabel", hasText("5:00"));
     }
 
     @Test
-    public void testMoneyNotUpdatedBeforeStart() {
-        setup("Beginner");
-
+    public void t03MoneyNotUpdatedBeforeStart() {
         verifyThat("#moneyLabel", hasText("500"));
-        sleep(12000);
+        sleep(10000);
         verifyThat("#moneyLabel", hasText("500"));
     }
 
     @Test
-    public void testNavya1() {
-
+    public void t04SurrenderButtonVisibleAfterStart() {
+        clickOn("#gameButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        verifyThat("Surrender", isVisible());
     }
 
     @Test
-    public void testNavya2() {
-
+    public void t05RestartButton() {
+        clickOn("#gameButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#gameButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#restartButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        verifyThat("Start Game!", isVisible());
     }
 
     @Test
-    public void testManiya1() {
-
+    public void t06ExitButton() {
+        clickOn("#gameButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#gameButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#exitButton");
+        WaitForAsyncUtils.waitForFxEvents();
+        assertFalse(myStage.isShowing());
     }
 
     @Test
-    public void testManiya2() {
+    public void t07EnemySpawns() {
+        clickOn("#gameButton");
+        assertThrows(EmptyNodeQueryException.class, () ->
+                lookup("#enemy1").query());
+        sleep(3500);
+        verifyThat("#enemy1", isVisible());
+    }
 
+    @Test
+    public void t08EnemyMoves() {
+        clickOn("#gameButton");
+        sleep(3500);
+        String initial = lookup("#enemy1").query().toString();
+        sleep(100);
+        assertNotEquals(initial, lookup("#enemy1").query().toString());
+    }
+
+    @Test
+    public void t09EnemyReachesMonument() {
+        clickOn("#gameButton");
+        sleep(8000);
+        verifyThat("#enemy1reached", isVisible());
+    }
+
+    @Test
+    public void t10EnemyDamagesMonument() {
+        clickOn("#gameButton");
+        ProgressBar monumentBar = lookup("#monumentHealth").query();
+        assertEquals(1.0, monumentBar.getProgress());
+        sleep(8000);
+        verifyThat("#enemy1reached", isVisible());
+        assertNotEquals(1.0, monumentBar.getProgress());
     }
 }
