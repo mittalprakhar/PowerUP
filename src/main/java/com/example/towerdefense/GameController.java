@@ -503,7 +503,7 @@ public class GameController {
     public void updateTowers() {
         try {
             for (Tower tower: playerTowers) {
-                tower.updateHealth();
+                tower.updateHealth(-1);
             }
         } catch (ConcurrentModificationException ignored) { }
     }
@@ -561,17 +561,18 @@ public class GameController {
     private class Tile extends StackPane {
         private final Location location;
         private final Image background;
-        private final boolean isPath;
-
         private final Rectangle rectangle;
+
         private List<Tile> currentTowerTiles;
-        private boolean occupied;
+
+        private final boolean isPath;
+        private boolean isOccupied;
         private boolean canPlace;
 
         public Tile(Location location, boolean isPath, Image background) {
             this.location = location;
             this.isPath = isPath;
-            this.occupied = isPath;
+            this.isOccupied = isPath;
             this.background = background;
 
             rectangle = new Rectangle(TILE_SIZE, TILE_SIZE);
@@ -593,7 +594,7 @@ public class GameController {
                                 Tile tile = tiles[(int) ((this.location.y + i) / TILE_SIZE
                                         * COLS + (this.location.x + j) / TILE_SIZE)];
                                 tile.rectangle.setOpacity(0.7);
-                                if (tile.occupied) {
+                                if (tile.isOccupied) {
                                     canPlace = false;
                                 }
                                 currentTowerTiles.add(tile);
@@ -629,7 +630,7 @@ public class GameController {
                         playerTower.setId("playerTower" + (playerTowers.size() + 1));
                         playerTowers.add(playerTower);
                         for (Tile tile: currentTowerTiles) {
-                            tile.occupied = true;
+                            tile.isOccupied = true;
                         }
                     } else {
                         Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -652,6 +653,11 @@ public class GameController {
 
             gamePane.getChildren().add(this);
         }
+
+        public String toString() {
+            return String.format("Location: %s, Path: %s, Occupied: %s",
+                    location, isPath ? "True" : "False", isOccupied ? "True": "False");
+        }
     }
 
     /**
@@ -664,11 +670,13 @@ public class GameController {
         private final String name;
         private final String description;
         private final int cost;
+        private double damagePerSecond;
+
         private final int towerSize;
-        private final double maxHealth;
+        private Location location;
         private List<Tile> onTiles;
 
-        private Location location;
+        private final double maxHealth;
         private double curHealth;
         private ProgressBar healthBar;
 
@@ -705,21 +713,25 @@ public class GameController {
             gamePane.getChildren().add(healthBar);
         }
 
-        public void updateHealth() {
+        public void updateHealth(double change) {
             if (curHealth > 0) {
-                curHealth -= 1;
+                curHealth += change;
                 healthBar.setProgress(curHealth / maxHealth);
             } else {
                 destroy();
             }
         }
 
-        public void destroy() {
+        public void damageEnemy(Enemy enemy) {
+
+        }
+
+        private void destroy() {
             gamePane.getChildren().remove(this);
             gamePane.getChildren().remove(healthBar);
             playerTowers.remove(this);
             for (Tile tile: this.onTiles) {
-                tile.occupied = false;
+                tile.isOccupied = false;
             }
         }
 
@@ -753,12 +765,15 @@ public class GameController {
      */
     private class Enemy extends StackPane {
         private Location location;
-        private final ProgressBar healthBar;
+        private int tileIndex;
 
         private int heading;
         private final double speed;
+        private double damagePerSecond;
 
-        private int tileIndex;
+        private double maxHealth;
+        private double curHealth;
+        private final ProgressBar healthBar;
 
         public Enemy(Location location, int heading, double speed) {
             this.location = location;
@@ -906,11 +921,24 @@ public class GameController {
             healthBar.setTranslateY(location.y - TILE_SIZE * 0.65);
         }
 
+        public void updateHealth(double change) {
+            if (curHealth > 0) {
+                curHealth += change;
+                healthBar.setProgress(curHealth / maxHealth);
+            } else {
+                destroy();
+            }
+        }
+
         public void damageMonument() {
             if (monumentCurHealth > 0) {
                 monumentCurHealth -= 0.002;
                 monumentBar.setProgress(monumentCurHealth / monumentMaxHealth);
             }
+        }
+
+        private void destroy() {
+
         }
 
         @Override
