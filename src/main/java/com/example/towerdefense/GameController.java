@@ -53,7 +53,7 @@ public class GameController {
 
     @FXML
     private Label timeLabel;                    // Time label in side menu
-    private int time = 300;                     // Starting time in seconds
+    private int time = 240;                     // Starting time in seconds
 
     @FXML
     private Label moneyLabel;                   // Money label in side menu
@@ -144,17 +144,17 @@ public class GameController {
         switch (difficulty) {
         case "Beginner":
             money = 500;
-            monumentMaxHealth = 1.0;
+            monumentMaxHealth = 800;
             costDifficultyFactor = 0;
             break;
         case "Moderate":
             money = 450;
-            monumentMaxHealth = 0.9;
+            monumentMaxHealth = 700;
             costDifficultyFactor = 10;
             break;
         default:
             money = 400;
-            monumentMaxHealth = 0.8;
+            monumentMaxHealth = 600;
             costDifficultyFactor = 20;
             break;
         }
@@ -162,7 +162,7 @@ public class GameController {
         moneyLabel.setText(money + "");
 
         // Initialize monument health bar
-        monumentBar.setProgress(monumentMaxHealth);
+        monumentBar.setProgress(monumentMaxHealth / 800);
         monumentBar.setId("monumentHealth");
         gamePane.getChildren().add(monumentBar);
 
@@ -219,39 +219,39 @@ public class GameController {
                                       int costDifficultyFactor) {
         gameTowers.add(new Tower("Cannon",
                 "Fires cannon balls to crush enemies.",
-                50 + costDifficultyFactor, TILE_SIZE * 2, 30));
+                50 + costDifficultyFactor, TILE_SIZE * 2, 30, 2));
 
         gameTowers.add(new Tower("Spiky",
                 "Spikes troops when they are not looking.",
-                75 + costDifficultyFactor, TILE_SIZE * 2, 40));
+                75 + costDifficultyFactor, TILE_SIZE * 2, 40, 4));
 
         gameTowers.add(new Tower("Bomber",
                 "Hurls bombs and wreaks havoc upon attackers.",
-                100 + costDifficultyFactor, TILE_SIZE * 3, 50));
+                100 + costDifficultyFactor, TILE_SIZE * 3, 50, 6));
 
         gameTowers.add(new Tower("Wizard",
                 "Hypnotizes fighters into surrendering.",
-                130 + costDifficultyFactor, TILE_SIZE * 3, 70));
+                130 + costDifficultyFactor, TILE_SIZE * 3, 70, 8));
 
         gameTowers.add(new Tower("Xbow",
                 "Chips away attackers at a blistering pace.",
-                160 + costDifficultyFactor, TILE_SIZE * 3, 90));
+                160 + costDifficultyFactor, TILE_SIZE * 3, 90, 10));
 
         gameTowers.add(new Tower("Electro",
                 "Stuns enemies through the power of electrons.",
-                200 + costDifficultyFactor, TILE_SIZE * 4, 110));
+                200 + costDifficultyFactor, TILE_SIZE * 4, 110, 12));
 
         gameTowers.add(new Tower("Drone",
                 "Drops deadly artillery from the skies.",
-                250 + costDifficultyFactor, TILE_SIZE * 4, 140));
+                250 + costDifficultyFactor, TILE_SIZE * 4, 140, 14));
 
         gameTowers.add(new Tower("Tank",
                 "Shoots shells that will impale enemies.",
-                300 + costDifficultyFactor, TILE_SIZE * 5, 170));
+                300 + costDifficultyFactor, TILE_SIZE * 5, 170, 18));
 
         gameTowers.add(new Tower("Missile",
                 "Obliterates anything and everything.",
-                350 + costDifficultyFactor, TILE_SIZE * 5, 200));
+                350 + costDifficultyFactor, TILE_SIZE * 5, 200, 20));
     }
 
     /**
@@ -340,8 +340,7 @@ public class GameController {
                     damageImage.setPreserveRatio(true);
 
                     // Create damage label
-                    Label damageLabel = new Label((int) (tower.maxHealth / 20 * (tower.cost / 40))
-                            + "");
+                    Label damageLabel = new Label((int) tower.damagePerSecond + "");
                     damageLabel.setPadding(new Insets(0, 13, 0, 3));
 
                     // Fill tower stats box with stats
@@ -405,7 +404,7 @@ public class GameController {
 
             @Override
             public void handle(long now) {
-                // Every 1 second, updates timer, tower and monument health
+                // Every 1 second, update timer, tower, enemy, and monument health
                 if (lastTimeUpdate == 0L) {
                     lastTimeUpdate = now;
                 } else {
@@ -413,6 +412,7 @@ public class GameController {
                     if (diff >= 1_000_000_000L) {
                         updateTime();
                         updateTowers();
+                        updateEnemies();
                         updateMonument();
                         if (time == 0 || monumentCurHealth < 0.01) {
                             gameButton.fire();
@@ -421,7 +421,7 @@ public class GameController {
                     }
                 }
 
-                // Every 10 seconds, adds money
+                // Every 10 seconds, add money
                 if (lastMoneyUpdate == 0L) {
                     lastMoneyUpdate = now;
                 } else {
@@ -471,6 +471,43 @@ public class GameController {
     }
 
     /**
+     * Decreases health of towers
+     */
+    public void updateTowers() {
+        try {
+            for (Tower tower: playerTowers) {
+                tower.decreaseHealth(1);
+            }
+        } catch (ConcurrentModificationException ignored) { }
+    }
+
+    /**
+     * For every tower, decreases health of closest enemy in range of tower
+     */
+    public void updateEnemies() {
+        try {
+            Enemy currentEnemy = null;
+            for (Tower tower: playerTowers) {
+                // TODO: Update currentEnemy to closest enemy within range
+                if (currentEnemy != null) {
+                    tower.damageEnemy(currentEnemy);
+                }
+            }
+        } catch (ConcurrentModificationException ignored) { }
+    }
+
+    /**
+     * For every reached enemy, decreases health of monument
+     */
+    public void updateMonument() {
+        try {
+            for (Enemy enemy: reachedEnemies) {
+                enemy.damageMonument();
+            }
+        } catch (ConcurrentModificationException ignored) { }
+    }
+
+    /**
      * Adds money
      */
     public void addMoney() {
@@ -483,7 +520,8 @@ public class GameController {
      */
     public void spawnEnemy() {
         int index = rand.nextInt(spawnPoints.size());
-        movingEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index), TILE_SIZE));
+        movingEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index),
+                TILE_SIZE, 17, 2));
     }
 
     /**
@@ -493,28 +531,6 @@ public class GameController {
         try {
             for (Enemy enemy: movingEnemies) {
                 enemy.move();
-            }
-        } catch (ConcurrentModificationException ignored) { }
-    }
-
-    /**
-     * Updates health of towers
-     */
-    public void updateTowers() {
-        try {
-            for (Tower tower: playerTowers) {
-                tower.updateHealth(-1);
-            }
-        } catch (ConcurrentModificationException ignored) { }
-    }
-
-    /**
-     * Updates health of monument
-     */
-    public void updateMonument() {
-        try {
-            for (Enemy enemy: reachedEnemies) {
-                enemy.damageMonument();
             }
         } catch (ConcurrentModificationException ignored) { }
     }
@@ -553,10 +569,7 @@ public class GameController {
     }
 
     /**
-     * Defines a single tile with x-y coordinates, a background image,
-     * and a boolean to track if the tile is occupied by a path/building or not.
-     *
-     * Game container --> game pane --> tile stack panes
+     * Defines a tile object
      */
     private class Tile extends StackPane {
         private final Location location;
@@ -626,7 +639,7 @@ public class GameController {
                         Tower playerTower = new Tower(selectedTower.name,
                                 selectedTower.description, selectedTower.cost,
                                 selectedTower.towerSize, selectedTower.maxHealth,
-                                currentTowerTiles);
+                                selectedTower.damagePerSecond, currentTowerTiles);
                         playerTower.setId("playerTower" + (playerTowers.size() + 1));
                         playerTowers.add(playerTower);
                         for (Tile tile: currentTowerTiles) {
@@ -661,16 +674,13 @@ public class GameController {
     }
 
     /**
-     * Defines a single tower with x-y coordinates, a background image,
-     * a given size (since towers can take up multiple tiles), and health variables.
-     *
-     * Game container --> game pane --> tower stack panes
+     * Defines a tower object
      */
     private class Tower extends StackPane {
         private final String name;
         private final String description;
         private final int cost;
-        private double damagePerSecond;
+        private final double damagePerSecond;
 
         private final int towerSize;
         private Location location;
@@ -681,18 +691,19 @@ public class GameController {
         private ProgressBar healthBar;
 
         public Tower(String name, String description, int cost, int towerSize,
-                     double maxHealth) {
+                     double maxHealth, double damagePerSecond) {
             this.name = name;
             this.description = description;
             this.cost = cost;
             this.towerSize = towerSize;
             this.maxHealth = maxHealth;
             this.curHealth = maxHealth;
+            this.damagePerSecond = damagePerSecond;
         }
 
         public Tower(String name, String description, int cost, int towerSize,
-                     double maxHealth, List<Tile> onTiles) {
-            this(name, description, cost, towerSize, maxHealth);
+                     double maxHealth, double damagePerSecond, List<Tile> onTiles) {
+            this(name, description, cost, towerSize, maxHealth, damagePerSecond);
             this.onTiles = onTiles;
             this.location = onTiles.get(0).location;
 
@@ -713,9 +724,9 @@ public class GameController {
             gamePane.getChildren().add(healthBar);
         }
 
-        public void updateHealth(double change) {
+        public void decreaseHealth(double change) {
             if (curHealth > 0) {
-                curHealth += change;
+                curHealth -= change;
                 healthBar.setProgress(curHealth / maxHealth);
             } else {
                 destroy();
@@ -723,7 +734,7 @@ public class GameController {
         }
 
         public void damageEnemy(Enemy enemy) {
-
+            enemy.decreaseHealth(damagePerSecond);
         }
 
         private void destroy() {
@@ -743,7 +754,7 @@ public class GameController {
     }
 
     /**
-     * Defines a location object associated with a tile or a tower object.
+     * Defines a location object
      */
     private static class Location {
         private final double x;
@@ -761,7 +772,7 @@ public class GameController {
     }
 
     /**
-     * Defines a single enemy with a location, heading, and health
+     * Defines an enemy object
      */
     private class Enemy extends StackPane {
         private Location location;
@@ -769,16 +780,20 @@ public class GameController {
 
         private int heading;
         private final double speed;
-        private double damagePerSecond;
 
-        private double maxHealth;
+        private final double maxHealth;
         private double curHealth;
         private final ProgressBar healthBar;
+        private final double damagePerSecond;
 
-        public Enemy(Location location, int heading, double speed) {
+        public Enemy(Location location, int heading, double speed,
+                     double maxHealth, double damagePerSecond) {
             this.location = location;
             this.speed = speed;
             this.heading = heading;
+            this.maxHealth = maxHealth;
+            this.curHealth = maxHealth;
+            this.damagePerSecond = damagePerSecond;
 
             Rectangle border = new Rectangle(TILE_SIZE * 2, TILE_SIZE * 2);
             border.setFill(new ImagePattern(new Image(String.valueOf(
@@ -921,9 +936,9 @@ public class GameController {
             healthBar.setTranslateY(location.y - TILE_SIZE * 0.65);
         }
 
-        public void updateHealth(double change) {
+        public void decreaseHealth(double change) {
             if (curHealth > 0) {
-                curHealth += change;
+                curHealth -= change;
                 healthBar.setProgress(curHealth / maxHealth);
             } else {
                 destroy();
@@ -932,13 +947,22 @@ public class GameController {
 
         public void damageMonument() {
             if (monumentCurHealth > 0) {
-                monumentCurHealth -= 0.002;
+                monumentCurHealth -= damagePerSecond;
                 monumentBar.setProgress(monumentCurHealth / monumentMaxHealth);
             }
         }
 
         private void destroy() {
+            gamePane.getChildren().remove(this);
+            gamePane.getChildren().remove(healthBar);
+            movingEnemies.remove(this);
+            reachedEnemies.remove(this);
 
+            kills += 1;
+            killsLabel.setText(kills + "");
+
+            money += 5;
+            moneyLabel.setText(money + "");
         }
 
         @Override
