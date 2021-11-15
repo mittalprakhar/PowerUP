@@ -482,15 +482,28 @@ public class GameController {
     }
 
     /**
-     * For every tower, decreases health of closest enemy in range of tower
+     * For every tower, decreases health of all enemies in range of tower
      */
     public void updateEnemies() {
         try {
-            Enemy currentEnemy = null;
             for (Tower tower: playerTowers) {
-                // TODO: Update currentEnemy to closest enemy within range
-                if (currentEnemy != null) {
-                    tower.damageEnemy(currentEnemy);
+                double towerCenterX = tower.location.x + tower.towerSize / 2;
+                double towerCenterY = tower.location.y + tower.towerSize / 2;
+                for (Enemy enemy: movingEnemies) {
+                    if (enemy.location.x >= towerCenterX - tower.range
+                            && enemy.location.x <= towerCenterX + tower.range
+                            && enemy.location.y >= towerCenterY - tower.range
+                            && enemy.location.y <= towerCenterY + tower.range) {
+                        tower.damageEnemy(enemy);
+                    }
+                }
+                for (Enemy enemy: reachedEnemies) {
+                    if (enemy.location.x >= towerCenterX - tower.range
+                            && enemy.location.x <= towerCenterX + tower.range
+                            && enemy.location.y >= towerCenterY - tower.range
+                            && enemy.location.y <= towerCenterY + tower.range) {
+                        tower.damageEnemy(enemy);
+                    }
                 }
             }
         } catch (ConcurrentModificationException ignored) { }
@@ -690,6 +703,8 @@ public class GameController {
         private double curHealth;
         private ProgressBar healthBar;
 
+        private final int range;
+
         public Tower(String name, String description, int cost, int towerSize,
                      double maxHealth, double damagePerSecond) {
             this.name = name;
@@ -699,6 +714,7 @@ public class GameController {
             this.maxHealth = maxHealth;
             this.curHealth = maxHealth;
             this.damagePerSecond = damagePerSecond;
+            this.range = towerSize * 5;
         }
 
         public Tower(String name, String description, int cost, int towerSize,
