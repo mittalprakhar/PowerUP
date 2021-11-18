@@ -498,22 +498,53 @@ public class GameController {
      */
     public void updateTowers() {
         try {
-            for (Tower tower: playerTowers) {
-                tower.decreaseHealth(1);
+            for (Enemy enemy : movingEnemies) {
+                for (Tower tower : playerTowers) {
+                    if (tower.location.x >= enemy.location.x - enemy.range
+                            && tower.location.x <= enemy.location.x + enemy.range
+                            && tower.location.y >= enemy.location.y - enemy.range
+                            && tower.location.y <= enemy.location.y + enemy.range) {
+                        enemy.damageTower(tower);
+                    }
+                }
             }
-        } catch (ConcurrentModificationException ignored) { }
+            for (Enemy enemy : reachedEnemies) {
+                for (Tower tower : playerTowers) {
+                    if (tower.location.x >= enemy.location.x - enemy.range
+                            && tower.location.x <= enemy.location.x + enemy.range
+                            && tower.location.y >= enemy.location.y - enemy.range
+                            && tower.location.y <= enemy.location.y + enemy.range) {
+                        enemy.damageTower(tower);
+                    }
+                }
+            }
+        } catch (ConcurrentModificationException ignored) {
+        }
     }
 
     /**
-     * For every tower, decreases health of closest enemy in range of tower
+     * For every tower, decreases health of all enemies in range of tower
      */
     public void updateEnemies() {
         try {
-            Enemy currentEnemy = null;
             for (Tower tower: playerTowers) {
-                // TODO: Update currentEnemy to closest enemy within range
-                if (currentEnemy != null) {
-                    tower.damageEnemy(currentEnemy);
+                double towerCenterX = tower.location.x + tower.towerSize / 2;
+                double towerCenterY = tower.location.y + tower.towerSize / 2;
+                for (Enemy enemy: movingEnemies) {
+                    if (enemy.location.x >= towerCenterX - tower.range
+                            && enemy.location.x <= towerCenterX + tower.range
+                            && enemy.location.y >= towerCenterY - tower.range
+                            && enemy.location.y <= towerCenterY + tower.range) {
+                        tower.damageEnemy(enemy);
+                    }
+                }
+                for (Enemy enemy: reachedEnemies) {
+                    if (enemy.location.x >= towerCenterX - tower.range
+                            && enemy.location.x <= towerCenterX + tower.range
+                            && enemy.location.y >= towerCenterY - tower.range
+                            && enemy.location.y <= towerCenterY + tower.range) {
+                        tower.damageEnemy(enemy);
+                    }
                 }
             }
         } catch (ConcurrentModificationException ignored) { }
@@ -724,6 +755,8 @@ public class GameController {
         private double curHealth;
         private ProgressBar healthBar;
 
+        private final int range;
+
         public Tower(String name, String description, int cost, int towerSize,
                      double maxHealth, double damagePerSecond) {
             this.name = name;
@@ -733,6 +766,7 @@ public class GameController {
             this.maxHealth = maxHealth;
             this.curHealth = maxHealth;
             this.damagePerSecond = damagePerSecond;
+            this.range = towerSize * 5;
         }
 
         public Tower(String name, String description, int cost, int towerSize,
@@ -820,6 +854,8 @@ public class GameController {
         private final ProgressBar healthBar;
         private final double damagePerSecond;
 
+        private final double range;
+
         public Enemy(Location location, int heading, double speed,
                      double maxHealth, double damagePerSecond) {
             this.location = location;
@@ -846,6 +882,7 @@ public class GameController {
             healthBar.setPrefWidth(TILE_SIZE * 1.6);
             healthBar.setPrefHeight(TILE_SIZE * 0.55);
             gamePane.getChildren().add(healthBar);
+            this.range = 10 * TILE_SIZE * 2;
         }
 
         public void move() {
@@ -1006,6 +1043,10 @@ public class GameController {
         public String toString() {
             return String.format("Location: %s, Heading: %d, Speed: %f",
                     location, heading, speed);
+        }
+
+        public void damageTower(Tower tower) {
+            tower.decreaseHealth(damagePerSecond);
         }
     }
 }
