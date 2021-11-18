@@ -836,55 +836,57 @@ public class GameController {
                 return;
             }
 
-            tileIndex = (int) (location.y / TILE_SIZE)
-                    * COLS + (int) (location.x / TILE_SIZE);
+            if (location.y % TILE_SIZE == 0 && location.x % TILE_SIZE == 0) {
+                tileIndex = (int) (location.y / TILE_SIZE)
+                        * COLS + (int) (location.x / TILE_SIZE);
 
-            List<Integer> possibleHeadings = new ArrayList<>();
+                List<Integer> possibleHeadings = new ArrayList<>();
 
-            if (checkForward()) {
-                possibleHeadings.add(2);
-            }
-            if (checkBackward()) {
-                possibleHeadings.add(4);
-            }
-            if (checkDown()) {
-                possibleHeadings.add(3);
-            }
-            if (checkUp()) {
-                possibleHeadings.add(1);
+                if (checkForward()) {
+                    possibleHeadings.add(2);
+                }
+                if (checkBackward()) {
+                    possibleHeadings.add(4);
+                }
+                if (checkDown()) {
+                    possibleHeadings.add(3);
+                }
+                if (checkUp()) {
+                    possibleHeadings.add(1);
+                }
+
+                if (possibleHeadings.contains(2) && possibleHeadings.contains(4)) {
+                    if (location.x < monumentLocation.x) {
+                        possibleHeadings.remove(Integer.valueOf(4));
+                    } else {
+                        possibleHeadings.remove(Integer.valueOf(2));
+                    }
+                }
+                if (equalsMonumentX
+                        && possibleHeadings.contains(1) && possibleHeadings.contains(3)) {
+                    if (location.y < monumentLocation.y) {
+                        possibleHeadings.remove(Integer.valueOf(1));
+                    } else {
+                        possibleHeadings.remove(Integer.valueOf(3));
+                    }
+                }
+                if (possibleHeadings.size() > 1) {
+                    if (heading == 1 && possibleHeadings.contains(3)) {
+                        possibleHeadings.remove(Integer.valueOf(3));
+                    } else if (heading == 3 && possibleHeadings.contains(1)) {
+                        possibleHeadings.remove(Integer.valueOf(1));
+                    }
+                }
+                if (possibleHeadings.size() > 1) {
+                    if (heading == 2 && possibleHeadings.contains(4)) {
+                        possibleHeadings.remove(Integer.valueOf(4));
+                    } else if (heading == 4 && possibleHeadings.contains(2)) {
+                        possibleHeadings.remove(Integer.valueOf(2));
+                    }
+                }
+                heading = possibleHeadings.get(rand.nextInt(possibleHeadings.size()));
             }
 
-            if (possibleHeadings.contains(2) && possibleHeadings.contains(4)) {
-                if (location.x < monumentLocation.x) {
-                    possibleHeadings.remove(Integer.valueOf(4));
-                } else {
-                    possibleHeadings.remove(Integer.valueOf(2));
-                }
-            }
-            if (equalsMonumentX
-                    && possibleHeadings.contains(1) && possibleHeadings.contains(3)) {
-                if (location.y < monumentLocation.y) {
-                    possibleHeadings.remove(Integer.valueOf(1));
-                } else {
-                    possibleHeadings.remove(Integer.valueOf(3));
-                }
-            }
-            if (possibleHeadings.size() > 1) {
-                if (heading == 1 && possibleHeadings.contains(3)) {
-                    possibleHeadings.remove(Integer.valueOf(3));
-                } else if (heading == 3 && possibleHeadings.contains(1)) {
-                    possibleHeadings.remove(Integer.valueOf(1));
-                }
-            }
-            if (possibleHeadings.size() > 1) {
-                if (heading == 2 && possibleHeadings.contains(4)) {
-                    possibleHeadings.remove(Integer.valueOf(4));
-                } else if (heading == 4 && possibleHeadings.contains(2)) {
-                    possibleHeadings.remove(Integer.valueOf(2));
-                }
-            }
-
-            heading = possibleHeadings.get(rand.nextInt(possibleHeadings.size()));
             updateLocation();
         }
 
