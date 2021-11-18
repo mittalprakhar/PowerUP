@@ -213,6 +213,10 @@ public class GameController {
         return array;
     }
 
+    /**
+     * Initializes gameEnemies with all available game enemies.
+     * @param gameEnemies list of enemies
+     */
     private void initializeGameEnemies(List<Enemy> gameEnemies) {
         int index = rand.nextInt(spawnPoints.size());
         gameEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index),
