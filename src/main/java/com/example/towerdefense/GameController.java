@@ -75,6 +75,8 @@ public class GameController {
     private List<Enemy> movingEnemies;          // List of all enemies still moving
     private List<Enemy> reachedEnemies;         // List of all enemies that have reached monument
 
+    private List<Enemy> gameEnemies;
+
     private Random rand;                        // Random object
 
     @FXML
@@ -98,6 +100,7 @@ public class GameController {
         spawnHeadings = new ArrayList<>();
         movingEnemies = new ArrayList<>();
         reachedEnemies = new ArrayList<>();
+        gameEnemies = new ArrayList<>();
         rand = new Random();
 
         // Set time and kills labels
@@ -169,6 +172,8 @@ public class GameController {
         // Initialize gameTowers with all available game towers
         initializeGameTowers(gameTowers, costDifficultyFactor);
 
+        initializeGameEnemies(gameEnemies);
+
         // Initialize towerMenu with gameTowers
         initializeTowerMenu();
     }
@@ -206,6 +211,20 @@ public class GameController {
         }
 
         return array;
+    }
+
+    private void initializeGameEnemies(List<Enemy> gameEnemies) {
+        int index = rand.nextInt(spawnPoints.size());
+        gameEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index),
+                TILE_SIZE, 10, 1));
+        gameEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index),
+                TILE_SIZE, 15, 2));
+        gameEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index),
+                TILE_SIZE, 20, 3));
+        gameEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index),
+                TILE_SIZE, 30, 4));
+        gameEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index),
+                TILE_SIZE, 50, 5));
     }
 
     /**
@@ -794,6 +813,7 @@ public class GameController {
             this.maxHealth = maxHealth;
             this.curHealth = maxHealth;
             this.damagePerSecond = damagePerSecond;
+
 
             Rectangle border = new Rectangle(TILE_SIZE * 2, TILE_SIZE * 2);
             border.setFill(new ImagePattern(new Image(String.valueOf(
