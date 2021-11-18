@@ -519,9 +519,20 @@ public class GameController {
      * Spawns enemy
      */
     public void spawnEnemy() {
-        int index = rand.nextInt(spawnPoints.size());
-        movingEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index),
-                TILE_SIZE, 17, 2));
+        int whichEnemy = 1;
+        int randomNumber = rand.nextInt(101);
+        if (randomNumber >= 0 && randomNumber < 45) {
+            whichEnemy = 1;
+        } else if (randomNumber >= 45 && randomNumber < 75) {
+            whichEnemy = 2;
+        } else if (randomNumber >= 75 && randomNumber < 90) {
+            whichEnemy = 3;
+        } else if (randomNumber >= 90 && randomNumber < 97) {
+            whichEnemy = 4;
+        } else if (randomNumber >= 97 && randomNumber < 100) {
+            whichEnemy = 5;
+        }
+        movingEnemies.add(gameEnemies.get(whichEnemy - 1));
     }
 
     /**
