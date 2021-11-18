@@ -172,6 +172,7 @@ public class GameController {
         // Initialize gameTowers with all available game towers
         initializeGameTowers(gameTowers, costDifficultyFactor);
 
+        // Initialize gameEnemies with all available game enemies
         initializeGameEnemies(gameEnemies);
 
         // Initialize towerMenu with gameTowers
@@ -219,16 +220,16 @@ public class GameController {
      */
     private void initializeGameEnemies(List<Enemy> gameEnemies) {
         int index = rand.nextInt(spawnPoints.size());
-        gameEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index),
-                TILE_SIZE, 10, 1));
-        gameEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index),
-                TILE_SIZE, 15, 2));
-        gameEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index),
-                TILE_SIZE, 20, 3));
-        gameEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index),
-                TILE_SIZE, 30, 4));
-        gameEnemies.add(new Enemy(spawnPoints.get(index), spawnHeadings.get(index),
-                TILE_SIZE, 50, 5));
+        gameEnemies.add(new Enemy(spawnHeadings.get(index),
+                0.5, 10, 1));
+        gameEnemies.add(new Enemy(spawnHeadings.get(index),
+                0.5, 15, 2));
+        gameEnemies.add(new Enemy(spawnHeadings.get(index),
+                0.5, 20, 3));
+        gameEnemies.add(new Enemy(spawnHeadings.get(index),
+                0.5, 30, 4));
+        gameEnemies.add(new Enemy(spawnHeadings.get(index),
+                0.5, 50, 5));
     }
 
     /**
@@ -498,7 +499,7 @@ public class GameController {
      */
     public void updateTowers() {
         try {
-            for (Enemy enemy : movingEnemies) {
+            for (Enemy enemy: movingEnemies) {
                 for (Tower tower : playerTowers) {
                     if (tower.location.x >= enemy.location.x - enemy.range
                             && tower.location.x <= enemy.location.x + enemy.range
@@ -508,8 +509,8 @@ public class GameController {
                     }
                 }
             }
-            for (Enemy enemy : reachedEnemies) {
-                for (Tower tower : playerTowers) {
+            for (Enemy enemy: reachedEnemies) {
+                for (Tower tower: playerTowers) {
                     if (tower.location.x >= enemy.location.x - enemy.range
                             && tower.location.x <= enemy.location.x + enemy.range
                             && tower.location.y >= enemy.location.y - enemy.range
@@ -573,20 +574,22 @@ public class GameController {
      * Spawns enemy
      */
     public void spawnEnemy() {
-        int whichEnemy = 1;
-        int randomNumber = rand.nextInt(101);
-        if (randomNumber >= 0 && randomNumber < 45) {
-            whichEnemy = 1;
-        } else if (randomNumber >= 45 && randomNumber < 75) {
-            whichEnemy = 2;
-        } else if (randomNumber >= 75 && randomNumber < 90) {
-            whichEnemy = 3;
-        } else if (randomNumber >= 90 && randomNumber < 97) {
-            whichEnemy = 4;
-        } else if (randomNumber >= 97 && randomNumber < 100) {
-            whichEnemy = 5;
+        int randomEnemyType = rand.nextInt(101);
+        if (randomEnemyType >= 0 && randomEnemyType < 45) {
+            randomEnemyType = 0;
+        } else if (randomEnemyType >= 45 && randomEnemyType < 75) {
+            randomEnemyType = 1;
+        } else if (randomEnemyType >= 75 && randomEnemyType < 90) {
+            randomEnemyType = 2;
+        } else if (randomEnemyType >= 90 && randomEnemyType < 97) {
+            randomEnemyType = 3;
+        } else {
+            randomEnemyType = 4;
         }
-        movingEnemies.add(gameEnemies.get(whichEnemy - 1));
+        int randomSpawnPoint = rand.nextInt(spawnPoints.size());
+        Enemy tmp = gameEnemies.get(randomEnemyType);
+        movingEnemies.add(new Enemy(spawnPoints.get(randomSpawnPoint), spawnHeadings.get(randomSpawnPoint),
+                tmp.speed, tmp.maxHealth, tmp.damagePerSecond, randomEnemyType + 1));
     }
 
     /**
@@ -795,7 +798,7 @@ public class GameController {
         public void decreaseHealth(double change) {
             if (curHealth > 0) {
                 curHealth -= change;
-                healthBar.setProgress(curHealth / maxHealth);
+                healthBar.setProgress(Math.max(0, curHealth / maxHealth));
             } else {
                 destroy();
             }
@@ -856,33 +859,36 @@ public class GameController {
 
         private final double range;
 
-        public Enemy(Location location, int heading, double speed,
-                     double maxHealth, double damagePerSecond) {
-            this.location = location;
+        public Enemy(int heading, double speed, double maxHealth, double damagePerSecond) {
             this.speed = speed;
             this.heading = heading;
             this.maxHealth = maxHealth;
             this.curHealth = maxHealth;
             this.damagePerSecond = damagePerSecond;
+            this.range = 10 * TILE_SIZE * 2;
+            healthBar = new ProgressBar();
+        }
 
+        public Enemy(Location location, int heading, double speed,
+                     double maxHealth, double damagePerSecond, int imageId) {
+            this(heading, speed, maxHealth, damagePerSecond);
+            this.location = location;
 
             Rectangle border = new Rectangle(TILE_SIZE * 2, TILE_SIZE * 2);
             border.setFill(new ImagePattern(new Image(String.valueOf(
-                    getClass().getResource("/images/enemy.png")))));
+                    getClass().getResource("/images/enemy" + imageId + ".png")))));
             this.getChildren().add(border);
             this.setTranslateX(location.x);
             this.setTranslateY(location.y);
             this.setId("enemy" + (movingEnemies.size() + reachedEnemies.size() + 1));
             gamePane.getChildren().add(this);
 
-            healthBar = new ProgressBar();
             healthBar.setProgress(1);
             healthBar.setTranslateX(location.x + TILE_SIZE * 0.2);
             healthBar.setTranslateY(location.y - TILE_SIZE * 0.65);
             healthBar.setPrefWidth(TILE_SIZE * 1.6);
             healthBar.setPrefHeight(TILE_SIZE * 0.55);
             gamePane.getChildren().add(healthBar);
-            this.range = 10 * TILE_SIZE * 2;
         }
 
         public void move() {
@@ -915,7 +921,6 @@ public class GameController {
                 if (checkUp()) {
                     possibleHeadings.add(1);
                 }
-
                 if (possibleHeadings.contains(2) && possibleHeadings.contains(4)) {
                     if (location.x < monumentLocation.x) {
                         possibleHeadings.remove(Integer.valueOf(4));
@@ -1013,7 +1018,7 @@ public class GameController {
         public void decreaseHealth(double change) {
             if (curHealth > 0) {
                 curHealth -= change;
-                healthBar.setProgress(curHealth / maxHealth);
+                healthBar.setProgress(Math.max(0, curHealth / maxHealth));
             } else {
                 destroy();
             }
