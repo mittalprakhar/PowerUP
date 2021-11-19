@@ -37,12 +37,20 @@ public class M5Test extends ApplicationTest {
         clickOn("#difficultyComboBox");
         clickOn("Beginner");
         clickOn("#startButton");
+        clickOn("#gameButton");
 
         // on game screen now, time to test!
     }
-
     @Test
-    public void t01() {
+    public void testtowerhealthdecreasebyenemies() {
+        clickOn("#gameTower4");
+        WaitForAsyncUtils.waitForFxEvents();
+        sleep(25000);
+        clickOn("#tileGroundmonument");
+        sleep(10000);
+        WaitForAsyncUtils.waitForFxEvents();
+        assertThrows(EmptyNodeQueryException.class, () ->
+                verifyThat("#playerTower1", isVisible()));
 
     }
 }

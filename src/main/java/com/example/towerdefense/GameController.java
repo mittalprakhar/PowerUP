@@ -136,6 +136,9 @@ public class GameController {
         tiles[66].setId("tileGround3");
         tiles[69].setId("tileGround4");
 
+        //M5 Test IDs
+        tiles[(15*60) + 46].setId("tileGroundmonument");
+
         // Initialize dependent game variables
         playerLabel.setText(String.valueOf(configParams.get("playerName")));
 
