@@ -131,7 +131,7 @@ public class GameController {
                     getResource("/images/tile" + tileImages[i] + ".png"))));
         }
 
-        // M3 Test IDs
+        // Test IDs
         tiles[21].setId("tilePath");
         tiles[60].setId("tileGround1");
         tiles[63].setId("tileGround2");
@@ -139,9 +139,6 @@ public class GameController {
         tiles[69].setId("tileGround4");
         tiles[1000].setId("tileNearMonument");
         tiles[2000].setId("tileGround5");
-
-        //M5 Test IDs
-        tiles[(15*60) + 46].setId("tileGroundmonument");
 
         // Initialize dependent game variables
         playerLabel.setText(String.valueOf(configParams.get("playerName")));
@@ -154,17 +151,17 @@ public class GameController {
         switch (difficulty) {
         case "Beginner":
             money = 500;
-            monumentMaxHealth = 800;
+            monumentMaxHealth = 6000;
             costDifficultyFactor = 0;
             break;
         case "Moderate":
             money = 450;
-            monumentMaxHealth = 700;
+            monumentMaxHealth = 3000;
             costDifficultyFactor = 10;
             break;
         default:
             money = 400;
-            monumentMaxHealth = 600;
+            monumentMaxHealth = 1000;
             costDifficultyFactor = 20;
             break;
         }
@@ -228,15 +225,15 @@ public class GameController {
     private void initializeGameEnemies(List<Enemy> gameEnemies) {
         int index = rand.nextInt(spawnPoints.size());
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                0.5, 10, 1));
+                0.5, 10, 1, 1));
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                0.5, 15, 2));
+                0.5, 15, 2, 2));
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                0.5, 20, 3));
+                0.5, 20, 3, 3));
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                0.5, 30, 4));
+                0.5, 30, 4, 4));
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                0.5, 50, 5));
+                0.5, 50, 5, 5));
     }
 
     /**
@@ -766,7 +763,7 @@ public class GameController {
         private double curHealth;
         private ProgressBar healthBar;
 
-        private final int range;
+        private final double range;
 
         public Tower(String name, String description, int cost, int towerSize,
                      double maxHealth, double damagePerSecond) {
@@ -827,8 +824,9 @@ public class GameController {
 
         @Override
         public String toString() {
-            return String.format("Name: %s, Cost: %d, Max Health: %f, Cur Health: %f, "
-                    + "Location: %s", name, cost, maxHealth, curHealth, location);
+            return String.format("Name: %s, Cost: %d, Max Health: %f, Cur Health: %f,"
+                    + "Location: %s, DPS: %f, Range: %f", name, cost, maxHealth,
+                    curHealth, location, damagePerSecond, range);
         }
     }
 
@@ -865,26 +863,29 @@ public class GameController {
         private final ProgressBar healthBar;
         private final double damagePerSecond;
 
+        private final int type;
         private final double range;
 
-        public Enemy(int heading, double speed, double maxHealth, double damagePerSecond) {
-            this.speed = speed;
+        public Enemy(int heading, double speed, double maxHealth,
+                     double damagePerSecond, int type) {
             this.heading = heading;
+            this.speed = speed;
             this.maxHealth = maxHealth;
             this.curHealth = maxHealth;
             this.damagePerSecond = damagePerSecond;
-            this.range = 10 * TILE_SIZE * 2;
+            this.type = type;
+            this.range = 10 * TILE_SIZE * 2 + (0.2 * type * TILE_SIZE);
             healthBar = new ProgressBar();
         }
 
         public Enemy(Location location, int heading, double speed,
-                     double maxHealth, double damagePerSecond, int imageId) {
-            this(heading, speed, maxHealth, damagePerSecond);
+                     double maxHealth, double damagePerSecond, int type) {
+            this(heading, speed, maxHealth, damagePerSecond, type);
             this.location = location;
 
             Rectangle border = new Rectangle(TILE_SIZE * 2, TILE_SIZE * 2);
             border.setFill(new ImagePattern(new Image(String.valueOf(
-                    getClass().getResource("/images/enemy" + imageId + ".png")))));
+                    getClass().getResource("/images/enemy" + this.type + ".png")))));
             this.getChildren().add(border);
             this.setTranslateX(location.x);
             this.setTranslateY(location.y);
@@ -1054,8 +1055,9 @@ public class GameController {
 
         @Override
         public String toString() {
-            return String.format("Location: %s, Heading: %d, Speed: %f",
-                    location, heading, speed);
+            return String.format("Location: %s, Heading: %d, Speed: %f,"
+                            + "Health: %f, DPS: %f, ID: %d, Range: %f",
+                    location, heading, speed, maxHealth, damagePerSecond, type, range);
         }
 
         public void damageTower(Tower tower) {
