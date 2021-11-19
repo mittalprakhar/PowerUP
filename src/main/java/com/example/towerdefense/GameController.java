@@ -85,6 +85,8 @@ public class GameController {
 
     private AnimationTimer gameLoop;            // Game loop animation timer
 
+    private int enemyCounter = 1;
+
     @FXML
     public void initialize() {
         // Divide game screen into two containers
@@ -135,6 +137,8 @@ public class GameController {
         tiles[63].setId("tileGround2");
         tiles[66].setId("tileGround3");
         tiles[69].setId("tileGround4");
+        tiles[1000].setId("tileNearMonument");
+        tiles[2000].setId("tileGround5");
 
         //M5 Test IDs
         tiles[(15*60) + 46].setId("tileGroundmonument");
@@ -591,7 +595,8 @@ public class GameController {
         }
         int randomSpawnPoint = rand.nextInt(spawnPoints.size());
         Enemy tmp = gameEnemies.get(randomEnemyType);
-        movingEnemies.add(new Enemy(spawnPoints.get(randomSpawnPoint), spawnHeadings.get(randomSpawnPoint),
+        movingEnemies.add(new Enemy(spawnPoints.get(randomSpawnPoint),
+                spawnHeadings.get(randomSpawnPoint),
                 tmp.speed, tmp.maxHealth, tmp.damagePerSecond, randomEnemyType + 1));
     }
 
@@ -740,7 +745,7 @@ public class GameController {
 
         public String toString() {
             return String.format("Location: %s, Path: %s, Occupied: %s",
-                    location, isPath ? "True" : "False", isOccupied ? "True": "False");
+                    location, isPath ? "True" : "False", isOccupied ? "True" : "False");
         }
     }
 
@@ -883,7 +888,7 @@ public class GameController {
             this.getChildren().add(border);
             this.setTranslateX(location.x);
             this.setTranslateY(location.y);
-            this.setId("enemy" + (movingEnemies.size() + reachedEnemies.size() + 1));
+            this.setId("enemy" + enemyCounter++);
             gamePane.getChildren().add(this);
 
             healthBar.setProgress(1);

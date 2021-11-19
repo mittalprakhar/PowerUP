@@ -1,6 +1,5 @@
 import com.example.towerdefense.Main;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -8,12 +7,8 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.service.query.EmptyNodeQueryException;
-import org.testfx.util.WaitForAsyncUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.matcher.base.NodeMatchers.isVisible;
-import static org.testfx.matcher.control.LabeledMatchers.hasText;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class M5Test extends ApplicationTest {
@@ -37,9 +32,9 @@ public class M5Test extends ApplicationTest {
         clickOn("#difficultyComboBox");
         clickOn("Beginner");
         clickOn("#startButton");
-        clickOn("#gameButton");
 
         // on game screen now, time to test!
+        clickOn("#gameButton");
     }
     @Test
     public void testtowerhealthdecreasebyenemies() {
@@ -52,5 +47,37 @@ public class M5Test extends ApplicationTest {
         assertThrows(EmptyNodeQueryException.class, () ->
                 verifyThat("#playerTower1", isVisible()));
 
+    @Test
+    public void testTowerDamagesEnemy() {
+        clickOn("#gameTower5");
+        clickOn("#tileNearMonument");
+
+
+        clickOn("#gameTower4");
+        clickOn("#tileGround5");
+
+        clickOn("#gameTower3");
+        clickOn("#tileGround3");
+
+        sleep(10000);
+        assertThrows(EmptyNodeQueryException.class, () ->
+                lookup("#enemy1").query());
+    }
+
+    @Test
+    public void testKillsLabelUpdates() {
+        clickOn("#gameTower5");
+        clickOn("#tileNearMonument");
+
+        clickOn("#gameTower4");
+        clickOn("#tileGround5");
+
+        clickOn("#gameTower3");
+        clickOn("#tileGround3");
+
+        Label killsLabel = lookup("#killsLabel").query();
+        assertEquals(killsLabel.getText(), "0");
+        sleep(10000);
+        assertNotEquals(killsLabel.getText(), "0");
     }
 }
