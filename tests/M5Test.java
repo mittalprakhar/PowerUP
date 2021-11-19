@@ -36,11 +36,22 @@ public class M5Test extends ApplicationTest {
         // on game screen now, time to test!
         clickOn("#gameButton");
     }
+    @Test
+    public void testtowerhealthdecreasebyenemies() {
+        clickOn("#gameTower4");
+        WaitForAsyncUtils.waitForFxEvents();
+        sleep(25000);
+        clickOn("#tileGroundmonument");
+        sleep(10000);
+        WaitForAsyncUtils.waitForFxEvents();
+        assertThrows(EmptyNodeQueryException.class, () ->
+                verifyThat("#playerTower1", isVisible()));
 
     @Test
     public void testTowerDamagesEnemy() {
         clickOn("#gameTower5");
         clickOn("#tileNearMonument");
+
 
         clickOn("#gameTower4");
         clickOn("#tileGround5");
