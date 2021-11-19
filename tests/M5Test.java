@@ -7,6 +7,9 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.service.query.EmptyNodeQueryException;
+import org.testfx.util.WaitForAsyncUtils;
+import static org.testfx.api.FxAssert.verifyThat;
+import static org.testfx.matcher.base.NodeMatchers.isVisible;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,6 +49,7 @@ public class M5Test extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         assertThrows(EmptyNodeQueryException.class, () ->
                 verifyThat("#playerTower1", isVisible()));
+    }
 
     @Test
     public void testTowerDamagesEnemy() {
