@@ -380,7 +380,8 @@ public class GameController {
                     upgradeButton.setId("upgrade" + (gameTowers.indexOf(tower) + 1));
                     upgradeButton.setAlignment(Pos.CENTER);
                     upgradeButton.getStyleClass().add("upgradeButton");
-                    upgradeButton.setText("⬆");
+                    upgradeButton.setText(tower.isUpgraded ? "✓" : "⬆");
+                    upgradeButton.setDisable(tower.isUpgraded);
                     upgradeButton.setOnAction(new EventHandler<ActionEvent>() {
                         @Override
                         public void handle(ActionEvent actionEvent) {
@@ -391,6 +392,7 @@ public class GameController {
                                 healthLabel.setText((int) tower.maxHealth + "");
                                 tower.damagePerSecond = tower.damagePerSecond * 2;
                                 damageLabel.setText((int) tower.damagePerSecond + "");
+                                tower.isUpgraded = true;
                                 upgradeButton.setText("✓");
                                 upgradeButton.setDisable(true);
                             } else {
@@ -846,6 +848,7 @@ public class GameController {
         private ProgressBar healthBar;
 
         private final double range;
+        private boolean isUpgraded = false;
 
         public Tower(String name, String description, int cost, int towerSize,
                      double maxHealth, double damagePerSecond) {
