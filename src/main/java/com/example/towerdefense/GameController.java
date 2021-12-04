@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 public class GameController {
     @FXML
     private VBox gameContainer;                 // Game container
@@ -58,7 +59,7 @@ public class GameController {
     @FXML
     private Label moneyLabel;                   // Money label in side menu
     private int money;                          // Starting money
-    private int moneyused;                      // Money used during the game
+    private int moneyUsed;                      // Money used during the game
 
     @FXML
     private Label killsLabel;                   // Kills label in side menu
@@ -112,7 +113,7 @@ public class GameController {
         timeLabel.setText(time / 60 + ":"
                 + new DecimalFormat("00").format(time % 60));
         killsLabel.setText(kills + "");
-        moneyused = 0;
+        moneyUsed = 0;
     }
 
     /**
@@ -396,12 +397,12 @@ public class GameController {
                                             + " to upgrade this tower!");
                             alert.show();
                         } else {
-                            money = money - tower.cost;
-                            moneyused = moneyused + tower.cost;
+                            money -= tower.cost;
+                            moneyUsed += tower.cost;
                             moneyLabel.setText(String.valueOf(money));
-                            tower.maxHealth = tower.maxHealth * 2;
+                            tower.maxHealth *= 2;
                             healthLabel.setText((int) tower.maxHealth + "");
-                            tower.damagePerSecond = tower.damagePerSecond * 2;
+                            tower.damagePerSecond *= 2;
                             damageLabel.setText((int) tower.damagePerSecond + "");
                             tower.isUpgraded = true;
                             upgradeButton.setText("✓");
@@ -487,12 +488,12 @@ public class GameController {
                 }
 
                 if (time >= 120) {
-                    // Every 2 seconds, spawn enemy
+                    // Every 3 seconds, spawn enemy
                     if (lastEnemySpawned == 0L) {
                         lastEnemySpawned = now;
                     } else {
                         long diff = now - lastEnemySpawned;
-                        if (diff >= 2_000_000_000L) {
+                        if (diff >= 3_000_000_000L) {
                             spawnEnemy();
                             lastEnemySpawned = now;
                         }
@@ -501,7 +502,6 @@ public class GameController {
                     spawnedFinalBoss = true;
                     spawnFinalBoss();
                 }
-
 
                 // Move enemies
                 if (lastEnemyMoved == 0L) {
@@ -578,14 +578,15 @@ public class GameController {
     public void updateEnemies() {
         try {
             for (Tower tower: playerTowers) {
-                double towerCenterX = tower.location.x + tower.towerSize / 2;
-                double towerCenterY = tower.location.y + tower.towerSize / 2;
+                double towerCenterX = tower.location.x + tower.towerSize / 2.0;
+                double towerCenterY = tower.location.y + tower.towerSize / 2.0;
                 for (Enemy enemy: movingEnemies) {
                     if (enemy.location.x >= towerCenterX - tower.range
                             && enemy.location.x <= towerCenterX + tower.range
                             && enemy.location.y >= towerCenterY - tower.range
                             && enemy.location.y <= towerCenterY + tower.range) {
                         tower.damageEnemy(enemy);
+                        return;
                     }
                 }
                 for (Enemy enemy: reachedEnemies) {
@@ -594,6 +595,7 @@ public class GameController {
                             && enemy.location.y >= towerCenterY - tower.range
                             && enemy.location.y <= towerCenterY + tower.range) {
                         tower.damageEnemy(enemy);
+                        return;
                     }
                 }
             }
@@ -702,7 +704,7 @@ public class GameController {
             java.util.Map<String, Object> gameParams = new HashMap<>();
             gameParams.put("playerName", playerLabel.getText());
             gameParams.put("kills", killsLabel.getText());
-            gameParams.put("moneyUsed", String.valueOf(moneyused));
+            gameParams.put("moneyUsed", String.valueOf(moneyUsed));
             gameParams.put("timeUsed", String.valueOf(240 - time));
             gameParams.put("result", won);
 
@@ -796,8 +798,8 @@ public class GameController {
             setOnMouseClicked(mouseEvent -> {
                 if (selectedTower != null && canPlace) {
                     if (money >= selectedTower.cost) {
-                        money = money - selectedTower.cost;
-                        moneyused = moneyused + selectedTower.cost;
+                        money -= selectedTower.cost;
+                        moneyUsed += selectedTower.cost;
                         moneyLabel.setText(money + "");
                         Tower playerTower = new Tower(selectedTower.name,
                                 selectedTower.description, selectedTower.cost,
