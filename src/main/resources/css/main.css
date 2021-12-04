@@ -52,3 +52,14 @@
 .dialog-pane Button{
     -fx-padding: 4 8;
 }
+
+.upgradeButton {
+    -fx-border-radius: 2;
+    -fx-border-color: #0f5e24;
+    -fx-text-fill: #0f5e24;
+    -fx-cursor: hand;
+    -fx-font-size: 12;
+    -fx-padding: 0;
+    -fx-pref-height: 20;
+    -fx-pref-width: 20;
+}

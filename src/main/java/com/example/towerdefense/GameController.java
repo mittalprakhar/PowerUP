@@ -302,7 +302,7 @@ public class GameController {
                     cell.setAlignment(Pos.CENTER);
                     cell.prefWidthProperty().bind(towerMenu.widthProperty().subtract(30));
                     cell.maxWidthProperty().bind(towerMenu.widthProperty().subtract(30));
-                    cell.setSpacing(6);
+                    cell.setSpacing(5);
                     cell.setId("gameTower" + (gameTowers.indexOf(tower) + 1));
 
                     // Create left box to hold each tower's name and image
@@ -319,8 +319,8 @@ public class GameController {
                     // Create tower image
                     ImageView towerImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/tower" + tower.name + ".png"))));
-                    towerImage.setFitWidth(40);
-                    towerImage.setFitHeight(40);
+                    towerImage.setFitWidth(43);
+                    towerImage.setFitHeight(43);
                     towerImage.setPreserveRatio(true);
 
                     // Fill left box with tower name and image
@@ -329,9 +329,8 @@ public class GameController {
                     // Create right box to hold each tower's description and stats
                     VBox rightBox = new VBox();
                     rightBox.setAlignment(Pos.CENTER_LEFT);
-                    rightBox.setPadding(new Insets(0, 0, 9, 0));
+                    rightBox.setPadding(new Insets(3, 0, 8, 0));
                     rightBox.setSpacing(3);
-                    rightBox.prefHeightProperty().bind(leftBox.heightProperty());
 
                     // Create label with tower description
                     Label towerDescription = new Label(tower.description);
@@ -345,39 +344,40 @@ public class GameController {
                     // Create cost image
                     ImageView costImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/menuMoney.png"))));
-                    costImage.setFitWidth(15);
-                    costImage.setFitHeight(15);
+                    costImage.setFitWidth(13);
+                    costImage.setFitHeight(13);
                     costImage.setPreserveRatio(true);
 
                     // Create cost label
                     Label costLabel = new Label(tower.cost + "");
-                    costLabel.setPadding(new Insets(0, 11, 0, 3));
+                    costLabel.setPadding(new Insets(0, 11, 0, 2));
 
                     // Create health image
                     ImageView healthImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/menuHealth.png"))));
-                    healthImage.setFitWidth(15);
-                    healthImage.setFitHeight(15);
+                    healthImage.setFitWidth(13);
+                    healthImage.setFitHeight(13);
                     healthImage.setPreserveRatio(true);
 
                     // Create health label
                     Label healthLabel = new Label((int) tower.maxHealth + "");
-                    healthLabel.setPadding(new Insets(0, 11, 0, 3));
+                    healthLabel.setPadding(new Insets(0, 11, 0, 2));
 
                     // Create damage image
                     ImageView damageImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/menuDamage.png"))));
-                    damageImage.setFitWidth(15);
-                    damageImage.setFitHeight(15);
+                    damageImage.setFitWidth(13);
+                    damageImage.setFitHeight(13);
                     damageImage.setPreserveRatio(true);
 
                     // Create damage label
                     Label damageLabel = new Label((int) tower.damagePerSecond + "");
-                    damageLabel.setPadding(new Insets(0, 11, 0, 3));
+                    damageLabel.setPadding(new Insets(0, 11, 0, 2));
 
                     Button upgradeButton = new Button();
                     upgradeButton.setId("upgrade" + (gameTowers.indexOf(tower) + 1));
                     upgradeButton.setAlignment(Pos.CENTER);
+                    upgradeButton.getStyleClass().add("upgradeButton");
                     upgradeButton.setText("⬆");
 
                     // Fill tower stats box with stats
