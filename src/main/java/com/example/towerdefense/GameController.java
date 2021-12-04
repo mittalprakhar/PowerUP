@@ -86,6 +86,7 @@ public class GameController {
     private AnimationTimer gameLoop;            // Game loop animation timer
 
     private int enemyCounter = 1;
+    private boolean spawnedFinalBoss = false;
 
     @FXML
     public void initialize() {
@@ -234,6 +235,8 @@ public class GameController {
                 0.5, 30, 4, 4));
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
                 0.5, 50, 5, 5));
+        gameEnemies.add(new Enemy(spawnHeadings.get(index),
+                1.0, 150, 15, 6));
     }
 
     /**
@@ -460,16 +463,22 @@ public class GameController {
                     }
                 }
 
-                // Every 3 seconds, spawn enemy
-                if (lastEnemySpawned == 0L) {
-                    lastEnemySpawned = now;
-                } else {
-                    long diff = now - lastEnemySpawned;
-                    if (diff >= 3_000_000_000L) {
-                        spawnEnemy();
+                if (time >= 120) {
+                    // Every 5 seconds, spawn enemy
+                    if (lastEnemySpawned == 0L) {
                         lastEnemySpawned = now;
+                    } else {
+                        long diff = now - lastEnemySpawned;
+                        if (diff >= 5_000_000_000L) {
+                            spawnEnemy();
+                            lastEnemySpawned = now;
+                        }
                     }
+                } else if (!spawnedFinalBoss){
+                    spawnedFinalBoss = true;
+                    spawnFinalBoss();
                 }
+
 
                 // Move enemies
                 if (lastEnemyMoved == 0L) {
@@ -570,7 +579,20 @@ public class GameController {
      * Adds money
      */
     public void addMoney() {
-        money += 10;
+        String difficulty = difficultyLabel.getText();
+        int moneyIncrement;
+        switch (difficulty) {
+            case "Beginner":
+                moneyIncrement = 50;
+                break;
+            case "Moderate":
+                moneyIncrement = 40;
+                break;
+            default:
+                moneyIncrement = 20;
+                break;
+        }
+        money += moneyIncrement;
         moneyLabel.setText(money + "");
     }
 
@@ -590,6 +612,18 @@ public class GameController {
         } else {
             randomEnemyType = 4;
         }
+        int randomSpawnPoint = rand.nextInt(spawnPoints.size());
+        Enemy tmp = gameEnemies.get(randomEnemyType);
+        movingEnemies.add(new Enemy(spawnPoints.get(randomSpawnPoint),
+                spawnHeadings.get(randomSpawnPoint),
+                tmp.speed, tmp.maxHealth, tmp.damagePerSecond, randomEnemyType + 1));
+    }
+
+    /**
+     * Spawns final boss
+     */
+    public void spawnFinalBoss() {
+        int randomEnemyType = 5;
         int randomSpawnPoint = rand.nextInt(spawnPoints.size());
         Enemy tmp = gameEnemies.get(randomEnemyType);
         movingEnemies.add(new Enemy(spawnPoints.get(randomSpawnPoint),
