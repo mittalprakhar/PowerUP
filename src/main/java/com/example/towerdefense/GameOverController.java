@@ -3,7 +3,6 @@ package com.example.towerdefense;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
@@ -21,12 +20,6 @@ public class GameOverController {
     private Label descriptionLabel;
 
     @FXML
-    private Button restartButton;
-
-    @FXML
-    private Button exitButton;
-
-    @FXML
     public void initialize() {
 
     }
@@ -36,14 +29,16 @@ public class GameOverController {
             resultLabel.setText("Victory");
             descriptionLabel.setText(gameParams.get("playerName")
                     + ", you showed great courage in slaying " + gameParams.get("kills")
-                    + " enemies and defending your castle!" + " You spent $" + gameParams.get("MoneyUsed")
-                    + " in " + gameParams.get("time") + " seconds to achieving this victory!" );
+                    + " enemies and defending your castle!" + " You spent $"
+                    + gameParams.get("moneyUsed") + " in " + gameParams.get("timeUsed")
+                    + " seconds in achieving this victory!");
         } else {
             resultLabel.setText("Game Over");
             descriptionLabel.setText(gameParams.get("playerName")
                     + ", do not lose heart for thou showed great courage in slaying "
-                    + gameParams.get("kills") + " enemies!" + " You spent $" + gameParams.get("MoneyUsed")
-                    + " in " + gameParams.get("time") + " seconds while playing the game!" );
+                    + gameParams.get("kills") + " enemies!" + " You spent $"
+                    + gameParams.get("moneyUsed") + " in " + gameParams.get("timeUsed")
+                    + " seconds while playing the game!");
         }
     }
 

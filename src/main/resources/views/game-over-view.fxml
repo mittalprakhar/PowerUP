@@ -5,10 +5,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.towerdefense.GameOverController">
-    <VBox alignment="CENTER" prefHeight="600.0" prefWidth="1200.0" spacing="25.0" styleClass="startBox">
+<AnchorPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.towerdefense.GameOverController">
+    <VBox alignment="CENTER" prefHeight="650.0" prefWidth="1200.0" spacing="20.0" styleClass="startBox">
         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
         </padding>
         <Text fx:id="resultLabel" fill="#0f5e24" stroke="black" strokeWidth="3" styleClass="welcomeTitle">
             <font>
@@ -18,18 +18,18 @@
                 <Insets bottom="20.0" />
             </VBox.margin>
         </Text>
-        <Label fx:id="descriptionLabel" alignment="CENTER" prefHeight="100.0" prefWidth="550.0" textAlignment="CENTER" wrapText="true">
+        <Label fx:id="descriptionLabel" alignment="CENTER" prefHeight="150.0" prefWidth="550.0" textAlignment="CENTER" wrapText="true">
             <font>
                 <Font size="24.0" />
             </font>
         </Label>
         <HBox alignment="CENTER" prefHeight="45.0" prefWidth="200.0" spacing="30.0">
-            <Button fx:id="restartButton" onAction="#onRestartButtonClick" prefHeight="45.0" prefWidth="135.0" styleClass="customButton" text="Restart">
+            <Button onAction="#onRestartButtonClick" prefHeight="45.0" prefWidth="135.0" styleClass="customButton" text="Restart">
                 <font>
                     <Font size="18.0" />
                 </font>
             </Button>
-            <Button fx:id="exitButton" onAction="#onExitButtonClick" prefHeight="45.0" prefWidth="136.0" styleClass="customButton" text="Exit">
+            <Button onAction="#onExitButtonClick" prefHeight="45.0" prefWidth="136.0" styleClass="customButton" text="Exit">
                 <font>
                     <Font size="18.0" />
                 </font>

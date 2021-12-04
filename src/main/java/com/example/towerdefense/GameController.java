@@ -3,8 +3,6 @@ package com.example.towerdefense;
 import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -78,19 +76,19 @@ public class GameController {
     private List<Enemy> movingEnemies;          // List of all enemies still moving
     private List<Enemy> reachedEnemies;         // List of all enemies that have reached monument
 
-    private List<Enemy> gameEnemies;
+    private List<Enemy> gameEnemies;            // List of enemies in game
 
     private Random rand;                        // Random object
 
     @FXML
     private Button gameButton;                  // Button to start combat or surrender
     private boolean isStarted = false;          // Game started or not
-    private boolean won = false;
+    private boolean won = false;                // Player won or not
 
     private AnimationTimer gameLoop;            // Game loop animation timer
 
-    private int enemyCounter = 1;
-    private boolean spawnedFinalBoss = false;
+    private int enemyCounter = 1;               // Total number of enemies spawned
+    private boolean spawnedFinalBoss = false;   // Final boss spawned or not
 
     @FXML
     public void initialize() {
@@ -125,7 +123,6 @@ public class GameController {
      */
     public void initState(Map<String, Object> configParams) throws FileNotFoundException {
         // Get tile images from map file
-        // Array of tile backgrounds
         int[] tileImages = readMap("src/main/resources/maps/"
                 + configParams.get("mapName").toString().toLowerCase() + ".txt");
 
@@ -149,7 +146,7 @@ public class GameController {
         // Initialize dependent game variables
         playerLabel.setText(String.valueOf(configParams.get("playerName")));
 
-        // Starting difficulty
+        // Starting difficulty and monument health
         String difficulty = String.valueOf(configParams.get("difficulty"));
         difficultyLabel.setText(difficulty);
 
@@ -230,18 +227,24 @@ public class GameController {
      */
     private void initializeGameEnemies(List<Enemy> gameEnemies) {
         int index = rand.nextInt(spawnPoints.size());
+
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                0.5, 10, 1, 1));
+                0.25, 10, 1, 1));
+
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                0.5, 15, 2, 2));
+                0.25, 15, 2, 2));
+
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                0.5, 20, 3, 3));
+                0.25, 20, 3, 3));
+
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                0.5, 30, 4, 4));
+                0.25, 30, 4, 4));
+
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                0.5, 50, 5, 5));
+                0.25, 50, 5, 5));
+
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                1.0, 500, 15, 6));
+                0.5, 500, 15, 6));
     }
 
     /**
@@ -345,74 +348,64 @@ public class GameController {
                     towerStats.setPrefHeight(25);
                     towerStats.setAlignment(Pos.CENTER_LEFT);
 
-                    // Create cost image
+                    // Create cost image and label
                     ImageView costImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/menuMoney.png"))));
                     costImage.setFitWidth(13);
                     costImage.setFitHeight(13);
                     costImage.setPreserveRatio(true);
 
-                    // Create cost label
                     Label costLabel = new Label(tower.cost + "");
                     costLabel.setPadding(new Insets(0, 11, 0, 2));
 
-                    // Create health image
+                    // Create health image and label
                     ImageView healthImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/menuHealth.png"))));
                     healthImage.setFitWidth(13);
                     healthImage.setFitHeight(13);
                     healthImage.setPreserveRatio(true);
 
-                    // Create health label
                     Label healthLabel = new Label((int) tower.maxHealth + "");
                     healthLabel.setPadding(new Insets(0, 11, 0, 2));
 
-                    // Create damage image
+                    // Create damage image and label
                     ImageView damageImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/menuDamage.png"))));
                     damageImage.setFitWidth(13);
                     damageImage.setFitHeight(13);
                     damageImage.setPreserveRatio(true);
 
-                    // Create damage label
                     Label damageLabel = new Label((int) tower.damagePerSecond + "");
                     damageLabel.setPadding(new Insets(0, 11, 0, 2));
 
+                    // Create upgrade button
                     Button upgradeButton = new Button();
                     upgradeButton.setId("upgrade" + (gameTowers.indexOf(tower) + 1));
                     upgradeButton.setAlignment(Pos.CENTER);
                     upgradeButton.getStyleClass().add("upgradeButton");
                     upgradeButton.setText(tower.isUpgraded ? "✓" : "⬆");
                     upgradeButton.setDisable(tower.isUpgraded);
-                    upgradeButton.setOnAction(new EventHandler<ActionEvent>() {
-                        @Override
-                        public void handle(ActionEvent actionEvent) {
-                            if (money >= tower.cost) {
-                                money = money - tower.cost;
-                                moneyused = moneyused + tower.cost;
-                                moneyLabel.setText(String.valueOf(money));
-                                tower.maxHealth = tower.maxHealth * 2;
-                                healthLabel.setText((int) tower.maxHealth + "");
-                                tower.damagePerSecond = tower.damagePerSecond * 2;
-                                damageLabel.setText((int) tower.damagePerSecond + "");
-                                tower.isUpgraded = true;
-                                upgradeButton.setText("✓");
-                                upgradeButton.setDisable(true);
-                            } else {
-                                Alert alert = new Alert(Alert.AlertType.WARNING);
-                                alert.setHeaderText("Not enough money!");
-                                alert.setContentText("You cannot upgrade the tower! Earn more Money!");
-
-                                Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
-                                alertStage.getIcons().add(new Image(String.valueOf(getClass().getResource(
-                                        "/images/towerSpiky.png"))));
-
-                                DialogPane dialogPane = alert.getDialogPane();
-                                dialogPane.getStylesheets().add(String.valueOf(getClass().getResource(
-                                        "/css/main.css")));
-
-                                alert.show();
-                            }
+                    upgradeButton.setOnAction(actionEvent -> {
+                        if (!isStarted) {
+                            Alert alert = generateAlert("Game Not Started",
+                                    "You must start combat before upgrading towers!");
+                            alert.show();
+                        } else if (money < tower.cost) {
+                            Alert alert = generateAlert("Insufficient Money",
+                                    "You do not have the money required"
+                                            + " to upgrade this tower!");
+                            alert.show();
+                        } else {
+                            money = money - tower.cost;
+                            moneyused = moneyused + tower.cost;
+                            moneyLabel.setText(String.valueOf(money));
+                            tower.maxHealth = tower.maxHealth * 2;
+                            healthLabel.setText((int) tower.maxHealth + "");
+                            tower.damagePerSecond = tower.damagePerSecond * 2;
+                            damageLabel.setText((int) tower.damagePerSecond + "");
+                            tower.isUpgraded = true;
+                            upgradeButton.setText("✓");
+                            upgradeButton.setDisable(true);
                         }
                     });
 
@@ -447,18 +440,8 @@ public class GameController {
                 }
             } else {
                 // Show alert if the game is not yet started
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setHeaderText("Game Not Started");
-                alert.setContentText("You must start combat before buying towers!");
-
-                Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
-                alertStage.getIcons().add(new Image(String.valueOf(getClass().getResource(
-                        "/images/towerSpiky.png"))));
-
-                DialogPane dialogPane = alert.getDialogPane();
-                dialogPane.getStylesheets().add(String.valueOf(getClass().getResource(
-                        "/css/main.css")));
-
+                Alert alert = generateAlert("Game Not Started",
+                        "You must start combat before buying towers!");
                 alert.show();
             }
         });
@@ -504,12 +487,12 @@ public class GameController {
                 }
 
                 if (time >= 120) {
-                    // Every 5 seconds, spawn enemy
+                    // Every 2 seconds, spawn enemy
                     if (lastEnemySpawned == 0L) {
                         lastEnemySpawned = now;
                     } else {
                         long diff = now - lastEnemySpawned;
-                        if (diff >= 5_000_000_000L) {
+                        if (diff >= 2_000_000_000L) {
                             spawnEnemy();
                             lastEnemySpawned = now;
                         }
@@ -642,7 +625,7 @@ public class GameController {
             moneyIncrement = 40;
             break;
         default:
-            moneyIncrement = 20;
+            moneyIncrement = 30;
             break;
         }
         money += moneyIncrement;
@@ -719,15 +702,32 @@ public class GameController {
             java.util.Map<String, Object> gameParams = new HashMap<>();
             gameParams.put("playerName", playerLabel.getText());
             gameParams.put("kills", killsLabel.getText());
-            gameParams.put("MoneyUsed", String.valueOf(moneyused));
+            gameParams.put("moneyUsed", String.valueOf(moneyused));
+            gameParams.put("timeUsed", String.valueOf(240 - time));
             gameParams.put("result", won);
-            gameParams.put("time",String.valueOf(240-time));
 
             GameOverController gameOverController = fxmlLoader.getController();
             gameOverController.initState(gameParams);
 
             primaryStage.setScene(scene);
         }
+    }
+
+    private Alert generateAlert(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+
+        Stage alertStage =
+                (Stage) alert.getDialogPane().getScene().getWindow();
+        alertStage.getIcons().add(new Image(String.valueOf(
+                getClass().getResource("/images/towerSpiky.png"))));
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(String.valueOf(
+                getClass().getResource("/css/main.css")));
+
+        return alert;
     }
 
     /**
@@ -809,19 +809,9 @@ public class GameController {
                             tile.isOccupied = true;
                         }
                     } else {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setHeaderText("Insufficient Funds");
-                        alert.setContentText("You do not have the money required"
+                        Alert alert = generateAlert("Insufficient Money",
+                                "You do not have the money required"
                                 + " to buy this tower!");
-
-                        Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
-                        alertStage.getIcons().add(new Image(String.valueOf(getClass().getResource(
-                                "/images/towerSpiky.png"))));
-
-                        DialogPane dialogPane = alert.getDialogPane();
-                        dialogPane.getStylesheets().add(String.valueOf(getClass().getResource(
-                                "/css/main.css")));
-
                         alert.show();
                     }
                 }
@@ -852,7 +842,6 @@ public class GameController {
         private double maxHealth;
         private double curHealth;
         private ProgressBar healthBar;
-        private boolean towerUpgrade;
 
         private final double range;
         private boolean isUpgraded = false;
