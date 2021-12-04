@@ -155,17 +155,17 @@ public class GameController {
         switch (difficulty) {
         case "Beginner":
             money = 500;
-            monumentMaxHealth = 3000;
+            monumentMaxHealth = 1800;
             costDifficultyFactor = 0;
             break;
         case "Moderate":
             money = 450;
-            monumentMaxHealth = 2000;
+            monumentMaxHealth = 1300;
             costDifficultyFactor = 10;
             break;
         default:
             money = 400;
-            monumentMaxHealth = 1000;
+            monumentMaxHealth = 900;
             costDifficultyFactor = 20;
             break;
         }
@@ -259,39 +259,39 @@ public class GameController {
                                       int costDifficultyFactor) {
         gameTowers.add(new Tower("Cannon",
                 "Fires cannon balls to crush enemies.",
-                50 + costDifficultyFactor, TILE_SIZE * 2, 30, 2));
+                50 + costDifficultyFactor, TILE_SIZE * 2, 200, 2));
 
         gameTowers.add(new Tower("Spiky",
                 "Spikes troops when they are not looking.",
-                75 + costDifficultyFactor, TILE_SIZE * 2, 40, 4));
+                75 + costDifficultyFactor, TILE_SIZE * 2, 275, 4));
 
         gameTowers.add(new Tower("Bomber",
                 "Hurls bombs and wreaks havoc upon attackers.",
-                100 + costDifficultyFactor, TILE_SIZE * 3, 50, 6));
+                100 + costDifficultyFactor, TILE_SIZE * 3, 300, 6));
 
         gameTowers.add(new Tower("Wizard",
                 "Hypnotizes fighters into surrendering.",
-                130 + costDifficultyFactor, TILE_SIZE * 3, 70, 8));
+                130 + costDifficultyFactor, TILE_SIZE * 3, 400, 8));
 
         gameTowers.add(new Tower("Xbow",
                 "Chips away attackers at a blistering pace.",
-                160 + costDifficultyFactor, TILE_SIZE * 3, 90, 10));
+                160 + costDifficultyFactor, TILE_SIZE * 3, 500, 10));
 
         gameTowers.add(new Tower("Electro",
                 "Stuns enemies through the power of electrons.",
-                200 + costDifficultyFactor, TILE_SIZE * 4, 110, 12));
+                200 + costDifficultyFactor, TILE_SIZE * 4, 600, 12));
 
         gameTowers.add(new Tower("Drone",
                 "Drops deadly artillery from the skies.",
-                250 + costDifficultyFactor, TILE_SIZE * 4, 140, 14));
+                250 + costDifficultyFactor, TILE_SIZE * 4, 700, 14));
 
         gameTowers.add(new Tower("Tank",
                 "Shoots shells that will impale enemies.",
-                300 + costDifficultyFactor, TILE_SIZE * 5, 170, 18));
+                300 + costDifficultyFactor, TILE_SIZE * 5, 800, 18));
 
         gameTowers.add(new Tower("Missile",
                 "Obliterates anything and everything.",
-                350 + costDifficultyFactor, TILE_SIZE * 5, 200, 20));
+                350 + costDifficultyFactor, TILE_SIZE * 5, 900, 20));
     }
 
     /**
@@ -621,13 +621,13 @@ public class GameController {
         int moneyIncrement;
         switch (difficulty) {
         case "Beginner":
-            moneyIncrement = 50;
+            moneyIncrement = 20;
             break;
         case "Moderate":
-            moneyIncrement = 40;
+            moneyIncrement = 15;
             break;
         default:
-            moneyIncrement = 30;
+            moneyIncrement = 10;
             break;
         }
         money += moneyIncrement;
@@ -1132,7 +1132,7 @@ public class GameController {
             kills += 1;
             killsLabel.setText(kills + "");
 
-            money += 5;
+            money += 20;
             moneyLabel.setText(money + "");
         }
 
