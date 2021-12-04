@@ -3,6 +3,8 @@ package com.example.towerdefense;
 import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -379,6 +381,35 @@ public class GameController {
                     upgradeButton.setId("upgrade" + (gameTowers.indexOf(tower) + 1));
                     upgradeButton.setAlignment(Pos.CENTER);
                     upgradeButton.setText("⬆");
+                    upgradeButton.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent actionEvent) {
+                            if (money >= tower.cost) {
+                                money = money - tower.cost;
+                                moneyLabel.setText(String.valueOf(money));
+                                tower.maxHealth = tower.maxHealth * 2;
+                                healthLabel.setText((int) tower.maxHealth + "");
+                                tower.damagePerSecond = tower.damagePerSecond * 2;
+                                damageLabel.setText((int) tower.damagePerSecond + "");
+                                upgradeButton.setText("✓");
+                                upgradeButton.setDisable(true);
+                            } else {
+                                Alert alert = new Alert(Alert.AlertType.WARNING);
+                                alert.setHeaderText("Not enough money!");
+                                alert.setContentText("You cannot upgrade the tower! Earn more Money!");
+
+                                Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+                                alertStage.getIcons().add(new Image(String.valueOf(getClass().getResource(
+                                        "/images/towerSpiky.png"))));
+
+                                DialogPane dialogPane = alert.getDialogPane();
+                                dialogPane.getStylesheets().add(String.valueOf(getClass().getResource(
+                                        "/css/main.css")));
+
+                                alert.show();
+                            }
+                        }
+                    });
 
                     // Fill tower stats box with stats
                     towerStats.getChildren().addAll(costImage, costLabel, healthImage,
@@ -804,13 +835,13 @@ public class GameController {
         private final String name;
         private final String description;
         private final int cost;
-        private final double damagePerSecond;
+        private double damagePerSecond;
 
         private final int towerSize;
         private Location location;
         private List<Tile> onTiles;
 
-        private final double maxHealth;
+        private double maxHealth;
         private double curHealth;
         private ProgressBar healthBar;
 
