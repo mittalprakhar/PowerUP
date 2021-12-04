@@ -82,6 +82,7 @@ public class GameController {
     @FXML
     private Button gameButton;                  // Button to start combat or surrender
     private boolean isStarted = false;          // Game started or not
+    private boolean won = false;
 
     private AnimationTimer gameLoop;            // Game loop animation timer
 
@@ -236,7 +237,7 @@ public class GameController {
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
                 0.5, 50, 5, 5));
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                1.0, 150, 15, 6));
+                1.0, 300, 15, 6));
     }
 
     /**
@@ -445,9 +446,10 @@ public class GameController {
                         updateTowers();
                         updateEnemies();
                         updateMonument();
-                        if (time == 0 || monumentCurHealth < 0.01) {
-                            gameButton.fire();
-                        }
+//                        if (time == 0 || monumentCurHealth < 0.01) {
+//                            gameButton.fire();
+//                        }
+                        checkGameStatus();
                         lastTimeUpdate = now;
                     }
                 }
@@ -494,6 +496,19 @@ public class GameController {
         };
 
         gameLoop.start();
+    }
+
+    /**
+     * Checks status of the game
+     */
+    private void checkGameStatus() {
+        if (time <= 0 || monumentCurHealth < 0.01) {
+            gameButton.fire();
+        }
+        if (spawnedFinalBoss && movingEnemies.isEmpty() && reachedEnemies.isEmpty()) {
+            won = true;
+            gameButton.fire();
+        }
     }
 
     /**
@@ -601,13 +616,13 @@ public class GameController {
      */
     public void spawnEnemy() {
         int randomEnemyType = rand.nextInt(101);
-        if (randomEnemyType >= 0 && randomEnemyType < 45) {
+        if (randomEnemyType < 45) {
             randomEnemyType = 0;
-        } else if (randomEnemyType >= 45 && randomEnemyType < 75) {
+        } else if (randomEnemyType < 75) {
             randomEnemyType = 1;
-        } else if (randomEnemyType >= 75 && randomEnemyType < 90) {
+        } else if (randomEnemyType < 90) {
             randomEnemyType = 2;
-        } else if (randomEnemyType >= 90 && randomEnemyType < 97) {
+        } else if (randomEnemyType < 97) {
             randomEnemyType = 3;
         } else {
             randomEnemyType = 4;
@@ -666,7 +681,7 @@ public class GameController {
             java.util.Map<String, Object> gameParams = new HashMap<>();
             gameParams.put("playerName", playerLabel.getText());
             gameParams.put("kills", killsLabel.getText());
-            gameParams.put("result", time == 0);
+            gameParams.put("result", won);
 
             GameOverController gameOverController = fxmlLoader.getController();
             gameOverController.initState(gameParams);
