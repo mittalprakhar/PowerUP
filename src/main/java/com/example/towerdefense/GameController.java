@@ -153,12 +153,12 @@ public class GameController {
         switch (difficulty) {
         case "Beginner":
             money = 500;
-            monumentMaxHealth = 6000;
+            monumentMaxHealth = 3000;
             costDifficultyFactor = 0;
             break;
         case "Moderate":
             money = 450;
-            monumentMaxHealth = 3000;
+            monumentMaxHealth = 2000;
             costDifficultyFactor = 10;
             break;
         default:
@@ -237,7 +237,7 @@ public class GameController {
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
                 0.5, 50, 5, 5));
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                1.0, 300, 15, 6));
+                1.0, 500, 15, 6));
     }
 
     /**
@@ -446,9 +446,6 @@ public class GameController {
                         updateTowers();
                         updateEnemies();
                         updateMonument();
-//                        if (time == 0 || monumentCurHealth < 0.01) {
-//                            gameButton.fire();
-//                        }
                         checkGameStatus();
                         lastTimeUpdate = now;
                     }
@@ -476,7 +473,7 @@ public class GameController {
                             lastEnemySpawned = now;
                         }
                     }
-                } else if (!spawnedFinalBoss){
+                } else if (!spawnedFinalBoss) {
                     spawnedFinalBoss = true;
                     spawnFinalBoss();
                 }
@@ -597,15 +594,15 @@ public class GameController {
         String difficulty = difficultyLabel.getText();
         int moneyIncrement;
         switch (difficulty) {
-            case "Beginner":
-                moneyIncrement = 50;
-                break;
-            case "Moderate":
-                moneyIncrement = 40;
-                break;
-            default:
-                moneyIncrement = 20;
-                break;
+        case "Beginner":
+            moneyIncrement = 50;
+            break;
+        case "Moderate":
+            moneyIncrement = 40;
+            break;
+        default:
+            moneyIncrement = 20;
+            break;
         }
         money += moneyIncrement;
         moneyLabel.setText(money + "");
