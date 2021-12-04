@@ -36,12 +36,14 @@ public class GameOverController {
             resultLabel.setText("Victory");
             descriptionLabel.setText(gameParams.get("playerName")
                     + ", you showed great courage in slaying " + gameParams.get("kills")
-                    + " enemies and defending your castle!");
+                    + " enemies and defending your castle!" + " You spent $" + gameParams.get("MoneyUsed")
+                    + " in " + gameParams.get("time") + " seconds to achieving this victory!" );
         } else {
             resultLabel.setText("Game Over");
             descriptionLabel.setText(gameParams.get("playerName")
                     + ", do not lose heart for thou showed great courage in slaying "
-                    + gameParams.get("kills") + " enemies!");
+                    + gameParams.get("kills") + " enemies!" + " You spent $" + gameParams.get("MoneyUsed")
+                    + " in " + gameParams.get("time") + " seconds while playing the game!" );
         }
     }
 

@@ -60,6 +60,7 @@ public class GameController {
     @FXML
     private Label moneyLabel;                   // Money label in side menu
     private int money;                          // Starting money
+    private int moneyused;                      // Money used during the game
 
     @FXML
     private Label killsLabel;                   // Kills label in side menu
@@ -113,6 +114,7 @@ public class GameController {
         timeLabel.setText(time / 60 + ":"
                 + new DecimalFormat("00").format(time % 60));
         killsLabel.setText(kills + "");
+        moneyused = 0;
     }
 
     /**
@@ -387,6 +389,7 @@ public class GameController {
                         public void handle(ActionEvent actionEvent) {
                             if (money >= tower.cost) {
                                 money = money - tower.cost;
+                                moneyused = moneyused + tower.cost;
                                 moneyLabel.setText(String.valueOf(money));
                                 tower.maxHealth = tower.maxHealth * 2;
                                 healthLabel.setText((int) tower.maxHealth + "");
@@ -716,7 +719,9 @@ public class GameController {
             java.util.Map<String, Object> gameParams = new HashMap<>();
             gameParams.put("playerName", playerLabel.getText());
             gameParams.put("kills", killsLabel.getText());
+            gameParams.put("MoneyUsed", String.valueOf(moneyused));
             gameParams.put("result", won);
+            gameParams.put("time",String.valueOf(240-time));
 
             GameOverController gameOverController = fxmlLoader.getController();
             gameOverController.initState(gameParams);
@@ -792,6 +797,7 @@ public class GameController {
                 if (selectedTower != null && canPlace) {
                     if (money >= selectedTower.cost) {
                         money = money - selectedTower.cost;
+                        moneyused = moneyused + selectedTower.cost;
                         moneyLabel.setText(money + "");
                         Tower playerTower = new Tower(selectedTower.name,
                                 selectedTower.description, selectedTower.cost,
@@ -846,6 +852,7 @@ public class GameController {
         private double maxHealth;
         private double curHealth;
         private ProgressBar healthBar;
+        private boolean towerUpgrade;
 
         private final double range;
         private boolean isUpgraded = false;
