@@ -36,7 +36,7 @@ public class M5Test extends ApplicationTest {
         clickOn("Beginner");
         clickOn("#startButton");
 
-        // on game screen now, time to test!
+        // on game screen now , time to test!
         clickOn("#gameButton");
     }
 
