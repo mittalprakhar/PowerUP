@@ -142,6 +142,9 @@ public class GameController {
         tiles[66].setId("tileGround3");
         tiles[69].setId("tileGround4");
         tiles[1000].setId("tileNearMonument");
+        tiles[870].setId("tileFinalBoss1");
+        tiles[885].setId("tileFinalBoss2");
+        tiles[1405].setId("tileFinalBoss3");
         tiles[2000].setId("tileGround5");
 
         // Initialize dependent game variables
@@ -972,7 +975,11 @@ public class GameController {
             this.getChildren().add(border);
             this.setTranslateX(location.x);
             this.setTranslateY(location.y);
-            this.setId("enemy" + enemyCounter++);
+            if (type == 6) {
+                this.setId("enemy6FinalBoss");
+            } else {
+                this.setId("enemy" + enemyCounter++);
+            }
             gamePane.getChildren().add(this);
 
             healthBar.setProgress(1);
