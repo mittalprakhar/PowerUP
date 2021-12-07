@@ -266,7 +266,7 @@ public class GameController {
 
         gameTowers.add(new Tower("Spiky",
                 "Spikes troops when they are not looking.",
-                75 + costDifficultyFactor, TILE_SIZE * 2, 275, 4));
+                75 + costDifficultyFactor, TILE_SIZE * 2, 250, 4));
 
         gameTowers.add(new Tower("Bomber",
                 "Hurls bombs and wreaks havoc upon attackers.",
@@ -274,27 +274,27 @@ public class GameController {
 
         gameTowers.add(new Tower("Wizard",
                 "Hypnotizes fighters into surrendering.",
-                130 + costDifficultyFactor, TILE_SIZE * 3, 400, 8));
+                130 + costDifficultyFactor, TILE_SIZE * 3, 350, 8));
 
         gameTowers.add(new Tower("Xbow",
                 "Chips away attackers at a blistering pace.",
-                160 + costDifficultyFactor, TILE_SIZE * 3, 500, 10));
+                160 + costDifficultyFactor, TILE_SIZE * 3, 400, 10));
 
         gameTowers.add(new Tower("Electro",
                 "Stuns enemies through the power of electrons.",
-                200 + costDifficultyFactor, TILE_SIZE * 4, 550, 12));
+                200 + costDifficultyFactor, TILE_SIZE * 4, 450, 12));
 
         gameTowers.add(new Tower("Drone",
                 "Drops deadly artillery from the skies.",
-                250 + costDifficultyFactor, TILE_SIZE * 4, 600, 13));
+                250 + costDifficultyFactor, TILE_SIZE * 4, 500, 13));
 
         gameTowers.add(new Tower("Tank",
                 "Shoots shells that will impale enemies.",
-                300 + costDifficultyFactor, TILE_SIZE * 5, 650, 14));
+                300 + costDifficultyFactor, TILE_SIZE * 5, 550, 14));
 
         gameTowers.add(new Tower("Missile",
                 "Obliterates anything and everything.",
-                350 + costDifficultyFactor, TILE_SIZE * 5, 700, 15));
+                350 + costDifficultyFactor, TILE_SIZE * 5, 600, 15));
     }
 
     /**
@@ -860,7 +860,7 @@ public class GameController {
             this.maxHealth = maxHealth;
             this.curHealth = maxHealth;
             this.damagePerSecond = damagePerSecond;
-            this.range = Math.max(towerSize * 4, TILE_SIZE * 12);
+            this.range = Math.max(towerSize * 3, TILE_SIZE * 10);
         }
 
         public Tower(String name, String description, int cost, int towerSize,
@@ -960,7 +960,7 @@ public class GameController {
             this.curHealth = maxHealth;
             this.damagePerSecond = damagePerSecond;
             this.type = type;
-            this.range = 10 * TILE_SIZE * 2 + (0.2 * type * TILE_SIZE);
+            this.range = 6 * TILE_SIZE * 2 + (0.2 * type * TILE_SIZE);
             healthBar = new ProgressBar();
         }
 
