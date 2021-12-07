@@ -31,7 +31,7 @@
 .customButton:hover{
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
     -fx-text-fill: white;
-    -fx-background-color: #7CA982;
+    -fx-background-color: rgba(21, 113, 44, 0.85);
     -fx-alignment: CENTER;
     -fx-content-display: LEFT;
 }
