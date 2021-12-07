@@ -1,13 +1,12 @@
 import com.example.towerdefense.Main;
 import javafx.scene.control.DialogPane;
-import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.service.query.EmptyNodeQueryException;
-import org.testfx.util.WaitForAsyncUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,6 +27,7 @@ public class M6Test extends ApplicationTest {
         myStage = primaryStage;
     }
 
+    @Before
     public void setup() {
         // on welcome screen
         clickOn("#startButton");
@@ -37,96 +37,127 @@ public class M6Test extends ApplicationTest {
         clickOn("#difficultyComboBox");
         clickOn("Beginner");
         clickOn("#startButton");
+    }
 
-        // on game screen now, time to test!
+    @Test
+    public void t01GameOverScreen() {
         clickOn("#gameButton");
-    }
 
-    @Test
-    public void testGameOverTime() {
-        setup();
-        verifyThat("#timeLabel", hasText("4:00"));
-        sleep(10000);
         clickOn("Surrender");
-        verifyThat("player1, do not lose heart for thou showed great " +
-                "courage in slaying 0 enemies! You spent $0 in 10 seconds while playing the game!", isVisible());
-    }
+        sleep(3000);
 
-    @Test
-    public void testGameOverMoney() {
-        setup();
-        verifyThat("#moneyLabel", hasText("500"));
-        ListView<Object> towerMenu = lookup("#towerMenu").queryListView();
-        towerMenu.getSelectionModel().select(0);
-        WaitForAsyncUtils.waitForFxEvents();
-        clickOn("#gameTower1");
-        clickOn("#tileNearMonument");
-        clickOn("Surrender");
-        verifyThat("player1, do not lose heart for thou showed great " +
-                "courage in slaying 0 enemies! You spent $50 in 1 seconds while playing the game!", isVisible());
-    }
-
-    @Test
-    public void testGameOverScreen() {
-        setup();
-        WaitForAsyncUtils.waitForFxEvents();
-        clickOn("Surrender");
-        sleep(5000);
         verifyThat("Game Over", isVisible());
     }
+
     @Test
-    public void testGameNotStarted() {
-        clickOn("#startButton");
-        clickOn("#nameTextField").write("player1");
-        clickOn("#difficultyComboBox");
-        clickOn("Beginner");
-        clickOn("#startButton");
-        clickOn("#upgrade1");
+    public void t02GameOverTime() {
+        clickOn("#gameButton");
+
+        verifyThat("#timeLabel", hasText("4:00"));
+        sleep(10000);
+
+        clickOn("Surrender");
+        verifyThat("player1, do not lose heart for thou showed great "
+                + "courage in slaying 0 enemies! You spent $0 in 10 seconds while "
+                + "playing the game!", isVisible());
+    }
+
+    @Test
+    public void t03GameOverMoney() {
+        clickOn("#gameButton");
+
+        verifyThat("#moneyLabel", hasText("500"));
+        clickOn("#gameTower1");
+        clickOn("#tileNearMonument");
+
+        clickOn("Surrender");
+        sleep(2000);
+        verifyThat("#descriptionLabel", hasText("player1, do not lose heart "
+                + "for thou showed great courage in slaying 0 enemies! You spent $50 "
+                + "in 1 seconds while playing the game!"));
+    }
+
+    @Test
+    public void t04UpgradeButtonsVisible() {
+        clickOn("#gameButton");
+
+        for (int i = 1; i <= 5; i++) {
+            verifyThat("#upgradeTower" + i, isVisible());
+        }
+
+        clickOn("Surrender");
+    }
+
+    @Test
+    public void t05UpgradeGameNotStarted() {
+        clickOn("#upgradeTower1");
+
         DialogPane alert = lookup(".alert").query();
-        //assertEquals();
-        assertEquals(alert.getContentText(), "You must start combat before upgrading towers!");
-
+        assertEquals(alert.getContentText(),
+                "You must start combat before upgrading towers!");
     }
 
     @Test
-    public void upgradetowervisibility() {
-    setup();
-    sleep(2000);
-    for (int i = 1; i <= 5; i++) {
-        verifyThat("#upgrade" + i, isVisible());
+    public void t06UpgradeCostsMoney() {
+        clickOn("#gameButton");
+
+        verifyThat("#moneyLabel", hasText("500"));
+        clickOn("#upgradeTower1");
+
+        verifyThat("#moneyLabel", hasText("450"));
+
+        clickOn("Surrender");
     }
-    }
+
     @Test
-    public void upgradetowercostsmoney() {
-        setup();
-        verifyThat("#moneyLabel",hasText("500"));
-        clickOn("#upgrade1");
-        verifyThat("#moneyLabel",hasText("450"));
+    public void t07UpgradeTowerHealth() {
+        clickOn("#gameButton");
+
+        verifyThat("#healthTower1", hasText("200"));
+        clickOn("#upgradeTower1");
+
+        verifyThat("#healthTower1", hasText("400"));
+
+        clickOn("Surrender");
     }
+
     @Test
-    public void testFinalBossSpawns() {
-        setup();
+    public void t08UpgradeTowerDamage() {
+        clickOn("#gameButton");
+
+        verifyThat("#damageTower1", hasText("2"));
+        clickOn("#upgradeTower1");
+
+        verifyThat("#damageTower1", hasText("4"));
+
+        clickOn("Surrender");
+    }
+
+    @Test
+    public void t09UpgradeInsufficientMoney() {
+        clickOn("#gameButton");
+
+        clickOn("#upgradeTower1");
+        clickOn("#upgradeTower2");
+        clickOn("#upgradeTower3");
+        clickOn("#upgradeTower4");
+        clickOn("#upgradeTower5");
+
+        DialogPane alert = lookup(".alert").query();
+        assertEquals(alert.getContentText(), "You do not have the money required"
+                + " to upgrade this tower!");
+    }
+
+    @Test
+    public void t10FinalBossSpawns() {
+        clickOn("#gameButton");
+
         assertThrows(EmptyNodeQueryException.class, () ->
                 lookup("#enemy6FinalBoss").query());
         sleep(125000);
-        verifyThat("#enemy6FinalBoss", isVisible());
-    }
 
-    @Test
-    public void testFinalBossVictoryScreen() {
-        setup();
-        assertThrows(EmptyNodeQueryException.class, () ->
-                lookup("#enemy6FinalBoss").query());
-        ListView<Object> towerMenu = lookup("#towerMenu").queryListView();
-        towerMenu.scrollTo(8);
-        WaitForAsyncUtils.waitForFxEvents();
-        clickOn("#gameTower9");
-        clickOn("#tileFinalBoss1");
-        sleep(50000);
-        clickOn("#tileFinalBoss2");
-        sleep(50000);
-        clickOn("#tileFinalBoss3");
-        sleep(80000);
-        verifyThat("Victory", isVisible());
+        verifyThat("#enemy6FinalBoss", isVisible());
+
+        clickOn("Surrender");
     }
 }

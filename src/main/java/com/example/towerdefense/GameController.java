@@ -368,8 +368,8 @@ public class GameController {
                     healthImage.setFitWidth(13);
                     healthImage.setFitHeight(13);
                     healthImage.setPreserveRatio(true);
-
                     Label healthLabel = new Label((int) tower.maxHealth + "");
+                    healthLabel.setId("healthTower" + (gameTowers.indexOf(tower) + 1));
                     healthLabel.setPadding(new Insets(0, 11, 0, 2));
 
                     // Create damage image and label
@@ -378,13 +378,13 @@ public class GameController {
                     damageImage.setFitWidth(13);
                     damageImage.setFitHeight(13);
                     damageImage.setPreserveRatio(true);
-
                     Label damageLabel = new Label((int) tower.damagePerSecond + "");
+                    damageLabel.setId("damageTower" + (gameTowers.indexOf(tower) + 1));
                     damageLabel.setPadding(new Insets(0, 11, 0, 2));
 
                     // Create upgrade button
                     Button upgradeButton = new Button();
-                    upgradeButton.setId("upgrade" + (gameTowers.indexOf(tower) + 1));
+                    upgradeButton.setId("upgradeTower" + (gameTowers.indexOf(tower) + 1));
                     upgradeButton.setAlignment(Pos.CENTER);
                     upgradeButton.getStyleClass().add("upgradeButton");
                     upgradeButton.setText(tower.isUpgraded ? "✓" : "⬆");
@@ -860,7 +860,7 @@ public class GameController {
             this.maxHealth = maxHealth;
             this.curHealth = maxHealth;
             this.damagePerSecond = damagePerSecond;
-            this.range = towerSize * 5;
+            this.range = Math.max(towerSize * 4, TILE_SIZE * 12);
         }
 
         public Tower(String name, String description, int cost, int towerSize,
