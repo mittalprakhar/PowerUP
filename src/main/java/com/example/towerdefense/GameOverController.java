@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.media.AudioClip;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -13,6 +14,9 @@ import java.io.IOException;
 import java.util.Map;
 
 public class GameOverController {
+
+    private AudioClip overmusic;
+
     @FXML
     private Text resultLabel;
 
@@ -40,10 +44,12 @@ public class GameOverController {
                     + gameParams.get("moneyUsed") + " in " + gameParams.get("timeUsed")
                     + " seconds while playing the game!");
         }
+        overmusic = (AudioClip) gameParams.get("audio");
     }
 
     @FXML
     private void onRestartButtonClick() throws IOException {
+        overmusic.stop();
         Stage primaryStage = Main.getPrimaryStage();
         FXMLLoader fxmlLoader = new FXMLLoader(
                 getClass().getResource("/views/welcome-view.fxml"));
@@ -59,6 +65,7 @@ public class GameOverController {
 
     @FXML
     private void onExitButtonClick() {
+        overmusic.stop();
         Main.getPrimaryStage().close();
     }
 }
