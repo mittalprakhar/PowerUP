@@ -282,19 +282,19 @@ public class GameController {
 
         gameTowers.add(new Tower("Electro",
                 "Stuns enemies through the power of electrons.",
-                200 + costDifficultyFactor, TILE_SIZE * 4, 600, 12));
+                200 + costDifficultyFactor, TILE_SIZE * 4, 550, 12));
 
         gameTowers.add(new Tower("Drone",
                 "Drops deadly artillery from the skies.",
-                250 + costDifficultyFactor, TILE_SIZE * 4, 700, 14));
+                250 + costDifficultyFactor, TILE_SIZE * 4, 600, 13));
 
         gameTowers.add(new Tower("Tank",
                 "Shoots shells that will impale enemies.",
-                300 + costDifficultyFactor, TILE_SIZE * 5, 800, 18));
+                300 + costDifficultyFactor, TILE_SIZE * 5, 650, 14));
 
         gameTowers.add(new Tower("Missile",
                 "Obliterates anything and everything.",
-                350 + costDifficultyFactor, TILE_SIZE * 5, 900, 20));
+                350 + costDifficultyFactor, TILE_SIZE * 5, 700, 15));
     }
 
     /**
