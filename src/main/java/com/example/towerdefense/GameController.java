@@ -333,18 +333,16 @@ public class GameController {
                     leftBox.setPadding(new Insets(0, 0, 5, 0));
                     leftBox.setSpacing(3);
 
-                    // Create label with tower name
+                    // Create tower image and label
                     Label towerName = new Label(tower.name);
                     towerName.setFont(new Font("System Bold", 13.0));
 
-                    // Create tower image
                     ImageView towerImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/tower" + tower.name + ".png"))));
                     towerImage.setFitWidth(43);
                     towerImage.setFitHeight(43);
                     towerImage.setPreserveRatio(true);
 
-                    // Fill left box with tower name and image
                     leftBox.getChildren().addAll(towerName, towerImage);
 
                     // Create right box to hold each tower's description and stats
@@ -353,46 +351,42 @@ public class GameController {
                     rightBox.setPadding(new Insets(3, 0, 8, 0));
                     rightBox.setSpacing(3);
 
-                    // Create label with tower description
+                    // Create tower description and stats
                     Label towerDescription = new Label(tower.description);
                     towerDescription.setWrapText(true);
 
-                    // Create tower stats box
                     HBox towerStats = new HBox();
                     towerStats.setPrefHeight(25);
                     towerStats.setAlignment(Pos.CENTER_LEFT);
 
-                    // Create cost image
+                    // Create cost image and label
                     ImageView costImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/menuMoney.png"))));
                     costImage.setFitWidth(13);
                     costImage.setFitHeight(13);
                     costImage.setPreserveRatio(true);
 
-                    // Create cost label
                     Label costLabel = new Label(tower.cost + "");
                     costLabel.setPadding(new Insets(0, 11, 0, 2));
 
-                    // Create health image
+                    // Create health image and label
                     ImageView healthImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/menuHealth.png"))));
                     healthImage.setFitWidth(13);
                     healthImage.setFitHeight(13);
                     healthImage.setPreserveRatio(true);
 
-                    // Create health label
                     Label healthLabel = new Label((int) tower.maxHealth + "");
                     healthLabel.setId("healthTower" + (gameTowers.indexOf(tower) + 1));
                     healthLabel.setPadding(new Insets(0, 11, 0, 2));
 
-                    // Create damage image
+                    // Create damage image and label
                     ImageView damageImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/menuDamage.png"))));
                     damageImage.setFitWidth(13);
                     damageImage.setFitHeight(13);
                     damageImage.setPreserveRatio(true);
 
-                    // Create damage label
                     Label damageLabel = new Label((int) tower.damagePerSecond + "");
                     damageLabel.setId("damageTower" + (gameTowers.indexOf(tower) + 1));
                     damageLabel.setPadding(new Insets(0, 11, 0, 2));
@@ -418,7 +412,6 @@ public class GameController {
                             money -= tower.cost;
                             moneyUsed += tower.cost;
                             moneyLabel.setText(String.valueOf(money));
-
                             tower.maxHealth *= 2;
                             if (tower.maxHealth >= 1000) {
                                 String tmp = (int) tower.maxHealth + "";
@@ -426,27 +419,18 @@ public class GameController {
                             } else {
                                 healthLabel.setText((int) tower.maxHealth + "");
                             }
-
                             tower.damagePerSecond *= 2;
                             damageLabel.setText((int) tower.damagePerSecond + "");
-
                             tower.isUpgraded = true;
                             upgradeButton.setText("✓");
                             upgradeButton.setDisable(true);
                         }
                     });
 
-                    // Fill tower stats box with stats
                     towerStats.getChildren().addAll(costImage, costLabel, healthImage,
                             healthLabel, damageImage, damageLabel, upgradeButton);
-
-                    // Fill right box with tower description and stats
                     rightBox.getChildren().addAll(towerDescription, towerStats);
-
-                    // Fill cell with left and right boxes
                     cell.getChildren().addAll(leftBox, rightBox);
-
-                    // Set the HBox as the display
                     setGraphic(cell);
                 }
             }
@@ -733,7 +717,7 @@ public class GameController {
             gameParams.put("moneyUsed", String.valueOf(moneyUsed));
             gameParams.put("timeUsed", String.valueOf(240 - time));
             gameParams.put("result", won);
-            gameParams.put("audio",music);
+            gameParams.put("audio", music);
 
             GameOverController gameOverController = fxmlLoader.getController();
             gameOverController.initState(gameParams);

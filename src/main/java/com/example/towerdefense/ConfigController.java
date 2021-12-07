@@ -43,10 +43,10 @@ public class ConfigController {
     private int mapIndex = 0;
     private String playerName;
     private String difficulty;
-    private AudioClip lobbymusicconfig;
+    private AudioClip lobbyMusicConfig;
 
-    public void initState(AudioClip lobbymusic) {
-        lobbymusicconfig = lobbymusic;
+    public void initState(AudioClip lobbyMusic) {
+        lobbyMusicConfig = lobbyMusic;
     }
 
     @FXML
@@ -72,8 +72,9 @@ public class ConfigController {
         playerName = nameTextField.getText();
         difficulty = difficultyComboBox.getSelectionModel().getSelectedItem();
         if (isConfigValid()) {
-            if (lobbymusicconfig != null)
-            lobbymusicconfig.stop();
+            if (lobbyMusicConfig != null) {
+                lobbyMusicConfig.stop();
+            }
 
             Stage primaryStage = Main.getPrimaryStage();
             FXMLLoader fxmlLoader = new FXMLLoader(

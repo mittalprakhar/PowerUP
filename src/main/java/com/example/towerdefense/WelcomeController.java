@@ -15,18 +15,16 @@ import java.io.IOException;
 
 public class WelcomeController {
 
-
-    private AudioClip lobbymusic;
-
-
+    private AudioClip lobbyMusic;
 
     @FXML
     private Button startButton;
 
     public WelcomeController() {
-        lobbymusic = new AudioClip(Paths.get("src/main/resources/music/lobby.mp3").toUri().toString());
-        lobbymusic.setCycleCount(INDEFINITE);
-        lobbymusic.play();
+        lobbyMusic = new AudioClip(
+                Paths.get("src/main/resources/music/lobby.mp3").toUri().toString());
+        lobbyMusic.setCycleCount(INDEFINITE);
+        lobbyMusic.play();
     }
 
     @FXML
@@ -39,7 +37,7 @@ public class WelcomeController {
                 "/css/main.css")));
 
         ConfigController configController = fxmlLoader.getController();
-        configController.initState(lobbymusic);
+        configController.initState(lobbyMusic);
 
         primaryStage.setScene(scene);
     }
