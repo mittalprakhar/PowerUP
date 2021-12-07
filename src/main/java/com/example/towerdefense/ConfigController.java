@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.media.AudioClip;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -42,9 +43,10 @@ public class ConfigController {
     private int mapIndex = 0;
     private String playerName;
     private String difficulty;
+    private AudioClip lobbymusicconfig;
 
-    public void initState() {
-
+    public void initState(AudioClip lobbymusic) {
+        lobbymusicconfig = lobbymusic;
     }
 
     @FXML
@@ -70,6 +72,9 @@ public class ConfigController {
         playerName = nameTextField.getText();
         difficulty = difficultyComboBox.getSelectionModel().getSelectedItem();
         if (isConfigValid()) {
+            if (lobbymusicconfig != null)
+            lobbymusicconfig.stop();
+
             Stage primaryStage = Main.getPrimaryStage();
             FXMLLoader fxmlLoader = new FXMLLoader(
                     getClass().getResource("/views/game-view.fxml"));

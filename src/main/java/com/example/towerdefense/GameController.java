@@ -17,12 +17,16 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.scene.media.AudioClip;
+import java.nio.file.Paths;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
+
+import static javafx.scene.media.AudioClip.INDEFINITE;
 
 @SuppressWarnings("ALL")
 public class GameController {
@@ -91,6 +95,9 @@ public class GameController {
     private int enemyCounter = 1;               // Total number of enemies spawned
     private boolean spawnedFinalBoss = false;   // Final boss spawned or not
 
+    private AudioClip music;                    // Music
+
+
     @FXML
     public void initialize() {
         // Divide game screen into two containers
@@ -114,6 +121,7 @@ public class GameController {
                 + new DecimalFormat("00").format(time % 60));
         killsLabel.setText(kills + "");
         moneyUsed = 0;
+        music = new AudioClip(Paths.get("src/main/resources/music/war.mp3").toUri().toString());
     }
 
     /**
@@ -188,6 +196,8 @@ public class GameController {
 
         // Initialize towerMenu with gameTowers
         initializeTowerMenu();
+        music.setCycleCount(INDEFINITE);
+        music.play();
     }
 
     /**
@@ -710,6 +720,7 @@ public class GameController {
             gameParams.put("moneyUsed", String.valueOf(moneyUsed));
             gameParams.put("timeUsed", String.valueOf(240 - time));
             gameParams.put("result", won);
+            gameParams.put("audio",music);
 
             GameOverController gameOverController = fxmlLoader.getController();
             gameOverController.initState(gameParams);
