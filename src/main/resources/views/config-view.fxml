@@ -11,20 +11,15 @@
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
-    <Text fill="#0f5e24" stroke="black" strokeWidth="2" styleClass="welcomeTitle" text="Tower Defense">
+    <Text fill="#0f5e24" stroke="black" strokeWidth="2" styleClass="configTitle" text="Powerup">
         <font>
             <Font size="80.0" />
         </font>
     </Text>
-    <Text stroke="BLACK" text="Configuration">
-        <font>
-            <Font size="24.0" />
-        </font>
-        <VBox.margin>
-            <Insets bottom="43.0" top="5.0" />
-        </VBox.margin>
-    </Text>
     <HBox alignment="CENTER" prefHeight="200.0" prefWidth="400.0" spacing="70.0">
+        <padding>
+            <Insets top="30.0" />
+        </padding>
         <VBox alignment="CENTER" prefHeight="228.0" prefWidth="183.0" spacing="50.0">
             <TextField fx:id="nameTextField" focusTraversable="false" prefHeight="30.0" prefWidth="190.0" promptText="Enter player name">
                 <effect>
