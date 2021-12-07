@@ -9,12 +9,12 @@
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
-    <Text text="Tower Defense" stroke="black" strokeWidth="3" fill="#0f5e24" styleClass="welcomeTitle">
+    <Text text="Powerup" stroke="black" strokeWidth="3" fill="#0f5e24" styleClass="welcomeTitle">
         <font>
             <Font size="155.0" />
         </font>
     </Text>
-    <Text stroke="BLACK" text="Powered by Team OLogN">
+    <Text stroke="BLACK" text="Powered by OLogN" styleClass = "welcomeTitle2">
         <font>
             <Font size="27.0" />
         </font>
