@@ -26,6 +26,13 @@
     -fx-padding: 10 20 10 20;
     -fx-cursor: hand;
 }
+.customButton:hover{
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-text-fill: white;
+    -fx-background-color: #7CA982;
+    -fx-alignment: CENTER;
+    -fx-content-display: LEFT;
+}
 
 .text-field {
     -fx-prompt-text-fill: black;
