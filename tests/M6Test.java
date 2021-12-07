@@ -1,4 +1,5 @@
 import com.example.towerdefense.Main;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import org.junit.FixMethodOrder;
@@ -8,9 +9,11 @@ import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.service.query.EmptyNodeQueryException;
 import org.testfx.util.WaitForAsyncUtils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
+import static org.testfx.matcher.control.LabeledMatchers.hasText;
 
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -64,5 +67,51 @@ public class M6Test extends ApplicationTest {
         clickOn("#tileFinalBoss3");
         sleep(80000);
         verifyThat("Victory", isVisible());
+    }
+
+    @Test
+    public void testGameOverTime() {
+        setup();
+        verifyThat("#timeLabel", hasText("4:00"));
+        sleep(10000);
+        clickOn("Surrender");
+        verifyThat("player1, do not lose heart for thou showed great " +
+                "courage in slaying 0 enemies! You spent $0 in 10 seconds while playing the game!", isVisible());
+    }
+
+    @Test
+    public void testGameOverMoney() {
+        setup();
+        verifyThat("#moneyLabel", hasText("500"));
+        ListView<Object> towerMenu = lookup("#towerMenu").queryListView();
+        towerMenu.getSelectionModel().select(0);
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#gameTower1");
+        clickOn("#tileNearMonument");
+        clickOn("Surrender");
+        verifyThat("player1, do not lose heart for thou showed great " +
+                "courage in slaying 0 enemies! You spent $50 in 1 seconds while playing the game!", isVisible());
+    }
+
+    @Test
+    public void testGameOverScreen() {
+        setup();
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("Surrender");
+        sleep(5000);
+        verifyThat("Game Over", isVisible());
+    }
+    @Test
+    public void testGameNotStarted() {
+        clickOn("#startButton");
+        clickOn("#nameTextField").write("player1");
+        clickOn("#difficultyComboBox");
+        clickOn("Beginner");
+        clickOn("#startButton");
+        clickOn("#upgrade1");
+        DialogPane alert = lookup(".alert").query();
+        //assertEquals();
+        assertEquals(alert.getContentText(), "You must start combat before upgrading towers!");
+
     }
 }
