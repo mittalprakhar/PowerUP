@@ -8,15 +8,17 @@
 }
 
 .welcomeTitle {
-     -fx-font-family: "Future TimeSplitters";
-      -fx-font-size: 200;
+    -fx-font-family: "Future TimeSplitters";
+    -fx-font-size: 200;
 }
+
+.welcomeTitle2 {
+    -fx-font-family: "Arial";
+}
+
 .configTitle {
     -fx-font-family: "Future TimeSplitters";
-     -fx-font-size: 150;
-}
-.welcomeTitle2 {
-     -fx-font-family: "Arial";
+    -fx-font-size: 150;
 }
 
 .customButton {

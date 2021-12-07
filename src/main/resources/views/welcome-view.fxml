@@ -14,9 +14,9 @@
             <Font size="155.0" />
         </font>
     </Text>
-    <Text stroke="BLACK" text="Powered by OLogN" styleClass = "welcomeTitle2">
+    <Text stroke="BLACK" text="Powered by OLogN" styleClass="welcomeTitle2">
         <font>
-            <Font size="27.0" />
+            <Font size="26.0" />
         </font>
         <VBox.margin>
             <Insets bottom="65.0" top="5.0" />

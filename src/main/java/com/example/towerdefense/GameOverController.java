@@ -51,7 +51,7 @@ public class GameOverController {
         Font.loadFont(getClass().getResourceAsStream("/css/futureTimeSplitters.otf"), 16);
         scene.getStylesheets().add(String.valueOf(getClass().getResource(
                 "/css/main.css")));
-        primaryStage.setTitle("Tower Defense");
+        primaryStage.setTitle("PowerUP");
         primaryStage.getIcons().add(new Image(String.valueOf(getClass().getResource(
                 "/images/towerSpiky.png"))));
         primaryStage.setScene(scene);
