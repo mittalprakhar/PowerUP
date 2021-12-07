@@ -352,32 +352,37 @@ public class GameController {
                     towerStats.setPrefHeight(25);
                     towerStats.setAlignment(Pos.CENTER_LEFT);
 
-                    // Create cost image and label
+                    // Create cost image
                     ImageView costImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/menuMoney.png"))));
                     costImage.setFitWidth(13);
                     costImage.setFitHeight(13);
                     costImage.setPreserveRatio(true);
 
+                    // Create cost label
                     Label costLabel = new Label(tower.cost + "");
                     costLabel.setPadding(new Insets(0, 11, 0, 2));
 
-                    // Create health image and label
+                    // Create health image
                     ImageView healthImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/menuHealth.png"))));
                     healthImage.setFitWidth(13);
                     healthImage.setFitHeight(13);
                     healthImage.setPreserveRatio(true);
+
+                    // Create health label
                     Label healthLabel = new Label((int) tower.maxHealth + "");
                     healthLabel.setId("healthTower" + (gameTowers.indexOf(tower) + 1));
                     healthLabel.setPadding(new Insets(0, 11, 0, 2));
 
-                    // Create damage image and label
+                    // Create damage image
                     ImageView damageImage = new ImageView(new Image(String.valueOf(
                             getClass().getResource("/images/menuDamage.png"))));
                     damageImage.setFitWidth(13);
                     damageImage.setFitHeight(13);
                     damageImage.setPreserveRatio(true);
+
+                    // Create damage label
                     Label damageLabel = new Label((int) tower.damagePerSecond + "");
                     damageLabel.setId("damageTower" + (gameTowers.indexOf(tower) + 1));
                     damageLabel.setPadding(new Insets(0, 11, 0, 2));
@@ -403,10 +408,18 @@ public class GameController {
                             money -= tower.cost;
                             moneyUsed += tower.cost;
                             moneyLabel.setText(String.valueOf(money));
+
                             tower.maxHealth *= 2;
-                            healthLabel.setText((int) tower.maxHealth + "");
+                            if (tower.maxHealth >= 1000) {
+                                String tmp = (int) tower.maxHealth + "";
+                                healthLabel.setText(tmp.charAt(0) + "." + tmp.charAt(1) + "k");
+                            } else {
+                                healthLabel.setText((int) tower.maxHealth + "");
+                            }
+
                             tower.damagePerSecond *= 2;
                             damageLabel.setText((int) tower.damagePerSecond + "");
+
                             tower.isUpgraded = true;
                             upgradeButton.setText("✓");
                             upgradeButton.setDisable(true);

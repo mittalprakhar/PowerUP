@@ -29,16 +29,21 @@ public class GameOverController {
             resultLabel.setText("Victory");
             descriptionLabel.setText(gameParams.get("playerName")
                     + ", you showed great courage in slaying " + gameParams.get("kills")
-                    + " enemies and defending your castle!" + " You spent $"
+                    + (Integer.parseInt((String) gameParams.get("kills")) == 1
+                    ? " enemy " : " enemies ") + "and defending your castle! You spent $"
                     + gameParams.get("moneyUsed") + " in " + gameParams.get("timeUsed")
-                    + " seconds in achieving this victory!");
+                    + (Integer.parseInt((String) gameParams.get("timeUsed")) == 1
+                    ? " second " : " seconds ") + "in achieving this victory!");
         } else {
             resultLabel.setText("Game Over");
             descriptionLabel.setText(gameParams.get("playerName")
                     + ", do not lose heart for thou showed great courage in slaying "
-                    + gameParams.get("kills") + " enemies!" + " You spent $"
-                    + gameParams.get("moneyUsed") + " in " + gameParams.get("timeUsed")
-                    + " seconds while playing the game!");
+                    + gameParams.get("kills")
+                    + (Integer.parseInt((String) gameParams.get("kills")) == 1
+                    ? " enemy! " : " enemies! ") + "You spent $" + gameParams.get("moneyUsed")
+                    + " in " + gameParams.get("timeUsed")
+                    + (Integer.parseInt((String) gameParams.get("timeUsed")) == 1
+                    ? " second " : " seconds ") + "while playing the game!");
         }
     }
 

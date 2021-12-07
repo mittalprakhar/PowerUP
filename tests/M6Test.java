@@ -74,7 +74,7 @@ public class M6Test extends ApplicationTest {
         sleep(2000);
         verifyThat("#descriptionLabel", hasText("player1, do not lose heart "
                 + "for thou showed great courage in slaying 0 enemies! You spent $50 "
-                + "in 1 seconds while playing the game!"));
+                + "in 1 second while playing the game!"));
     }
 
     @Test
