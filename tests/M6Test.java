@@ -43,33 +43,6 @@ public class M6Test extends ApplicationTest {
     }
 
     @Test
-    public void testFinalBossSpawns() {
-        setup();
-        assertThrows(EmptyNodeQueryException.class, () ->
-                lookup("#enemy6FinalBoss").query());
-        sleep(125000);
-        verifyThat("#enemy6FinalBoss", isVisible());
-    }
-
-    @Test
-    public void testFinalBossVictoryScreen() {
-        setup();
-        assertThrows(EmptyNodeQueryException.class, () ->
-                lookup("#enemy6FinalBoss").query());
-        ListView<Object> towerMenu = lookup("#towerMenu").queryListView();
-        towerMenu.scrollTo(8);
-        WaitForAsyncUtils.waitForFxEvents();
-        clickOn("#gameTower9");
-        clickOn("#tileFinalBoss1");
-        sleep(50000);
-        clickOn("#tileFinalBoss2");
-        sleep(50000);
-        clickOn("#tileFinalBoss3");
-        sleep(80000);
-        verifyThat("Victory", isVisible());
-    }
-
-    @Test
     public void testGameOverTime() {
         setup();
         verifyThat("#timeLabel", hasText("4:00"));
@@ -113,5 +86,47 @@ public class M6Test extends ApplicationTest {
         //assertEquals();
         assertEquals(alert.getContentText(), "You must start combat before upgrading towers!");
 
+    }
+
+    @Test
+    public void upgradetowervisibility() {
+    setup();
+    sleep(2000);
+    for (int i = 1; i <= 5; i++) {
+        verifyThat("#upgrade" + i, isVisible());
+    }
+    }
+    @Test
+    public void upgradetowercostsmoney() {
+        setup();
+        verifyThat("#moneyLabel",hasText("500"));
+        clickOn("#upgrade1");
+        verifyThat("#moneyLabel",hasText("450"));
+    }
+    @Test
+    public void testFinalBossSpawns() {
+        setup();
+        assertThrows(EmptyNodeQueryException.class, () ->
+                lookup("#enemy6FinalBoss").query());
+        sleep(125000);
+        verifyThat("#enemy6FinalBoss", isVisible());
+    }
+
+    @Test
+    public void testFinalBossVictoryScreen() {
+        setup();
+        assertThrows(EmptyNodeQueryException.class, () ->
+                lookup("#enemy6FinalBoss").query());
+        ListView<Object> towerMenu = lookup("#towerMenu").queryListView();
+        towerMenu.scrollTo(8);
+        WaitForAsyncUtils.waitForFxEvents();
+        clickOn("#gameTower9");
+        clickOn("#tileFinalBoss1");
+        sleep(50000);
+        clickOn("#tileFinalBoss2");
+        sleep(50000);
+        clickOn("#tileFinalBoss3");
+        sleep(80000);
+        verifyThat("Victory", isVisible());
     }
 }
