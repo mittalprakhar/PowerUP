@@ -1,6 +1,8 @@
-# Tower-Defense
-Edit Configuration for testfx
+# PowerUP
+A tower defense game developed as part of Georgia Tech's _CS 2340: Objects and Design_.
 
--ea --add-modules=javafx.graphics --add-reads javafx.graphics=ALL-UNNAMED --add-opens javafx.graphics/com.sun.javafx.application=ALL-UNNAMED 
-
-![Welcome Screen](https://github.gatech.edu/pmittal43/Tower-Defense/blob/master/src/main/resources/images/forest.png?raw=true)
+### Other Contributors
+* Mehul Rastogi
+* Adavya Bhutani
+* Navya Khanna
+* Maniya Dahiya

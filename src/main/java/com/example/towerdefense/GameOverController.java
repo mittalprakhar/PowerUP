@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class GameOverController {
 
-    private AudioClip overmusic;
+    private AudioClip overMusic;
 
     @FXML
     private Text resultLabel;
@@ -49,12 +49,12 @@ public class GameOverController {
                     + (Integer.parseInt((String) gameParams.get("timeUsed")) == 1
                     ? " second " : " seconds ") + "while playing the game!");
         }
-        overmusic = (AudioClip) gameParams.get("audio");
+        overMusic = (AudioClip) gameParams.get("audio");
     }
 
     @FXML
     private void onRestartButtonClick() throws IOException {
-        overmusic.stop();
+        overMusic.stop();
         Stage primaryStage = Main.getPrimaryStage();
         FXMLLoader fxmlLoader = new FXMLLoader(
                 getClass().getResource("/views/welcome-view.fxml"));
@@ -70,7 +70,7 @@ public class GameOverController {
 
     @FXML
     private void onExitButtonClick() {
-        overmusic.stop();
+        overMusic.stop();
         Main.getPrimaryStage().close();
     }
 }

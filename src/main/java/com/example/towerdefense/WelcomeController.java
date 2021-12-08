@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class WelcomeController {
 
-    private AudioClip lobbyMusic;
+    private final AudioClip lobbyMusic;
 
     @FXML
     private Button startButton;
