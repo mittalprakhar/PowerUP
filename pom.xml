@@ -4,10 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.example</groupId>
-    <artifactId>Tower-Defense</artifactId>
+    <groupId>com.powerup</groupId>
+    <artifactId>PowerUP</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Tower-Defense</name>
+    <name>PowerUP</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,6 +23,11 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
+            <version>11.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
             <version>11.0.2</version>
         </dependency>
 
@@ -66,7 +71,13 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.example.towerdefense/com.example.towerdefense.WelcomeScreen</mainClass>
+                            <mainClass>com.powerup/com.powerup.Main</mainClass>
+                            <launcher>launch.sh</launcher>
+                            <compress>2</compress>
+                            <jlinkZipName>PowerUP</jlinkZipName>
+                            <jlinkImageName>PowerUP</jlinkImageName>
+                            <noManPages>true</noManPages>
+                            <noHeaderFiles>true</noHeaderFiles>
                         </configuration>
                     </execution>
                 </executions>
