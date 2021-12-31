@@ -145,31 +145,28 @@ public class GameController {
 
         // Initialize dependent game variables
         playerLabel.setText(String.valueOf(configParams.get("playerName")));
+        money = 200;
+        moneyLabel.setText(money + "");
 
         // Starting difficulty and monument health
         String difficulty = String.valueOf(configParams.get("difficulty"));
         difficultyLabel.setText(difficulty);
-
         int costDifficultyFactor;
         switch (difficulty) {
         case "Beginner":
-            money = 500;
             monumentMaxHealth = 1800;
             costDifficultyFactor = 0;
             break;
         case "Moderate":
-            money = 450;
             monumentMaxHealth = 1300;
             costDifficultyFactor = 10;
             break;
         default:
-            money = 400;
             monumentMaxHealth = 900;
             costDifficultyFactor = 20;
             break;
         }
         monumentCurHealth = monumentMaxHealth;
-        moneyLabel.setText(money + "");
 
         // Initialize monument health bar
         monumentBar.setProgress(monumentMaxHealth / 800);
@@ -231,7 +228,7 @@ public class GameController {
         int index = rand.nextInt(spawnPoints.size());
 
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                0.25, 10, 1, 1));
+                0.25, 12, 1, 1));
 
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
                 0.25, 15, 2, 2));
@@ -243,10 +240,10 @@ public class GameController {
                 0.25, 30, 4, 4));
 
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                0.25, 50, 5, 5));
+                0.25, 50, 4, 5));
 
         gameEnemies.add(new Enemy(spawnHeadings.get(index),
-                0.5, 500, 15, 6));
+                0.5, 500, 5, 6));
     }
 
     /**
@@ -260,39 +257,39 @@ public class GameController {
                                       int costDifficultyFactor) {
         gameTowers.add(new Tower("Cannon",
                 "Fires cannon balls to crush enemies.",
-                50 + costDifficultyFactor, TILE_SIZE * 2, 200, 2));
+                50 + costDifficultyFactor, TILE_SIZE * 2, 150, 2));
 
         gameTowers.add(new Tower("Spiky",
                 "Spikes troops when they are not looking.",
-                75 + costDifficultyFactor, TILE_SIZE * 2, 250, 4));
+                75 + costDifficultyFactor, TILE_SIZE * 2, 160, 4));
 
         gameTowers.add(new Tower("Bomber",
                 "Hurls bombs and wreaks havoc upon attackers.",
-                100 + costDifficultyFactor, TILE_SIZE * 3, 300, 6));
+                100 + costDifficultyFactor, TILE_SIZE * 3, 170, 6));
 
         gameTowers.add(new Tower("Wizard",
                 "Hypnotizes fighters into surrendering.",
-                130 + costDifficultyFactor, TILE_SIZE * 3, 350, 8));
+                130 + costDifficultyFactor, TILE_SIZE * 3, 180, 8));
 
         gameTowers.add(new Tower("Xbow",
                 "Chips away attackers at a blistering pace.",
-                160 + costDifficultyFactor, TILE_SIZE * 3, 400, 10));
+                160 + costDifficultyFactor, TILE_SIZE * 3, 190, 10));
 
         gameTowers.add(new Tower("Electro",
                 "Stuns enemies through the power of electrons.",
-                200 + costDifficultyFactor, TILE_SIZE * 4, 450, 12));
+                200 + costDifficultyFactor, TILE_SIZE * 4, 200, 12));
 
         gameTowers.add(new Tower("Drone",
                 "Drops deadly artillery from the skies.",
-                250 + costDifficultyFactor, TILE_SIZE * 4, 500, 13));
+                250 + costDifficultyFactor, TILE_SIZE * 4, 210, 13));
 
         gameTowers.add(new Tower("Tank",
                 "Shoots shells that will impale enemies.",
-                300 + costDifficultyFactor, TILE_SIZE * 5, 550, 14));
+                300 + costDifficultyFactor, TILE_SIZE * 5, 220, 14));
 
         gameTowers.add(new Tower("Missile",
                 "Obliterates anything and everything.",
-                350 + costDifficultyFactor, TILE_SIZE * 5, 600, 15));
+                350 + costDifficultyFactor, TILE_SIZE * 5, 230, 15));
     }
 
     /**
@@ -466,8 +463,8 @@ public class GameController {
                     long diff = now - lastTimeUpdate;
                     if (diff >= 1_000_000_000L) {
                         updateTime();
-                        updateTowers();
                         updateEnemies();
+                        updateTowers();
                         updateMonument();
                         checkGameStatus();
                         lastTimeUpdate = now;
@@ -521,10 +518,10 @@ public class GameController {
      * Checks status of the game
      */
     private void checkGameStatus() {
-        if (time <= 0 || monumentCurHealth < 0.01) {
+        if (monumentCurHealth < 0.01) {
             gameButton.fire();
         }
-        if (spawnedFinalBoss && movingEnemies.isEmpty() && reachedEnemies.isEmpty()) {
+        if (time <= 0 || spawnedFinalBoss && movingEnemies.isEmpty() && reachedEnemies.isEmpty()) {
             won = true;
             gameButton.fire();
         }
@@ -542,12 +539,45 @@ public class GameController {
     }
 
     /**
+     * For every tower, decreases health of one enemy in range of tower
+     */
+    public void updateEnemies() {
+        try {
+            for (Tower tower: playerTowers) {
+                double towerCenterX = tower.location.x + tower.towerSize / 2.0;
+                double towerCenterY = tower.location.y + tower.towerSize / 2.0;
+                for (Enemy enemy: movingEnemies) {
+                    if (enemy.location.x >= towerCenterX - tower.range
+                            && enemy.location.x <= towerCenterX + tower.range
+                            && enemy.location.y >= towerCenterY - tower.range
+                            && enemy.location.y <= towerCenterY + tower.range
+                            && enemy.curHealth > 0) {
+                        tower.damageEnemy(enemy);
+                        break;
+                    }
+                }
+                for (Enemy enemy: reachedEnemies) {
+                    if (enemy.location.x >= towerCenterX - tower.range
+                            && enemy.location.x <= towerCenterX + tower.range
+                            && enemy.location.y >= towerCenterY - tower.range
+                            && enemy.location.y <= towerCenterY + tower.range
+                            && enemy.curHealth > 0) {
+                        tower.damageEnemy(enemy);
+                        break;
+                    }
+                }
+                tower.decreaseHealth(tower.maxHealth / 140);
+            }
+        } catch (ConcurrentModificationException ignored) { }
+    }
+
+    /**
      * Decreases health of towers
      */
     public void updateTowers() {
         try {
             for (Enemy enemy: movingEnemies) {
-                for (Tower tower : playerTowers) {
+                for (Tower tower: playerTowers) {
                     if (tower.location.x >= enemy.location.x - enemy.range
                             && tower.location.x <= enemy.location.x + enemy.range
                             && tower.location.y >= enemy.location.y - enemy.range
@@ -563,37 +593,6 @@ public class GameController {
                             && tower.location.y >= enemy.location.y - enemy.range
                             && tower.location.y <= enemy.location.y + enemy.range) {
                         enemy.damageTower(tower);
-                    }
-                }
-            }
-        } catch (ConcurrentModificationException ignored) {
-        }
-    }
-
-    /**
-     * For every tower, decreases health of all enemies in range of tower
-     */
-    public void updateEnemies() {
-        try {
-            for (Tower tower: playerTowers) {
-                double towerCenterX = tower.location.x + tower.towerSize / 2.0;
-                double towerCenterY = tower.location.y + tower.towerSize / 2.0;
-                for (Enemy enemy: movingEnemies) {
-                    if (enemy.location.x >= towerCenterX - tower.range
-                            && enemy.location.x <= towerCenterX + tower.range
-                            && enemy.location.y >= towerCenterY - tower.range
-                            && enemy.location.y <= towerCenterY + tower.range) {
-                        tower.damageEnemy(enemy);
-                        return;
-                    }
-                }
-                for (Enemy enemy: reachedEnemies) {
-                    if (enemy.location.x >= towerCenterX - tower.range
-                            && enemy.location.x <= towerCenterX + tower.range
-                            && enemy.location.y >= towerCenterY - tower.range
-                            && enemy.location.y <= towerCenterY + tower.range) {
-                        tower.damageEnemy(enemy);
-                        return;
                     }
                 }
             }
@@ -846,6 +845,7 @@ public class GameController {
         private double maxHealth;
         private double curHealth;
         private ProgressBar healthBar;
+        private Rectangle rangeRect;
 
         private final double range;
         private boolean isUpgraded = false;
@@ -859,7 +859,7 @@ public class GameController {
             this.maxHealth = maxHealth;
             this.curHealth = maxHealth;
             this.damagePerSecond = damagePerSecond;
-            this.range = Math.max(towerSize * 3, TILE_SIZE * 10);
+            this.range = Math.min(towerSize * 3, TILE_SIZE * 10);
         }
 
         public Tower(String name, String description, int cost, int towerSize,
@@ -883,13 +883,25 @@ public class GameController {
             healthBar.setPrefWidth(towerSize);
             healthBar.setPrefHeight(TILE_SIZE * 0.8);
             gamePane.getChildren().add(healthBar);
+
+            double centerX = location.x + towerSize / 2.0;
+            double centerY = location.y + towerSize / 2.0;
+            double leftX = Math.max(0, centerX - range);
+            double rightX = Math.min(centerX + range, TILE_SIZE * COLS);
+            double topY = Math.max(0, centerY - range);
+            double bottomY = Math.min(centerY + range, TILE_SIZE * ROWS);
+            rangeRect = new Rectangle(leftX, topY, rightX - leftX, bottomY - topY);
+            rangeRect.setOpacity(0.1);
+            rangeRect.setMouseTransparent(true);
+            gamePane.getChildren().add(rangeRect);
         }
 
         public void decreaseHealth(double change) {
             if (curHealth > 0) {
                 curHealth -= change;
                 healthBar.setProgress(Math.max(0, curHealth / maxHealth));
-            } else {
+            }
+            if (curHealth <= 0) {
                 destroy();
             }
         }
@@ -901,6 +913,7 @@ public class GameController {
         private void destroy() {
             gamePane.getChildren().remove(this);
             gamePane.getChildren().remove(healthBar);
+            gamePane.getChildren().remove(rangeRect);
             playerTowers.remove(this);
             for (Tile tile: this.onTiles) {
                 tile.isOccupied = false;
@@ -959,7 +972,7 @@ public class GameController {
             this.curHealth = maxHealth;
             this.damagePerSecond = damagePerSecond;
             this.type = type;
-            this.range = 6 * TILE_SIZE * 2 + (0.2 * type * TILE_SIZE);
+            this.range = 10 * TILE_SIZE + (0.2 * type * TILE_SIZE);
             healthBar = new ProgressBar();
         }
 
@@ -1117,14 +1130,19 @@ public class GameController {
             if (curHealth > 0) {
                 curHealth -= change;
                 healthBar.setProgress(Math.max(0, curHealth / maxHealth));
-            } else {
+            }
+            if (curHealth <= 0) {
                 destroy();
             }
         }
 
         public void damageMonument() {
             if (monumentCurHealth > 0) {
-                monumentCurHealth -= damagePerSecond;
+                if (type == 6) {
+                    monumentCurHealth -= damagePerSecond * 4;
+                } else {
+                    monumentCurHealth -= damagePerSecond;
+                }
                 monumentBar.setProgress(monumentCurHealth / monumentMaxHealth);
             }
         }
