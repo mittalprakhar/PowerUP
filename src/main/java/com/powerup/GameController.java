@@ -145,7 +145,7 @@ public class GameController {
 
         // Initialize dependent game variables
         playerLabel.setText(String.valueOf(configParams.get("playerName")));
-        money = 250;
+        money = 200;
         moneyLabel.setText(money + "");
 
         // Starting difficulty and monument health
