@@ -145,7 +145,7 @@ public class GameController {
 
         // Initialize dependent game variables
         playerLabel.setText(String.valueOf(configParams.get("playerName")));
-        money = 200;
+        money = 250;
         moneyLabel.setText(money + "");
 
         // Starting difficulty and monument health
@@ -742,6 +742,7 @@ public class GameController {
         private final Rectangle rectangle;
 
         private List<Tile> currentTowerTiles;
+        private Rectangle currentTowerRange;
 
         private final boolean isPath;
         private boolean isOccupied;
@@ -763,12 +764,11 @@ public class GameController {
 
             setOnMouseEntered(mouseEvent -> {
                 if (selectedTower != null) {
-                    int towerSize = selectedTower.towerSize;
                     canPlace = true;
-                    if (this.location.x + towerSize <= COLS * TILE_SIZE
-                            && this.location.y + towerSize <= ROWS * TILE_SIZE) {
-                        for (int i = 0; i < towerSize; i += TILE_SIZE) {
-                            for (int j = 0; j < towerSize; j += TILE_SIZE) {
+                    if (this.location.x + selectedTower.towerSize <= COLS * TILE_SIZE
+                            && this.location.y + selectedTower.towerSize <= ROWS * TILE_SIZE) {
+                        for (int i = 0; i < selectedTower.towerSize; i += TILE_SIZE) {
+                            for (int j = 0; j < selectedTower.towerSize; j += TILE_SIZE) {
                                 Tile tile = tiles[(int) ((this.location.y + i) / TILE_SIZE
                                         * COLS + (this.location.x + j) / TILE_SIZE)];
                                 tile.rectangle.setOpacity(0.7);
@@ -778,17 +778,29 @@ public class GameController {
                                 currentTowerTiles.add(tile);
                             }
                         }
+                        double centerX = location.x + selectedTower.towerSize / 2.0;
+                        double centerY = location.y + selectedTower.towerSize / 2.0;
+                        double leftX = Math.max(0, centerX - selectedTower.range);
+                        double rightX = Math.min(centerX + selectedTower.range, TILE_SIZE * COLS);
+                        double topY = Math.max(0, centerY - selectedTower.range);
+                        double bottomY = Math.min(centerY + selectedTower.range, TILE_SIZE * ROWS);
+                        currentTowerRange = new Rectangle(leftX, topY, rightX - leftX, bottomY - topY);
+                        currentTowerRange.setOpacity(0.1);
+                        currentTowerRange.setMouseTransparent(true);
                         if (!canPlace) {
                             for (Tile tile: currentTowerTiles) {
                                 tile.rectangle.setFill(Color.RED);
                                 tile.rectangle.setOpacity(0.4);
                             }
+                            currentTowerRange.setFill(Color.RED);
                         }
+                        gamePane.getChildren().add(currentTowerRange);
                     }
                 }
             });
 
             setOnMouseExited(mouseEvent -> {
+                gamePane.getChildren().remove(currentTowerRange);
                 for (Tile tile: currentTowerTiles) {
                     tile.rectangle.setFill(new ImagePattern(tile.background));
                     tile.rectangle.setOpacity(1.0);
