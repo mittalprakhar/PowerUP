@@ -13,20 +13,17 @@ A strategy-based tower defense game developed as part of Georgia Tech's _CS 2340
 ### Gameplay
 Welcome to the arena!
 
-<img src="https://github.com/mittalprakhar/PowerUP/blob/master/demo/demo1.jpg?raw=true" alt="Start Screen" width="400"/> &nbsp; &nbsp; &nbsp;
-<img src="https://github.com/mittalprakhar/PowerUP/blob/master/demo/demo2.jpg?raw=true" alt="Configuration Screen" width="400"/>
+<img src="https://github.com/mittalprakhar/PowerUP/blob/master/demo/demo1.jpg?raw=true" alt="Start Screen" height="200"/>&nbsp;&nbsp;<img src="https://github.com/mittalprakhar/PowerUP/blob/master/demo/demo2.jpg?raw=true" alt="Configuration Screen" height="200"/>
 
 Select your player name, difficulty level, and map.
 
 Buy, place, and upgrade towers to defend against the enemies. Each kill increases the money in your bank! 
 
-<img src="https://github.com/mittalprakhar/PowerUP/blob/master/demo/demo3.jpg?raw=true" alt="Placing Towers" width="400"/> &nbsp; &nbsp; &nbsp;
-<img src="https://github.com/mittalprakhar/PowerUP/blob/master/demo/demo4.jpg?raw=true" alt="Combat" width="400"/>
+<img src="https://github.com/mittalprakhar/PowerUP/blob/master/demo/demo3.jpg?raw=true" alt="Placing Towers" height="200"/>&nbsp;&nbsp;<img src="https://github.com/mittalprakhar/PowerUP/blob/master/demo/demo4.jpg?raw=true" alt="Combat" height="200"/>
 
 Spend your money wisely. Save up to battle the final boss and successfully defend your castle.
 
-<img src="https://github.com/mittalprakhar/PowerUP/blob/master/demo/demo5.jpg?raw=true" alt="Victory Screen" width="400"/> &nbsp; &nbsp; &nbsp;
-<img src="https://github.com/mittalprakhar/PowerUP/blob/master/demo/demo6.jpg?raw=true" alt="Game Over Screen" width="400"/>
+<img src="https://github.com/mittalprakhar/PowerUP/blob/master/demo/demo5.jpg?raw=true" alt="Victory Screen" height="200"/>&nbsp;&nbsp;<img src="https://github.com/mittalprakhar/PowerUP/blob/master/demo/demo6.jpg?raw=true" alt="Game Over Screen" height="200"/>
 
 Don't let the enemies sneak through your defenses, or the game shall be over!
 
